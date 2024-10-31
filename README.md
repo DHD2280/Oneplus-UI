@@ -23,10 +23,9 @@ dependencies {
 
 Use one of these themes in your `themes.xml` file:
 
-`
-Theme.Oneplus.Light.NoActionBar
-Theme.Oneplus.Dark.NoActionBar
-`
+`Theme.Oneplus.Light.NoActionBar`
+`Theme.Oneplus.Dark.NoActionBar`
+
 
 Extend your activity to `OplusActivity`, to get dark mode support. [Enhanced/Medium/Gentle]
 
