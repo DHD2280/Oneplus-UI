@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <it.dhd.oneplusui.preference.OplusPreferenceCategory android:title="This is a preference category">
+
+        <it.dhd.oneplusui.preference.OplusPreference
+            android:key="test_key"
+            android:summary="This is a test preference"
+            android:title="Test Preference" />
+
+        <it.dhd.oneplusui.preference.OplusSwitchPreference
+            android:key="test_switch_key"
+            android:summary="This is a test switch preference"
+            android:title="Test Switch Preference" />
+
+        <it.dhd.oneplusui.preference.OplusSliderPreference
+            android:key="test_slider_key"
+            android:summary="This is a test slider preference"
+            android:title="Test Slider Preference" />
+
+        <it.dhd.oneplusui.preference.OplusJumpPreference
+            android:key="test_jump_key"
+            android:summary="This is a test jump preference"
+            android:title="Test Jump Preference" />
+
+        <it.dhd.oneplusui.preference.OplusEditTextPreference
+            android:key="test_edittext_key"
+            android:summary="This is a test edittext preference"
+            android:title="Test EditText Preference" />
+
+    </it.dhd.oneplusui.preference.OplusPreferenceCategory>
+
+</PreferenceScreen>

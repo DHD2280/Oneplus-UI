@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="preference_card_margin_horizontal">16dp</dimen>
+    <dimen name="preference_min_height">48dp</dimen>
+    <dimen name="preference_title_padding_start">24dp</dimen>
+    <dimen name="preference_title_padding_end">24dp</dimen>
+    <dimen name="preference_icon_margin_top">14dp</dimen>
+    <dimen name="preference_icon_margin_bottom">14dp</dimen>
+    <dimen name="preference_icon_margin_right">16dp</dimen>
+    <dimen name="preference_text_content_padding_top">10dp</dimen>
+    <dimen name="preference_text_content_padding_bottom">10dp</dimen>
+    <dimen name="preference_text_margin_left">0dp</dimen>
+    <dimen name="preference_margin_between_line">2dp</dimen>
+    <dimen name="preference_widget_focus_jump_padding_top">12dp</dimen>
+    <dimen name="preference_widget_focus_jump_padding_bottom">12dp</dimen>
+    <dimen name="preference_status_text_max_width">162dp</dimen>
+    <dimen name="preference_widget_focus_jump_margin_start">24dp</dimen>
+    <dimen name="preference_widget_jump_margin_start">16dp</dimen>
+    <dimen name="preference_item_margin_top">12dp</dimen>
+    <dimen name="preference_category_padding_start">18dp</dimen>
+    <dimen name="preference_category_text_height">16dp</dimen>
+    <dimen name="preference_item_margin_bottom">4dp</dimen>
+    <dimen name="preference_item_padding_side">16dp</dimen>
+    <dimen name="bottom_sheet_bg_top_corner_radius">24dp</dimen>
+    <dimen name="ui_container_margin_side">16dp</dimen>
+    <dimen name="preference_switch_margin_left">16dp</dimen>
+
+    <dimen name="bar_height">24dp</dimen>
+    <dimen name="bar_width">38dp</dimen>
+    <dimen name="circle_padding">3dp</dimen>
+    <dimen name="inner_circle_width">7.9dp</dimen>
+    <dimen name="outer_circle_stroke_width">2.7dp</dimen>
+    <dimen name="outer_circle_width">18dp</dimen>
+    <dimen name="coui_switch_padding">0dp</dimen>
+
+    <dimen name="list_divider_height">1dp</dimen>
+    <dimen name="preference_divider_default_horizontal_padding">32dp</dimen>
+    <dimen name="android_preference_switch_margin_left">16dp</dimen>
+
+
+
+</resources>

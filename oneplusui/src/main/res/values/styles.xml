@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="OplusTextAppearance" parent="@android:style/TextAppearance">
+        <item name="android:textStyle">normal</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="OplusTextAppearanceBody" parent="@style/OplusTextAppearance">
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1.1</item>
+    </style>
+
+    <style name="PreferenceTitleStyle" parent="@style/OplusTextAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingMultiplier">1.05</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text_color_primary</item>
+    </style>
+
+    <style name="PreferenceSummaryStyle" parent="@style/OplusTextAppearanceBody">
+        <item name="android:typeface">normal</item>
+        <item name="android:textColor">@color/text_color_secondary</item>
+    </style>
+
+    <style name="PreferenceIcon" parent="">
+        <item name="android:layout_marginTop">@dimen/preference_icon_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/preference_icon_margin_bottom</item>
+        <item name="android:layout_marginEnd">@dimen/preference_icon_margin_right</item>
+    </style>
+
+    <style name="PreferenceContent" parent="">
+        <item name="android:paddingTop">@dimen/preference_text_content_padding_top</item>
+        <item name="android:paddingBottom">@dimen/preference_text_content_padding_bottom</item>
+        <item name="android:layout_marginStart">@dimen/preference_text_margin_left</item>
+    </style>
+
+    <style name="PreferenceStatusText" parent="">
+        <item name="android:textAppearance">@style/OplusTextAppearanceBody</item>
+        <item name="android:textColor">@color/text_color_secondary</item>
+    </style>
+
+    <style name="PreferenceStatusText.Tiny" parent="@style/PreferenceStatusText">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="OplusPreferenceCategoryStyle" parent="@android:style/Widget">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/preference_category_text_height</item>
+        <item name="android:layout_marginTop">@dimen/preference_item_margin_top</item>
+        <item name="android:layout_marginBottom">@dimen/preference_item_margin_bottom</item>
+        <item name="android:layout_marginLeft">@dimen/preference_item_padding_side</item>
+        <item name="android:layout_marginRight">@dimen/preference_item_padding_side</item>
+        <item name="android:paddingStart">@dimen/preference_category_padding_start</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/preference_category_text</item>
+        <item name="android:textAlignment">viewStart</item>
+    </style>
+
+    <style name="AppTheme.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:dialogCornerRadius">32dp</item>
+        <item name="android:background">@color/oplusColorSurfaces</item>
+        <item name="android:backgroundDimAmount">0.40</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Title.Text</item>
+    </style>
+
+    <style name="MaterialAlertDialog.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/ModalBottomSheetDialog</item>
+    </style>
+
+    <style name="ModalBottomSheetDialog" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:background">@drawable/bottom_sheet_background</item>
+        <item name="android:navigationBarColor">@color/oplusColorSurfaces</item>
+        <item name="android:windowElevation">17dp</item>
+        <item name="panelBackground">@drawable/panel_bg_without_shadow</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Design.BottomSheetDialog</item>
+        <item name="backgroundTint">@color/oplusColorSurfaces</item>
+    </style>
+
+    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="thumbTint">@color/white</item>
+        <item name="trackDecorationTint">@color/transparent</item>
+        <item name="trackTint">@drawable/switch_track</item>
+    </style>
+
+    <style name="Widget.CompoundButton.RadioButton" parent="@style/Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:button">@drawable/custom_radio_selector</item>
+    </style>
+
+    <style name="Widget.App.Snackbar" parent="Widget.Material3.Snackbar">
+        <item name="backgroundTint">@color/oplusColorSurfaces</item>
+    </style>
+
+    <style name="Widget.App.Slider" parent="Widget.Material3.Slider">
+        <item name="labelStyle">@style/Widget.App.Tooltip</item>
+    </style>
+
+    <style name="Widget.App.Tooltip" parent="Widget.Material3.Tooltip">
+        <item name="android:padding">10dp</item>
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="backgroundTint">@color/oplusColorSurfaces</item>
+    </style>
+
+    <!-- Toolbar -->
+    <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="colorOnSurface">@color/text_color_primary</item>
+        <item name="titleTextAppearance">@style/TextAppearance.App.TitleLarge</item>
+        <item name="subtitleTextAppearance">@style/TextAppearance.App.TitleMedium</item>
+        <item name="navigationIconTint">@color/text_color_primary</item>
+    </style>
+
+    <style name="TextAppearance.App.TitleLarge" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/text_color_primary</item>
+    </style>
+
+    <style name="TextAppearance.App.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/text_color_secondary</item>
+    </style>
+
+    <style name="Widget.BottomNavigationView" parent="Base.Widget.Material3.BottomNavigationView">
+        <item name="android:background">@color/bottomNavigationBackground</item>
+        <item name="itemRippleColor">@color/transparent</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.BottomNavigationView.ActiveIndicator</item>
+        <item name="itemIconTint">@color/text_color_primary</item>
+        <item name="itemTextColor">@color/text_color_primary</item>
+    </style>
+
+    <style name="Widget.BottomNavigationView.ActiveIndicator" parent="">
+        <item name="android:color">@color/transparent</item>
+    </style>
+
+    <style name="EditTextPreferenceStyle" parent="Preference.DialogPreference.EditTextPreference">
+        <item name="iconSpaceReserved">false</item>
+    </style>
+
+
+</resources>

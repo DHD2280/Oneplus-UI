@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="switch_off">Off</string>
+    <string name="switch_on">On</string>
+    <string name="switch_loading">Loading</string>
+
+
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Oneplus.Light.NoActionBar" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:navigationBarColor">?attr/backgroundColor</item>
+        <item name="android:statusBarColor">?attr/backgroundColor</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Background color. -->
+        <!-- Background color. -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <!-- Preference title -->
+        <item name="android:textAppearanceListItem">?textAppearanceSubtitle1</item>
+
+        <item name="alertDialogTheme">@style/AppTheme.Dialog</item>
+        <item name="materialAlertDialogTheme">@style/AppTheme.Dialog</item>
+
+        <item name="preferenceBackgroundColor">@android:color/white</item>
+        <item name="preferenceBackgroundColorPressed">@color/preference_background_color_pressed</item>
+
+        <item name="popupMenuBackground">@drawable/custom_popup_background</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
+
+        <item name="homeAsUpIndicator">@drawable/ic_home_up</item>
+
+        <!-- Switch Theme -->
+        <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
+
+        <item name="radioButtonStyle">@style/Widget.CompoundButton.RadioButton</item>
+        <item name="android:listChoiceIndicatorSingle">@drawable/custom_radio_selector</item>
+
+        <!-- Slider -->
+        <item name="sliderStyle">@style/Widget.App.Slider</item>
+
+        <!-- Toolbar -->
+        <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
+
+        <!-- Bottom Navigation -->
+        <item name="bottomNavigationStyle">@style/Widget.BottomNavigationView</item>
+        <item name="editTextPreferenceStyle">@style/EditTextPreferenceStyle</item>
+    </style>
+
+</resources>
