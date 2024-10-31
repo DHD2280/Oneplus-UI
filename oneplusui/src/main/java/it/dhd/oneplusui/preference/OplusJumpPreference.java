@@ -22,27 +22,19 @@ public class OplusJumpPreference extends OplusPreference {
 
     public OplusJumpPreference(@NonNull Context context) {
         this(context, null);
-        initResources();
     }
 
     public OplusJumpPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-        initResources();
+        this(context, attrs, R.style.Preferences_Oplus_Preference_Jump);
     }
 
     public OplusJumpPreference(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr, 0);
-        initResources();
+        this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_Jump);
     }
 
     public OplusJumpPreference(@NonNull Context context, @Nullable AttributeSet attrs,
                                int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        initResources();
-    }
-
-    private void initResources() {
-        setWidgetLayoutResource(R.layout.oplus_preference_widget_jump);
     }
 
     @Override

@@ -17,6 +17,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
+import androidx.recyclerview.widget.OplusRecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.LabelFormatter;
@@ -36,7 +37,7 @@ import java.util.Scanner;
 import it.dhd.oneplusui.R;
 
 
-public class OplusSliderPreference extends OplusPreference {
+public class OplusSliderPreference extends OplusPreference implements OplusRecyclerView.IOplusDividerDecorationInterface {
     @SuppressWarnings("unused")
     private static final String TAG = "Slider Preference";
     private float valueFrom;

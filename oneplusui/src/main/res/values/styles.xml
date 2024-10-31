@@ -145,5 +145,21 @@
         <item name="iconSpaceReserved">false</item>
     </style>
 
+    <style name="Preferences.Oplus.Category" parent="">
+        <item name="android:layout">@layout/oplus_preference_category</item>
+    </style>
+
+    <style name="Preferences.Oplus.Preference" parent="">
+        <item name="android:layout">@layout/oplus_preference</item>
+    </style>
+
+    <style name="Preferences.Oplus.Preference.Switch" parent="@style/Preferences.Oplus.Preference">
+        <item name="android:widgetLayout">@layout/oplus_preference_widget_switch</item>
+    </style>
+
+    <style name="Preferences.Oplus.Preference.Jump" parent="Preferences.Oplus.Preference">
+        <item name="android:widgetLayout">@layout/oplus_preference_widget_jump</item>
+    </style>
+
 
 </resources>

@@ -38,6 +38,11 @@
         <!-- Bottom Navigation -->
         <item name="bottomNavigationStyle">@style/Widget.BottomNavigationView</item>
         <item name="editTextPreferenceStyle">@style/EditTextPreferenceStyle</item>
+
+        <!-- Preferences -->
+        <item name="preferenceCategoryStyle">@style/Preferences.Oplus.Category</item>
+        <item name="preferenceStyle">@style/Preferences.Oplus.Preference</item>
+        <item name="switchPreferenceCompatStyle">@style/Preferences.Oplus.Preference.Switch</item>
     </style>
 
 </resources>

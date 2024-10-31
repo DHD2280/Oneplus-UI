@@ -14,28 +14,20 @@ public class OplusPreferenceCategory extends PreferenceCategory {
 
     public OplusPreferenceCategory(@NonNull Context context) {
         this(context, null);
-        initResource();
     }
 
     public OplusPreferenceCategory(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
-        initResource();
     }
 
     public OplusPreferenceCategory(@NonNull Context context, @Nullable AttributeSet attrs,
                                int defStyle) {
-        this(context, attrs, defStyle, 0);
-        initResource();
+        this(context, attrs, defStyle, R.style.Preferences_Oplus_Category);
     }
 
     public OplusPreferenceCategory(@NonNull Context context, @Nullable AttributeSet attrs,
                                int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        initResource();
-    }
-
-    private void initResource() {
-        setLayoutResource(R.layout.oplus_preference_category);
     }
 
     @Override
