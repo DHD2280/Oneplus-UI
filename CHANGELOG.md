@@ -1,3 +1,6 @@
+**1.2.1**  
+- Script changes
+  
 **1.2.0**  
 - Added Own dialogs for OplusListPreference & OplusMultiSelectListPreference
 - Added OplusMultiSelectListPreference
