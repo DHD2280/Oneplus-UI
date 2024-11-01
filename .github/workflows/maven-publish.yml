@@ -49,16 +49,6 @@ jobs:
           body: ${{ env.RMessage }}
           artifacts: 'oneplusui/build/outputs/aar/*.aar'
 
-      - name: Upload OneplusUI Library AAR 🗳
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: oneplusui/build/outputs/aar/oneplusui-release.aar
-          asset_name: oneplusui-release.aar
-          asset_content_type: application/aar
-
       - name: Commit version bump
         uses: github-actions-x/commit@v2.9
         with:
