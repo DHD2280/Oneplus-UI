@@ -1,3 +1,6 @@
+**1.2.2**  
+- Script changes for publish  
+  
 **1.2.1**  
 - Script changes
   
