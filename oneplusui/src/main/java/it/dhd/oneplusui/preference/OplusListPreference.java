@@ -21,7 +21,7 @@ public class OplusListPreference extends ListPreference implements OplusRecycler
 
     private final Context mContext;
     private String mForcePosition = null;
-    private View mItemView, mTitleView;
+    public View mItemView, mTitleView;
     private final int mDividerDefaultHorizontalPadding;
 
     public OplusListPreference(@NonNull Context context) {

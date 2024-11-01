@@ -19,4 +19,7 @@
 
     <color name="colorDivider">#33ffffff</color>
 
+    <color name="oplusColorPrimaryNeutral">#e6ffffff</color>
+    <color name="coui_color_secondary_neutral">#8affffff</color>
+
 </resources>

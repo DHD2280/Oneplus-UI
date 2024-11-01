@@ -22,9 +22,9 @@
     <color name="btn_radio_background_color">#4d000000</color>
     <color name="btn_radio_color_on_disabled">#ffffff</color>
 
-    <color name="colorBackground">#F3F4F6</color>
-
-
-
+    <color name="oplus_list_selector_color_disabled">#00000000</color>
+    <color name="colorDisabledNeutral">#4dffffff</color>
+    <color name="oplusColorPrimaryNeutral">#ff000000</color>
+    <color name="coui_color_secondary_neutral">#8a000000</color>
 
 </resources>

@@ -26,18 +26,31 @@
     <dimen name="ui_container_margin_side">16dp</dimen>
     <dimen name="preference_switch_margin_left">16dp</dimen>
 
-    <dimen name="bar_height">24dp</dimen>
-    <dimen name="bar_width">38dp</dimen>
-    <dimen name="circle_padding">3dp</dimen>
-    <dimen name="inner_circle_width">7.9dp</dimen>
-    <dimen name="outer_circle_stroke_width">2.7dp</dimen>
-    <dimen name="outer_circle_width">18dp</dimen>
-    <dimen name="coui_switch_padding">0dp</dimen>
-
     <dimen name="list_divider_height">1dp</dimen>
     <dimen name="preference_divider_default_horizontal_padding">32dp</dimen>
-    <dimen name="android_preference_switch_margin_left">16dp</dimen>
 
+    <!-- Dialogs -->
+    <dimen name="oplus_bottom_alert_dialog_vertical_button_padding_vertical">14dp</dimen>
+    <dimen name="alert_dialog_list_item_padding_left">20dp</dimen>
+    <dimen name="alert_dialog_list_item_padding_right">20dp</dimen>
+    <dimen name="alert_dialog_list_item_min_height">50dp</dimen>
+    <dimen name="oplus_delete_alert_dialog_button_height">48dp</dimen>
+    <dimen name="alert_dialog_single_list_padding_left">24dp</dimen>
+    <dimen name="alert_dialog_single_list_padding_right">24dp</dimen>
+    <dimen name="alert_dialog_single_list_icon_padding_vertical">20dp</dimen>
+    <dimen name="alert_dialog_single_list_padding_vertical">10dp</dimen>
+    <dimen name="alert_dialog_single_list_text_margin_end">40dp</dimen>
+    <dimen name="oplus_dialog_layout_margin_horizontal">16dp</dimen>
+    <dimen name="oplus_dialog_button_text_size">16sp</dimen>
+    <dimen name="oplus_dialog_button_summary_text_size">14sp</dimen>
+    <dimen name="oplus_alert_dialog_content_panel_padding_top">3dp</dimen>
+    <dimen name="alert_dialog_list_item_padding_top">16dp</dimen>
+    <dimen name="alert_dialog_list_item_padding_bottom">16dp</dimen>
+    <dimen name="oplus_bottom_alert_dialog_vertical_button_padding_vertical_new">14dp</dimen>
+    <dimen name="oplus_bottom_alert_dialog_horizontal_button_margin_default">24dp</dimen>
+    <dimen name="oplus_option_dialog_listview_text2_padding_top">0dp</dimen>
+    <dimen name="oplus_alert_dialog_summary_text_size">12sp</dimen>
+    <dimen name="oplus_alert_dialog_builder_content_max_height_with_adapter">60dp</dimen>
 
 
 </resources>

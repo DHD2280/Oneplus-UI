@@ -28,6 +28,28 @@
             android:summary="This is a test edittext preference"
             android:title="Test EditText Preference" />
 
+        <it.dhd.oneplusui.preference.OplusListPreference
+            android:entries="@array/test_entries"
+            android:entryValues="@array/test_values"
+            android:key="test_list_key"
+            android:summary="This is a test list preference"
+            android:title="Test List Preference" />
+
+        <it.dhd.oneplusui.preference.OplusMultiSelectListPreference
+            android:entries="@array/test_entries"
+            android:entryValues="@array/test_values"
+            android:key="test_multi_select_list_key"
+            android:summary="This is a test multi select list preference"
+            android:title="Test Multi Select List Preference" />
+
+        <it.dhd.oneplusui.preference.OplusMenuPreference
+            android:entries="@array/test_entries"
+            android:entryValues="@array/test_values"
+            android:key="test_menu_key"
+            android:persistent="true"
+            android:summary="This is a test menu preference"
+            android:title="Test Menu Preference" />
+
     </it.dhd.oneplusui.preference.OplusPreferenceCategory>
 
 </PreferenceScreen>

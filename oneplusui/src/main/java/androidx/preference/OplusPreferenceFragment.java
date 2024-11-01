@@ -7,14 +7,18 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.OplusRecyclerView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import it.dhd.oneplusui.R;
+import it.dhd.oneplusui.preference.OplusListPreferenceDialogFragment;
+import it.dhd.oneplusui.preference.OplusMultiSelectListPreferenceDialogFragment;
 import it.dhd.oneplusui.preference.OplusPreferenceItemDecoration;
 
 public class OplusPreferenceFragment extends PreferenceFragmentCompat {
 
+    private static final String DIALOG_FRAGMENT_TAG = "androidx.preference.PreferenceFragment.DIALOG";
     private boolean mEnableInternalDivider = true;
     private OplusPreferenceItemDecoration mPreferenceItemDecoration;
 
@@ -45,9 +49,9 @@ public class OplusPreferenceFragment extends PreferenceFragmentCompat {
 
     @Override
     public void onDestroyView() {
-        OplusPreferenceItemDecoration cOUIPreferenceItemDecoration = this.mPreferenceItemDecoration;
-        if (cOUIPreferenceItemDecoration != null) {
-            cOUIPreferenceItemDecoration.onDestroy();
+        OplusPreferenceItemDecoration oplusPreferenceItemDecoration = this.mPreferenceItemDecoration;
+        if (oplusPreferenceItemDecoration != null) {
+            oplusPreferenceItemDecoration.onDestroy();
         }
         super.onDestroyView();
     }
@@ -93,4 +97,24 @@ public class OplusPreferenceFragment extends PreferenceFragmentCompat {
             getListView().addItemDecoration(this.mPreferenceItemDecoration);
         }
     }
+
+    @Override
+    public void onDisplayPreferenceDialog(@NonNull Preference preference) {
+        DialogFragment newInstance;
+        if (getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
+            return;
+        }
+        if (preference instanceof MultiSelectListPreference) {
+            newInstance = OplusMultiSelectListPreferenceDialogFragment.newInstance(preference.getKey());
+        } else if (preference instanceof ListPreference) {
+            newInstance = OplusListPreferenceDialogFragment.newInstance(preference.getKey());
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+            return;
+        }
+        newInstance.setTargetFragment(this, 0);
+        newInstance.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+    }
+
+
 }

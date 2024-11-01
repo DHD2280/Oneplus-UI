@@ -16,6 +16,7 @@
         <item name="preferenceBackgroundColorPressed">@color/preference_background_color_pressed</item>
 
         <item name="popupMenuBackground">@drawable/custom_popup_background</item>
+        <item name="popupMenuStyle">@style/Widget.App.PopupMenu</item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
 
         <item name="homeAsUpIndicator">@drawable/ic_home_up</item>
@@ -35,6 +36,10 @@
         <!-- Bottom Navigation -->
         <item name="bottomNavigationStyle">@style/Widget.BottomNavigationView</item>
         <item name="editTextPreferenceStyle">@style/EditTextPreferenceStyle</item>
+
+        <!-- Snackbar -->
+        <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
+        <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
 
         <!-- Preferences -->
         <item name="preferenceCategoryStyle">@style/Preferences.Oplus.Category</item>
