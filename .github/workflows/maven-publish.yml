@@ -58,6 +58,6 @@ jobs:
           push-branch: 'master'
           commit-message: 'Version update: Release'
           force-add: 'true'
-          files: oneplusui/build.gradle.kts CHANGELOG.md
+          files: oneplusui/build.gradle.kts CHANGELOG.md README.md
           name: GitHub
           email: OxygenCustomizerAIPlugin@dhd.it
