@@ -1,4 +1,7 @@
-**1.2.1**  
+**1.2.0**  
+- Added Own dialogs for OplusListPreference & OplusMultiSelectListPreference
+- Added OplusMultiSelectListPreference
+- Misc fixes
   
 **1.1.1**
 - Fixed divider for OplusListPreference
