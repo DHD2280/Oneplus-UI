@@ -1,8 +1,8 @@
 #!/bin/bash
 
   # reset the file - most likely not needd
-  rm -f changeLog.md
-  touch changeLog.md
+  rm -f releaseChangeLog.md
+  touch releaseChangeLog.md
 
   #find the last time we made a changelog
   LASTUPDATE=$(git log -1000 | grep -B 4 "Version update: Release" | grep "commit" -m 1 | cut -d " " -f 2)
@@ -16,6 +16,6 @@
       for LINE in $COMMITMSGS
       do
         #save in the temp file to be used by next script
-        echo "- "${LINE##*CHANGELOG: }"  " >> changeLog.md
+        echo "- "${LINE##*CHANGELOG: }"  " >> releaseChangeLog.md
       done
   done

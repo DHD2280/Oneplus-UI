@@ -7,7 +7,7 @@ sed -i 's/com.github.DHD2280:Oneplus-UI:.*/com.github.DHD2280:Oneplus-UI:'$NEWVE
 
 # module changelog
 echo "**$NEWVERNAME**  " > newChangeLog.md
-cat changeLog.md >> newChangeLog.md
+cat releaseChangeLog.md >> newChangeLog.md
 echo "  " >> newChangeLog.md
 cat CHANGELOG.md >> newChangeLog.md
 mv  newChangeLog.md CHANGELOG.md
