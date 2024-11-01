@@ -1,3 +1,5 @@
+**1.2.1**  
+  
 **1.1.1**
 - Fixed divider for OplusListPreference
 
