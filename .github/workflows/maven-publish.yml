@@ -20,6 +20,15 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: Shell Scripts Permissions
+        run: chmod +x .github/*.sh
+
+      - name: Changelog Generation
+        run: .github/extractChanges.sh
+
+      - name: Version Bump
+        run: .github/bumpVersion.sh ${{ github.run_id }}
+
       - name: Grant Permission for Gradlew to Execute
         run: chmod +x gradlew
 
@@ -30,15 +39,15 @@ jobs:
         run: ./gradlew :oneplusui:publish
 
       - name: Create Release ✅
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1.14.0
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref_name }}
-          draft: false
+          tag: ${{ github.ref }}
+          name: ${{ github.ref_name }}
           prerelease: false
+          makeLatest: true
+          draft: false
+          body: ${{ env.RMessage }}
+          artifacts: 'oneplusui/build/outputs/aar/*.aar'
 
       - name: Upload OneplusUI Library AAR 🗳
         uses: actions/upload-release-asset@v1
@@ -49,3 +58,14 @@ jobs:
           asset_path: oneplusui/build/outputs/aar/oneplusui-release.aar
           asset_name: oneplusui-release.aar
           asset_content_type: application/aar
+
+      - name: Commit version bump
+        uses: github-actions-x/commit@v2.9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          push-branch: 'master'
+          commit-message: 'Version update: Release'
+          force-add: 'true'
+          files: oneplusui/build.gradle.kts CHANGELOG.md
+          name: GitHub
+          email: OxygenCustomizerAIPlugin@dhd.it
