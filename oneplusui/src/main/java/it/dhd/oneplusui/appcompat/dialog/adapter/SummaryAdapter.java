@@ -41,13 +41,13 @@ public class SummaryAdapter extends BaseAdapter {
         this.mTextColor = textColors;
     }
 
-    private void resetPadding(int i, View view) {
+    private void resetPadding(int position, View view) {
         int paddingVertical = this.mContext.getResources().getDimensionPixelSize(R.dimen.oplus_bottom_alert_dialog_vertical_button_padding_vertical_new);
         int paddingLeft = view.getPaddingLeft();
         int paddingRight = view.getPaddingRight();
-        if (i == getCount() - 1 && this.mIsBottom) {
+        if (position == getCount() - 1 && this.mIsBottom) {
             view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);
-        } else if (i == 0 && this.mIsTop) {
+        } else if (position == 0 && this.mIsTop) {
             view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);
         } else {
             view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);

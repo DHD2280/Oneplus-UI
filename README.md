@@ -29,6 +29,17 @@ Use one of these themes in your `themes.xml` file:
 
 Extend your activity to `OplusActivity`, to get dark mode support. [Enhanced/Medium/Gentle]
 
+Extend your `PreferenceFragment` to `OplusPreferenceFragment`, the recycler view will take care of dividers.
+
+# Custom Dividers
+
+You can use dividers by
+`
+binding.recyclerView.addItemDecoration(new OplusRecyclerView.OplusRecyclerViewItemDecoration(mContext));
+`
+
+Then you have to implement the `OplusRecyclerView.IOplusDividerDecorationInterface` class.
+
 # © License
 
 Oneplus UI library is licensed under GPLv3. Please see [`LICENSE`](./LICENSE.md) for the full license text.
