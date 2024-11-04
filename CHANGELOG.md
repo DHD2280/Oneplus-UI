@@ -1,3 +1,6 @@
+**1.2.3**  
+- Improved SummaryAdapter  
+  
 **1.2.2**  
 - Script changes for publish  
   
