@@ -1,3 +1,6 @@
+**1.2.4**  
+- OplusSliderPreference: showResetButton default true  
+  
 **1.2.3**  
 - Improved SummaryAdapter  
   
