@@ -70,7 +70,7 @@ public class OplusSliderPreference extends OplusPreference implements OplusRecyc
         valueFrom = a.getFloat(R.styleable.OplusSliderPreference_minVal, 0f);
         valueTo = a.getFloat(R.styleable.OplusSliderPreference_maxVal, 100f);
         tickInterval = a.getFloat(R.styleable.OplusSliderPreference_tickInterval, 1f);
-        showResetButton = a.getBoolean(R.styleable.OplusSliderPreference_showResetButton, false);
+        showResetButton = a.getBoolean(R.styleable.OplusSliderPreference_showResetButton, true);
         showValueLabel = a.getBoolean(R.styleable.OplusSliderPreference_showValueLabel, true);
         valueFormat = a.getString(R.styleable.OplusSliderPreference_valueFormat);
         isDecimalFormat = a.getBoolean(R.styleable.OplusSliderPreference_isDecimalFormat, false);
