@@ -1,3 +1,13 @@
+**1.3.0**  
+- OplusSliderPreference: add dafault values methods  
+- SummaryAdapter: add documentation  
+- OplusMenuPreference: improve popup menu with adapter and check mark  
+- OplusSwitchPreference: use SwitchCompat for better theming.  
+- OplusRecyclerView: add documentation.  
+- OplusPreferenceFragment: add documentation.  
+- OplusPreferenceCategory: add documentation.  
+- OplusPreference: add helper methods and documentation.  
+  
 **1.2.4**  
 - OplusSliderPreference: showResetButton default true  
   
