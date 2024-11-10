@@ -13,6 +13,11 @@ import androidx.core.content.ContextCompat;
 
 import it.dhd.oneplusui.R;
 
+/**
+ * An extension of RecyclerView
+ * This class uses a custom divider to look like Oneplus RecyclerView
+ * See {@link RecyclerView} for more information.
+ */
 @SuppressWarnings("unused")
 public class OplusRecyclerView extends RecyclerView {
 
@@ -211,23 +216,48 @@ public class OplusRecyclerView extends RecyclerView {
         }
     }
 
+    /**
+     * Interface to implement custom the divider
+     */
     public interface IOplusDividerDecorationInterface {
+
+        /**
+         * Draw the divider
+         * Use your custom logic to draw the divider
+         * @return true if the divider should be drawn
+         */
         default boolean drawDivider() {
             return false;
         }
 
+        /**
+         * Return the view to align the end of the divider
+         * @return the view to align the end of the divider
+         */
         default View getDividerEndAlignView() {
             return null;
         }
 
+        /**
+         * Return the inset for the end of the divider
+         * @return the end padding
+         */
         default int getDividerEndInset() {
             return 0;
         }
 
+        /**
+         * Return the view to align the start of the divider
+         * @return the view to align the start of the divider
+         */
         default View getDividerStartAlignView() {
             return null;
         }
 
+        /**
+         * Return the inset for the start of the divider
+         * @return the start padding
+         */
         default int getDividerStartInset() {
             return 0;
         }
