@@ -191,7 +191,11 @@
         <item name="android:layout">@layout/oplus_preference</item>
     </style>
 
-    <style name="Preferences.OplusMenuPreference" parent="@style/Preferences.Oplus.Preference">
+    <style name="Preferences.Oplus.Preference.List" parent="">
+        <item name="android:layout">@layout/oplus_preference_list</item>
+    </style>
+
+    <style name="Preferences.OplusMenuPreference" parent="@style/Preferences.Oplus.Preference.List">
         <item name="android:popupMenuStyle">@style/Widget.Preference.SimpleMenuPreference.PopupMenu</item>
         <item name="android:popupTheme">@style/ThemeOverlay.Preference.SimpleMenuPreference.PopupMenu</item>
     </style>
