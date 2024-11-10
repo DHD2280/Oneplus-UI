@@ -80,7 +80,7 @@ public class OplusMenuPreference extends OplusListPreference {
         View container = (View) mItemView   // itemView
                 .getParent();               // -> list (RecyclerView)
 
-        mPopupWindow.show(mItemView, container, (int) mTitleView.getX());
+        mPopupWindow.show(mItemView, container, 0);
     }
 
     @Override

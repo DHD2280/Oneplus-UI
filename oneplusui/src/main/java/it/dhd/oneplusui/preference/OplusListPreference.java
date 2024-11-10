@@ -47,7 +47,7 @@ public class OplusListPreference extends ListPreference implements OplusRecycler
         }
         this.mDividerDefaultHorizontalPadding = context.getResources().getDimensionPixelSize(R.dimen.preference_divider_default_horizontal_padding);
         a.recycle();
-        setLayoutResource(R.layout.oplus_preference);
+        setLayoutResource(R.layout.oplus_preference_list);
     }
 
     @Override
@@ -67,9 +67,6 @@ public class OplusListPreference extends ListPreference implements OplusRecycler
         } else {
             CardListHelper.setItemCardBackground(holder.itemView, CardListHelper.getPositionInGroup(this));
         }
-
-        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
-        summary.setTextColor(ContextCompat.getColor(mContext, android.R.color.system_accent1_400));
 
     }
 

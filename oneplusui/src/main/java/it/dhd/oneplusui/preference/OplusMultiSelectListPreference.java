@@ -68,9 +68,6 @@ public class OplusMultiSelectListPreference extends MultiSelectListPreference im
             CardListHelper.setItemCardBackground(holder.itemView, CardListHelper.getPositionInGroup(this));
         }
 
-        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
-        summary.setTextColor(ContextCompat.getColor(mContext, android.R.color.system_accent1_400));
-
     }
 
     @Override
