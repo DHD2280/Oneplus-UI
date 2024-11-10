@@ -22,7 +22,8 @@
         <item name="homeAsUpIndicator">@drawable/ic_home_up</item>
 
         <!-- Switch Theme -->
-        <item name="materialSwitchStyle">@style/Widget.App.Switch</item>
+        <item name="materialSwitchStyle">@style/Widget.App.Material3.Switch</item>
+        <item name="android:switchStyle">@style/Widget.App.AppCompat.Switch</item>
 
         <item name="radioButtonStyle">@style/Widget.CompoundButton.RadioButton</item>
         <item name="android:listChoiceIndicatorSingle">@drawable/custom_radio_selector</item>
