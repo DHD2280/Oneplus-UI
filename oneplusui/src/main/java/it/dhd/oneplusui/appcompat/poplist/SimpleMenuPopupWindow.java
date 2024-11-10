@@ -310,7 +310,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         setElevation(elevation);
         setAnimationStyle(R.style.Animation_Preference_SimpleMenuCenter);
 
-        super.showAtLocation(anchor, rtl ? Gravity.START : Gravity.END, centerX, y);
+        super.showAtLocation(anchor, rtl ? Gravity.START : Gravity.END, centerX, (int) container.getY());
 
     }
 
@@ -338,39 +338,33 @@ public class SimpleMenuPopupWindow extends PopupWindow {
 
         mRequestMeasure = false;
 
+        // Sort entries by length to determine the maximum width needed
         entries = Arrays.copyOf(entries, entries.length);
-
         Arrays.sort(entries, (o1, o2) -> o2.length() - o1.length());
 
         Context context = getContentView().getContext();
         int width = 0;
 
+        // Set the maximum width based on units and available space
         maxWidth = Math.min(unit * maxUnits, maxWidth);
 
         Rect bounds = new Rect();
-
         TextView view = LayoutInflater.from(context).inflate(R.layout.oplus_menu_item, null, false).findViewById(android.R.id.text1);
-        Paint textPaint = view.getPaint();
 
-        for (CharSequence chs : entries) {
-            textPaint.getTextBounds(chs.toString(), 0, chs.toString().length(), bounds);
-
-            width = Math.max(width, bounds.right + 1 + Math.round(listPadding[POPUP_MENU][HORIZONTAL] * 2 + 1));
-
-            // more than one line should use dialog
-            if (width > maxWidth
-                    || chs.toString().contains("\n")) {
-                return -1;
-            }
+        // Calculate width based on the longest entry
+        for (CharSequence entry : entries) {
+            view.setText(entry);
+            view.measure(0, 0);
+            bounds.set(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+            width = Math.max(width, bounds.width());
         }
 
-        // width is a multiple of a unit
-        int w = 0;
-        while (width > w) {
-            w += unit;
-        }
+        // Ensure width is not smaller than a certain threshold (e.g., 200dp)
+        int minWidth = (int) (context.getResources().getDisplayMetrics().density * 200);  // 200dp minimum width
+        width = Math.max(width, minWidth);
 
-        return w;
+        // Ensure the width does not exceed the max width
+        return Math.min(width, maxWidth);
     }
 
     @Override
