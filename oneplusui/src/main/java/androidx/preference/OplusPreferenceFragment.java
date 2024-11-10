@@ -16,6 +16,13 @@ import it.dhd.oneplusui.preference.OplusListPreferenceDialogFragment;
 import it.dhd.oneplusui.preference.OplusMultiSelectListPreferenceDialogFragment;
 import it.dhd.oneplusui.preference.OplusPreferenceItemDecoration;
 
+/**
+ * This is the entry point to using preference library.
+ * See {@link androidx.preference.PreferenceFragmentCompat} for more information.
+ * <p>
+ * This class replaces the default divider with a custom one.
+ * See {@link OplusPreferenceItemDecoration} for more information.
+ */
 public class OplusPreferenceFragment extends PreferenceFragmentCompat {
 
     private static final String DIALOG_FRAGMENT_TAG = "androidx.preference.PreferenceFragment.DIALOG";
@@ -68,7 +75,11 @@ public class OplusPreferenceFragment extends PreferenceFragmentCompat {
         }
     }
 
-    public void setEnableOplusPreferenceDivider(boolean enable) throws NullPointerException {
+    /**
+     * Set whether to enable the custom divider.
+     * @param enable true to enable, false to disable
+     */
+    public void setEnableOplusPreferenceDivider(boolean enable) {
         this.mEnableInternalDivider = enable;
         if (enable) {
             if (getListView() != null && this.mPreferenceItemDecoration != null) {
@@ -98,6 +109,11 @@ public class OplusPreferenceFragment extends PreferenceFragmentCompat {
         }
     }
 
+    /**
+     * Display the {@link DialogFragment} associated with the {@link Preference} object.
+     * This method give us the ability to display custom dialogs.
+     * @param preference The {@link Preference} object requesting the dialog
+     */
     @Override
     public void onDisplayPreferenceDialog(@NonNull Preference preference) {
         DialogFragment newInstance;
