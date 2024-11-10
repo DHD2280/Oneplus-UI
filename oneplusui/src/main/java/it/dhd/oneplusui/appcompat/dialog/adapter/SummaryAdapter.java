@@ -12,12 +12,15 @@ import android.widget.TextView;
 
 import it.dhd.oneplusui.R;
 
+/**
+ * An adapter for a list of items with summaries.
+ * This adapter can show a list of items with summaries.
+ * Is also able to set the text color for each item.
+ */
 public class SummaryAdapter extends BaseAdapter {
 
     private static final int LAYOUT = R.layout.oplus_alert_dialog_summary_item;
     private Context mContext;
-    private boolean mIsBottom;
-    private boolean mIsTop;
     private CharSequence[] mItems;
     private CharSequence[] mSummaries;
     private int[] mTextColor;
@@ -32,26 +35,64 @@ public class SummaryAdapter extends BaseAdapter {
         }
     }
 
-    public SummaryAdapter(Context context, boolean isTop, boolean isBottom, CharSequence[] items, CharSequence[] descriptions, int[] textColors) {
-        this.mIsTop = isTop;
-        this.mIsBottom = isBottom;
+    /**
+     * Constructor for SummaryAdapter.
+     *
+     * @param context The context.
+     * @param items The items to be shown.
+     * @param descriptions The summaries for each item.
+     * @param textColors The text color for each item.
+     */
+    public SummaryAdapter(Context context, CharSequence[] items, CharSequence[] descriptions, int[] textColors) {
         this.mContext = context;
         this.mItems = items;
         this.mSummaries = descriptions;
         this.mTextColor = textColors;
     }
 
-    private void resetPadding(int position, View view) {
+    /**
+     * Constructor for SummaryAdapter.
+     * @param context The context.
+     * @param items The items to be shown.
+     * @param descriptions The summaries for each item.
+     */
+    public SummaryAdapter(Context context, CharSequence[] items, CharSequence[] descriptions) {
+        this.mContext = context;
+        this.mItems = items;
+        this.mSummaries = descriptions;
+        this.mTextColor = null;
+    }
+
+    /**
+     * Constructor for SummaryAdapter.
+     * @param context The context.
+     * @param items The items to be shown.
+     */
+    public SummaryAdapter(Context context, CharSequence[] items) {
+        this.mContext = context;
+        this.mItems = items;
+        this.mSummaries = null;
+        this.mTextColor = null;
+    }
+
+    /**
+     * Constructor for SummaryAdapter.
+     * @param context The context.
+     * @param items The items to be shown.
+     * @param textColors The text color for each item.
+     */
+    public SummaryAdapter(Context context, CharSequence[] items, int[] textColors) {
+        this.mContext = context;
+        this.mItems = items;
+        this.mSummaries = null;
+        this.mTextColor = null;
+    }
+
+    private void resetPadding(View view) {
         int paddingVertical = this.mContext.getResources().getDimensionPixelSize(R.dimen.oplus_bottom_alert_dialog_vertical_button_padding_vertical_new);
         int paddingLeft = view.getPaddingLeft();
         int paddingRight = view.getPaddingRight();
-        if (position == getCount() - 1 && this.mIsBottom) {
-            view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);
-        } else if (position == 0 && this.mIsTop) {
-            view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);
-        } else {
-            view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);
-        }
+        view.setPadding(paddingLeft, paddingVertical, paddingRight, paddingVertical);
     }
 
     @Override
@@ -97,7 +138,7 @@ public class SummaryAdapter extends BaseAdapter {
             viewHolder.mSummaryView.setVisibility(View.VISIBLE);
             viewHolder.mSummaryView.setText(summary);
         }
-        resetPadding(position, viewHolder.mMainLayout);
+        resetPadding(viewHolder.mMainLayout);
         if (mTextColor != null && position >= 0 && position < mTextColor.length) {
             viewHolder.mItemView.setTextColor(mTextColor[position]);
         }
