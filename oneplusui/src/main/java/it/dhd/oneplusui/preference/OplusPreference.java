@@ -1,7 +1,6 @@
 package it.dhd.oneplusui.preference;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceDataStore;
 import androidx.preference.PreferenceViewHolder;
 import androidx.recyclerview.widget.OplusRecyclerView;
 
