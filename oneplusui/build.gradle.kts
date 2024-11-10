@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "it.dhd.oneplusui"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 33
@@ -55,7 +55,7 @@ publishing {
 
             groupId = "id.dhd"
             artifactId = "oneplusui"
-            version = "1.2.4"
+            version = "1.3.0"
         }
     }
 }
