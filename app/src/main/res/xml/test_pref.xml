@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <it.dhd.oneplusui.preference.OplusPreferenceCategory android:title="This is a preference category">
 
@@ -16,6 +17,9 @@
         <it.dhd.oneplusui.preference.OplusSliderPreference
             android:key="test_slider_key"
             android:summary="This is a test slider preference"
+            app:maxVal="100"
+            app:minVal="0"
+            app:defaultValue="50"
             android:title="Test Slider Preference" />
 
         <it.dhd.oneplusui.preference.OplusJumpPreference
