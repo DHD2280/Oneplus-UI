@@ -106,10 +106,16 @@
         <item name="backgroundTint">@color/oplusColorSurfaces</item>
     </style>
 
-    <style name="Widget.App.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+    <style name="Widget.App.Material3.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
         <item name="thumbTint">@color/white</item>
         <item name="trackDecorationTint">@color/transparent</item>
         <item name="trackTint">@drawable/switch_track</item>
+    </style>
+
+    <style name="Widget.App.AppCompat.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="track">@drawable/switch_track</item>
+        <item name="trackTint">@drawable/switch_track</item>
+        <item name="android:thumb">@drawable/switch_thumb</item>
     </style>
 
     <style name="Widget.App.PopupMenu" parent="Widget.Material3.PopupMenu">
@@ -185,6 +191,11 @@
         <item name="android:layout">@layout/oplus_preference</item>
     </style>
 
+    <style name="Preferences.OplusMenuPreference" parent="@style/Preferences.Oplus.Preference">
+        <item name="android:popupMenuStyle">@style/Widget.Preference.SimpleMenuPreference.PopupMenu</item>
+        <item name="android:popupTheme">@style/ThemeOverlay.Preference.SimpleMenuPreference.PopupMenu</item>
+    </style>
+
     <style name="Preferences.Oplus.Preference.Switch" parent="@style/Preferences.Oplus.Preference">
         <item name="android:widgetLayout">@layout/oplus_preference_widget_switch</item>
     </style>
@@ -203,5 +214,34 @@
         <item name="android:windowEnterAnimation">@anim/oplus_bottom_dialog_enter</item>
         <item name="android:windowExitAnimation">@anim/oplus_bottom_dialog_exit</item>
     </style>
+
+    <style name="Widget.Preference.SimpleMenuPreference.PopupMenu" parent="android:Widget">
+        <item name="android:popupBackground">@drawable/custom_popup_background</item>
+
+        <item name="listMarginHorizontal">@dimen/simple_menu_margin</item>
+        <item name="listMarginVertical">8dp</item>
+        <item name="listItemPadding">16dp</item>
+        <item name="listElevation">8dp</item>
+
+        <item name="dialogMarginHorizontal">16dp</item>
+        <item name="dialogMarginVertical">24dp</item>
+        <item name="dialogItemPadding">24dp</item>
+        <item name="dialogElevation">24dp</item>
+        <item name="dialogMaxWidth">@dimen/simple_menu_dialog_max_width</item>
+
+        <item name="unit">@dimen/simple_menu_unit</item>
+        <item name="maxUnits">@integer/simple_menu_max_units</item>
+    </style>
+
+    <style name="ThemeOverlay.Preference.SimpleMenuPreference.PopupMenu" parent="android:ThemeOverlay">
+        <item name="popupBackgroundRadius">50dp</item>
+    </style>
+
+    <style name="Animation.Preference.SimpleMenuCenter" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/coui_popup_list_enter</item>
+        <item name="android:windowExitAnimation">@anim/coui_popup_list_exit</item>
+    </style>
+
+
 
 </resources>
