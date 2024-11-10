@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" android:enterFadeDuration="100" android:exitFadeDuration="360">
     <item android:state_enabled="false">
-        <color android:color="@color/oplus_list_selector_color_disabled"/>
+        <color android:color="@color/oplus_list_selector_color_disabled" />
     </item>
     <item android:state_pressed="true">
-        <color android:color="?attr/preferenceBackgroundColorPressed"/>
+        <color android:color="?attr/preferenceBackgroundColorPressed" />
     </item>
     <item>
-        <color android:color="@null"/>
+        <color android:color="@null" />
     </item>
 </selector>

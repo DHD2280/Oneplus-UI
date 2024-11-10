@@ -238,8 +238,8 @@
     </style>
 
     <style name="Animation.Preference.SimpleMenuCenter" parent="android:Animation">
-        <item name="android:windowEnterAnimation">@anim/coui_popup_list_enter</item>
-        <item name="android:windowExitAnimation">@anim/coui_popup_list_exit</item>
+        <item name="android:windowEnterAnimation">@anim/oplus_popup_list_enter</item>
+        <item name="android:windowExitAnimation">@anim/oplus_popup_list_exit</item>
     </style>
 
 

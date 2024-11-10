@@ -1,135 +1,105 @@
 package it.dhd.oneplusui.preference;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceViewHolder;
+
+import android.content.res.TypedArray;
+import android.view.ContextThemeWrapper;
+
+import it.dhd.oneplusui.R;
+import it.dhd.oneplusui.appcompat.poplist.SimpleMenuPopupWindow;
+
+/**
+ * A version of {@link OplusListPreference} that use
+ * <a href="https://material.io/guidelines/components/menus.html#menus-simple-menus">Simple Menus</a>
+ * in Material Design as drop down.
+ */
 
 public class OplusMenuPreference extends OplusListPreference {
 
-    private final Context mContext;
-    private final ArrayAdapter mAdapter;
+    private View mTitleView;
+    private View mItemView;
+    private SimpleMenuPopupWindow mPopupWindow;
 
-    private PopupMenu mPopupMenu;
-
-    private final AdapterView.OnItemClickListener mItemSelectedListener = new AdapterView.OnItemClickListener() {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            if (position >= 0) {
-                String value = getEntryValues()[position].toString();
-                if (!value.equals(getValue()) && callChangeListener(value)) {
-                    setValue(value);
-                }
-            }
-            mPopupMenu.dismiss();
-        }
-    };
-
-    public OplusMenuPreference(@NonNull Context context) {
+    public OplusMenuPreference(Context context) {
         this(context, null);
     }
 
-    public OplusMenuPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public OplusMenuPreference(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public OplusMenuPreference(@NonNull Context context, @Nullable AttributeSet attrs,
-                              int defStyle) {
-        this(context, attrs, defStyle, 0);
+    public OplusMenuPreference(Context context, AttributeSet attrs, int defStyle) {
+        this(context, attrs, defStyle, R.style.Preferences_OplusMenuPreference);
     }
 
-    public OplusMenuPreference(@NonNull Context context, @Nullable AttributeSet attrs,
-                              int defStyleAttr, int defStyleRes) {
+    public OplusMenuPreference(Context context, AttributeSet attrs, int defStyleAttr,
+                                int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        mContext = context;
-        mAdapter = createAdapter();
-        updateEntries();
+
+        TypedArray a = context.obtainStyledAttributes(
+                attrs, R.styleable.OplusMenuPreference, defStyleAttr, defStyleRes);
+
+        int popupStyle = a.getResourceId(R.styleable.OplusMenuPreference_android_popupMenuStyle, R.style.Widget_Preference_SimpleMenuPreference_PopupMenu);
+        int popupTheme = a.getResourceId(R.styleable.OplusMenuPreference_android_popupTheme, R.style.Widget_App_PopupMenu);
+        Context popupContext;
+        if (popupTheme != 0) {
+            popupContext = new ContextThemeWrapper(context, popupTheme);
+        } else {
+            popupContext = context;
+        }
+
+        mPopupWindow = new SimpleMenuPopupWindow(popupContext, attrs, R.styleable.OplusMenuPreference_android_popupMenuStyle, popupStyle);
+        mPopupWindow.setOnItemClickListener(i -> {
+            String value = getEntryValues()[i].toString();
+            if (callChangeListener(value)) {
+                setValue(value);
+            }
+        });
+
+        a.recycle();
     }
 
     @Override
     protected void onClick() {
-        mPopupMenu.show();
+        if (getEntries() == null || getEntries().length == 0) {
+            return;
+        }
+
+        if (mPopupWindow == null) {
+            return;
+        }
+
+        mPopupWindow.setEntries(getEntries());
+        mPopupWindow.setSelectedIndex(findIndexOfValue(getValue()));
+
+        View container = (View) mItemView   // itemView
+                .getParent();               // -> list (RecyclerView)
+
+        mPopupWindow.show(mItemView, container, (int) mTitleView.getX());
     }
 
     @Override
     public void setEntries(@NonNull CharSequence[] entries) {
         super.setEntries(entries);
-        updateEntries();
-    }
-
-    @NonNull
-    private ArrayAdapter<?> createAdapter() {
-        return new ArrayAdapter<>(mContext, android.R.layout.simple_spinner_dropdown_item);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void updateEntries() {
-        mAdapter.clear();
-        if (getEntries() != null) {
-            for (CharSequence c : getEntries()) {
-                mAdapter.add(c.toString());
-            }
-        }
+        mPopupWindow.requestMeasure();
     }
 
     @Override
-    public void setValueIndex(int index) {
-        setValue(getEntryValues()[index].toString());
+    public void setValue(String value) {
+        super.setValue(value);
     }
 
     @Override
-    protected void notifyChanged() {
-        super.notifyChanged();
-        // When setting a SummaryProvider for this Preference, this method may be called before
-        // mAdapter has been set in ListPreference's constructor.
-        if (mAdapter != null) {
-            mAdapter.notifyDataSetChanged();
-        }
-    }
+    public void onBindViewHolder(@NonNull PreferenceViewHolder view) {
+        super.onBindViewHolder(view);
 
-    @Override
-    public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
+        mItemView = view.itemView;
+        mTitleView = view.itemView.findViewById(android.R.id.title);
 
-        mPopupMenu = new PopupMenu(mContext, holder.itemView, Gravity.END);
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            mPopupMenu.getMenu().add(0, i, 0, mAdapter.getItem(i).toString());
-        }
-        mPopupMenu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() >= 0) {
-                String value = getEntryValues()[item.getItemId()].toString();
-                if (!value.equals(getValue()) && callChangeListener(value)) {
-                    setValue(value);
-                }
-            }
-            return true;
-        });
-
-        TextView summary = holder.itemView.findViewById(android.R.id.summary);
-        summary.setTextColor(ContextCompat.getColor(mContext, android.R.color.system_accent1_400));
-
-        super.onBindViewHolder(holder);
-    }
-
-    private int findSpinnerIndexOfValue(String value) {
-        CharSequence[] entryValues = getEntryValues();
-        if (value != null && entryValues != null) {
-            for (int i = entryValues.length - 1; i >= 0; i--) {
-                if (TextUtils.equals(entryValues[i].toString(), value)) {
-                    return i;
-                }
-            }
-        }
-        return Spinner.INVALID_POSITION;
     }
 }

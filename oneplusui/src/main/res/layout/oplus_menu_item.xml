@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/oplus_alert_dialog_item_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/main_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:forceDarkAllowed="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/oplus_bottom_alert_dialog_horizontal_button_margin_default"
+        android:paddingTop="@dimen/alert_dialog_list_item_padding_top"
+        android:paddingBottom="@dimen/alert_dialog_list_item_padding_bottom">
+
+        <!-- First TextView: Title -->
+        <TextView
+            android:id="@android:id/text1"
+            android:layout_width="match_parent"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:layout_gravity="start"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/OplusTextAppearanceHeadline6"
+            android:textColor="@color/text_color_primary"
+            tools:text="Title" />
+
+        <!-- Second TextView: Summary -->
+        <TextView
+            android:id="@+id/summary_text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.15"
+            android:paddingTop="@dimen/oplus_option_dialog_listview_text2_padding_top"
+            android:textColor="@color/coui_color_secondary_neutral"
+            android:textSize="@dimen/oplus_alert_dialog_summary_text_size"
+            android:visibility="gone"
+            tools:text="Summary" />
+    </LinearLayout>
+
+    <!-- Check mark icon -->
+    <ImageView
+        android:id="@+id/check_mark"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/check_mark" />
+
+</LinearLayout>

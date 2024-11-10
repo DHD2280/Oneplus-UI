@@ -52,5 +52,10 @@
     <dimen name="oplus_alert_dialog_summary_text_size">12sp</dimen>
     <dimen name="oplus_alert_dialog_builder_content_max_height_with_adapter">60dp</dimen>
 
+    <!-- Popup Menu -->
+    <dimen name="simple_menu_unit">56dp</dimen>
+    <dimen name="simple_menu_margin">15dp</dimen>
+    <dimen name="simple_menu_dialog_max_width">600dp</dimen>
+    <integer name="simple_menu_max_units">5</integer>
 
 </resources>
