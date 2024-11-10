@@ -37,15 +37,12 @@ public class OplusPreferenceItemDecoration extends OplusRecyclerView.OplusDivide
             View childAt = recyclerView.getChildAt(i);
             Preference item = ((PreferenceGroupAdapter) adapter).getItem(recyclerView.getChildAdapterPosition(childAt));
             if (item != null && (item instanceof OplusRecyclerView.IOplusDividerDecorationInterface iCOUIDividerDecorationInterface)) {
-                boolean z = true;
-                if (childAt.getLayoutDirection() != View.LAYOUT_DIRECTION_RTL) {
-                    z = false;
-                }
+                boolean isRtl = childAt.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
                 View dividerEndAlignView = iCOUIDividerDecorationInterface.getDividerEndAlignView();
                 if (dividerEndAlignView != null) {
                     childAt.getLocationInWindow(this.mItemLocation);
                     dividerEndAlignView.getLocationInWindow(this.mChildLocation);
-                    if (z) {
+                    if (isRtl) {
                         width = this.mChildLocation[0] + dividerEndAlignView.getPaddingEnd();
                         width2 = this.mItemLocation[0];
                     } else {
@@ -71,16 +68,13 @@ public class OplusPreferenceItemDecoration extends OplusRecyclerView.OplusDivide
         if (adapter instanceof PreferenceGroupAdapter) {
             View childAt = recyclerView.getChildAt(i);
             Preference item = ((PreferenceGroupAdapter) adapter).getItem(recyclerView.getChildAdapterPosition(childAt));
-            if (item != null && (item instanceof OplusRecyclerView.IOplusDividerDecorationInterface iCOUIDividerDecorationInterface)) {
-                boolean z = true;
-                if (childAt.getLayoutDirection() != View.LAYOUT_DIRECTION_RTL) {
-                    z = false;
-                }
-                View dividerStartAlignView = iCOUIDividerDecorationInterface.getDividerStartAlignView();
+            if (item != null && (item instanceof OplusRecyclerView.IOplusDividerDecorationInterface oplusDividerDecorationInterface)) {
+                boolean isRtl = childAt.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+                View dividerStartAlignView = oplusDividerDecorationInterface.getDividerStartAlignView();
                 if (dividerStartAlignView != null) {
                     childAt.getLocationInWindow(this.mItemLocation);
                     dividerStartAlignView.getLocationInWindow(this.mChildLocation);
-                    if (z) {
+                    if (isRtl) {
                         paddingStart = this.mItemLocation[0] + childAt.getWidth();
                         i2 = (this.mChildLocation[0] + dividerStartAlignView.getWidth()) - dividerStartAlignView.getPaddingStart();
                     } else {
@@ -89,7 +83,7 @@ public class OplusPreferenceItemDecoration extends OplusRecyclerView.OplusDivide
                     }
                     return paddingStart - i2;
                 }
-                return iCOUIDividerDecorationInterface.getDividerStartInset();
+                return oplusDividerDecorationInterface.getDividerStartInset();
             }
         }
         return super.getDividerInsetStart(recyclerView, i);
