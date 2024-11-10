@@ -10,6 +10,11 @@ import androidx.preference.PreferenceViewHolder;
 
 import it.dhd.oneplusui.R;
 
+/**
+ * An extension of PreferenceCategory
+ * This class uses a custom layout to look like Oneplus PreferenceCategory
+ * See {@link R.layout#oplus_preference_category} for layout
+ */
 public class OplusPreferenceCategory extends PreferenceCategory {
 
     public OplusPreferenceCategory(@NonNull Context context) {
