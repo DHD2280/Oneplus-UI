@@ -17,7 +17,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceViewHolder;
-import androidx.recyclerview.widget.OplusRecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.slider.LabelFormatter;
@@ -37,7 +36,7 @@ import java.util.Scanner;
 import it.dhd.oneplusui.R;
 
 
-public class OplusSliderPreference extends OplusPreference implements OplusRecyclerView.IOplusDividerDecorationInterface {
+public class OplusSliderPreference extends OplusPreference {
     @SuppressWarnings("unused")
     private static final String TAG = "Slider Preference";
     private float valueFrom;
@@ -83,22 +82,25 @@ public class OplusSliderPreference extends OplusPreference implements OplusRecyc
         outputScale = a.getFloat(R.styleable.OplusSliderPreference_outputScale, 1f);
         String defaultValStr = a.getString(androidx.preference.R.styleable.Preference_defaultValue);
 
-        try {
-            Scanner scanner = new Scanner(defaultValStr);
-            scanner.useDelimiter(",");
-            scanner.useLocale(Locale.ENGLISH);
+        if (!TextUtils.isEmpty(defaultValStr) && !defaultValStr.equals("null")) {
+            try {
+                Scanner scanner = new Scanner(defaultValStr);
+                scanner.useDelimiter(",");
+                scanner.useLocale(Locale.ENGLISH);
 
-            while (scanner.hasNext()) {
-                defaultValue.add(scanner.nextFloat());
+                while (scanner.hasNext()) {
+                    defaultValue.add(scanner.nextFloat());
+                }
+            } catch (Exception ignored) {
+                Log.e(TAG, String.format("OplusSliderPreference: Error parsing default values for key: %s", getKey()));
             }
-        } catch (Exception ignored) {
-            Log.e(TAG, String.format("OplusSliderPreference: Error parsing default values for key: %s", getKey()));
         }
 
         a.recycle();
     }
 
     public void savePrefs() {
+        if (slider == null) return;
         setValues(getSharedPreferences(), getKey(), slider.getValues());
     }
 
@@ -323,4 +325,44 @@ public class OplusSliderPreference extends OplusPreference implements OplusRecyc
     public static int getSingleIntValue(SharedPreferences prefs, String key, int defaultValue) {
         return Math.round(getSingleFloatValue(prefs, key, defaultValue));
     }
+
+    @Override
+    protected void onSetInitialValue(Object defaultValueObj) {
+        List<Float> defaultValues = parseDefaultValue(defaultValueObj);
+        List<Float> savedValues = getValues(getSharedPreferences(), getKey(), valueFrom);
+
+        if (savedValues.isEmpty() && !defaultValues.isEmpty()) {
+            savedValues = defaultValues;
+        }
+
+        if (slider != null) {
+            slider.setValues(savedValues);
+        }
+        savePrefs();
+    }
+
+    @Override
+    protected Object onGetDefaultValue(TypedArray a, int index) {
+        String defaultValueStr = a.getString(index);
+        return parseDefaultValue(defaultValueStr);
+    }
+
+    private List<Float> parseDefaultValue(Object defaultValueObj) {
+        List<Float> parsedValues = new ArrayList<>();
+        if (defaultValueObj instanceof String) {
+            try {
+                Scanner scanner = new Scanner((String) defaultValueObj);
+                scanner.useDelimiter(",");
+                scanner.useLocale(Locale.ENGLISH);
+
+                while (scanner.hasNext()) {
+                    parsedValues.add(scanner.nextFloat());
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error parsing default values", e);
+            }
+        }
+        return parsedValues.isEmpty() ? Collections.singletonList(valueFrom) : parsedValues;
+    }
+
 }
