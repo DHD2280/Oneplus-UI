@@ -226,8 +226,8 @@ public class OplusSliderPreference extends OplusPreference {
         if (showResetButton) {
             mResetButton.setVisibility(View.VISIBLE);
             mResetButton.setOnClickListener(v -> {
-                handleResetButton();
                 slider.setValues(defaultValue);
+                handleResetButton();
                 savePrefs();
             });
         } else {
@@ -305,7 +305,9 @@ public class OplusSliderPreference extends OplusPreference {
 
         if (showResetButton) {
             mResetButton.setVisibility(View.VISIBLE);
-            mResetButton.setEnabled(isEnabled() && !Objects.equals(slider.getValues().get(0), defaultValue.get(0)));
+            if (!slider.getValues().isEmpty() && defaultValue != null && !defaultValue.isEmpty()) {
+                mResetButton.setEnabled(isEnabled() && !Objects.equals(slider.getValues().get(0), defaultValue.get(0)));
+            }
         } else {
             mResetButton.setVisibility(View.GONE);
         }
