@@ -1,3 +1,8 @@
+**1.3.1**  
+- SimpleMenuPopupWindow: fix y position of dialog.  
+- Use different layout for colored summary.  
+- OplusSliderPreference: improve reset button handling  
+  
 **1.3.0**  
 - OplusSliderPreference: add dafault values methods  
 - SummaryAdapter: add documentation  
