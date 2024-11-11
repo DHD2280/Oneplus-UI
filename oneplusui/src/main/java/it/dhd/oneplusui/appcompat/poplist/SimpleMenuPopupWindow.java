@@ -310,7 +310,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         setElevation(elevation);
         setAnimationStyle(R.style.Animation_Preference_SimpleMenuCenter);
 
-        super.showAtLocation(anchor, rtl ? Gravity.START : Gravity.END, centerX, (int) container.getY());
+        super.showAtLocation(anchor, rtl ? Gravity.START : Gravity.END, centerX, (int) anchor.getY());
 
     }
 

@@ -14,8 +14,11 @@ import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.button.MaterialButton;
@@ -27,7 +30,6 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -38,15 +40,17 @@ import it.dhd.oneplusui.R;
 
 
 public class OplusSliderPreference extends OplusPreference {
-    @SuppressWarnings("unused")
+
     private static final String TAG = "OplusSliderPreference";
     private float valueFrom;
     private float valueTo;
     private final float tickInterval;
-    private boolean showResetButton;
-    public static List<Float> defaultValue = new ArrayList<>();
+    private final boolean showResetButton;
+    public final List<Float> defaultValue = new ArrayList<>();
     public RangeSlider slider;
     private MaterialButton mResetButton;
+    @SuppressWarnings("unused")
+    private TextView sliderValue;
     int valueCount;
     private String valueFormat;
     private final float outputScale;
@@ -58,10 +62,12 @@ public class OplusSliderPreference extends OplusPreference {
     @SuppressWarnings("unused")
     public OplusSliderPreference(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
+        setSelectable(false);
     }
 
     public OplusSliderPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setSelectable(false);
         setLayoutResource(R.layout.oplus_preference_slider);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.OplusSliderPreference);
@@ -79,31 +85,27 @@ public class OplusSliderPreference extends OplusPreference {
         } else {
             decimalFormat = "#.#"; // Default decimal format
         }
-        if (TextUtils.isEmpty(decimalFormat) || decimalFormat.equals("null")) decimalFormat = "#.#";
         outputScale = a.getFloat(R.styleable.OplusSliderPreference_outputScale, 1f);
-//        String defaultValStr = a.getString(R.styleable.OplusSliderPreference_sliderDefaultValue);
-//        Log.d(TAG, String.format("OplusSliderPreference: Default values for key: %s", getKey()));
-//
-//        if (!TextUtils.isEmpty(defaultValStr) && !defaultValStr.equals("null")) {
-//            try {
-//                Scanner scanner = new Scanner(defaultValStr);
-//                scanner.useDelimiter(",");
-//                scanner.useLocale(Locale.ENGLISH);
-//
-//                while (scanner.hasNext()) {
-//                    defaultValue.add(scanner.nextFloat());
-//                }
-//            } catch (Exception ignored) {
-//                Log.e(TAG, String.format("OplusSliderPreference: Error parsing default values for key: %s", getKey()));
-//            }
-//        }
+        String defaultValStr = a.getString(androidx.preference.R.styleable.Preference_defaultValue);
+
+        if (valueFormat == null) valueFormat = "";
+
+        try {
+            Scanner scanner = new Scanner(defaultValStr);
+            scanner.useDelimiter(",");
+            scanner.useLocale(Locale.ENGLISH);
+
+            while (scanner.hasNext()) {
+                defaultValue.add(scanner.nextFloat());
+            }
+        } catch (Exception ignored) {
+            Log.e(TAG, String.format("SliderPreference: Error parsing default values for key: %s", getKey()));
+        }
 
         a.recycle();
     }
 
-
     public void savePrefs() {
-        if (slider == null) return;
         setValues(getSharedPreferences(), getKey(), slider.getValues());
     }
 
@@ -179,6 +181,7 @@ public class OplusSliderPreference extends OplusPreference {
     RangeSlider.OnSliderTouchListener sliderTouchListener = new RangeSlider.OnSliderTouchListener() {
         @Override
         public void onStartTrackingTouch(@NonNull RangeSlider slider) {
+            slider.setLabelFormatter(labelFormatter);
         }
 
         @Override
@@ -207,7 +210,7 @@ public class OplusSliderPreference extends OplusPreference {
                         ? Integer.toString((int) (slider.getValues().get(0) / 1f))
                         : new DecimalFormat(decimalFormat).format(slider.getValues().get(0) / outputScale);
             }
-            if (!TextUtils.isEmpty(valueFormat) && !valueFormat.equals("null")) result += valueFormat;
+            result += valueFormat;
 
             return result;
         }
@@ -217,7 +220,12 @@ public class OplusSliderPreference extends OplusPreference {
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        slider = (RangeSlider) holder.findViewById(R.id.slider);
+        if (isEnabled()) {
+            TextView title = holder.itemView.findViewById(android.R.id.title);
+            title.setTextColor(ContextCompat.getColor(getContext(), R.color.textColorPrimary));
+        }
+
+        slider = holder.itemView.findViewById(R.id.slider);
         slider.setTag(getKey());
 
         slider.addOnSliderTouchListener(sliderTouchListener);
@@ -225,7 +233,7 @@ public class OplusSliderPreference extends OplusPreference {
 
         slider.setLabelFormatter(labelFormatter);
 
-        mResetButton = (MaterialButton) holder.findViewById(R.id.reset_button);
+        mResetButton = holder.itemView.findViewById(R.id.reset_button);
         if (showResetButton) {
             mResetButton.setVisibility(View.VISIBLE);
             mResetButton.setOnClickListener(v -> {
@@ -236,6 +244,8 @@ public class OplusSliderPreference extends OplusPreference {
         } else {
             mResetButton.setVisibility(View.GONE);
         }
+
+        sliderValue = holder.itemView.findViewById(androidx.preference.R.id.seekbar_value);
 
         slider.setValueFrom(valueFrom);
         slider.setValueTo(valueTo);
@@ -248,12 +258,12 @@ public class OplusSliderPreference extends OplusPreference {
 
     public void setMin(float value) {
         valueFrom = value;
-        slider.setValueFrom(value);
+        if (slider != null) slider.setValueFrom(value);
     }
 
     public void setMax(float value) {
         valueTo = value;
-        slider.setValueTo(value);
+        if (slider != null) slider.setValueTo(value);
     }
 
     public static List<Float> getValues(SharedPreferences prefs, String key, float defaultValue) {
@@ -308,9 +318,7 @@ public class OplusSliderPreference extends OplusPreference {
 
         if (showResetButton) {
             mResetButton.setVisibility(View.VISIBLE);
-            if (!slider.getValues().isEmpty() && defaultValue != null && !defaultValue.isEmpty()) {
-                mResetButton.setEnabled(isEnabled() && !Objects.equals(slider.getValues().get(0), defaultValue.get(0)));
-            }
+            mResetButton.setEnabled(isEnabled() && !Objects.equals(slider.getValues().get(0), defaultValue.get(0)));
         } else {
             mResetButton.setVisibility(View.GONE);
         }
@@ -330,56 +338,4 @@ public class OplusSliderPreference extends OplusPreference {
     public static int getSingleIntValue(SharedPreferences prefs, String key, int defaultValue) {
         return Math.round(getSingleFloatValue(prefs, key, defaultValue));
     }
-
-    @Override
-    protected void onSetInitialValue(Object defaultValueObj) {
-        Log.d(TAG, String.format("onSetInitialValue: %s", getKey()));
-        List<Float> savedValues = getValues(getSharedPreferences(), getKey(), valueFrom);
-
-        Log.d(TAG, String.format("Default values for key: %s: %s", getKey(), Arrays.toString(defaultValue.toArray())));
-
-        if (savedValues.isEmpty()) {
-            if (!defaultValue.isEmpty()) {
-                savedValues = defaultValue;
-            } else if (defaultValueObj instanceof List) {
-                savedValues = (List<Float>) defaultValueObj;
-            }
-        }
-
-        if (slider != null) {
-            slider.setValues(savedValues);
-        }
-        savePrefs();
-    }
-
-    @Override
-    protected Object onGetDefaultValue(TypedArray a, int index) {
-        String defaultValueStr = a.getString(index);
-        Log.d(TAG, "onGetDefaultValue: " + defaultValueStr);
-        return parseDefaultValue(defaultValueStr);
-    }
-
-    private List<Float> parseDefaultValue(Object defaultValueObj) {
-        defaultValue = new ArrayList<>();
-        if (defaultValueObj instanceof String defaultValueStr) {
-            try {
-                if (!defaultValueStr.contains(",")) {
-                    defaultValue.add(Float.parseFloat(defaultValueStr.trim()));
-                } else {
-                    Scanner scanner = new Scanner(defaultValueStr);
-                    scanner.useDelimiter(",");
-                    scanner.useLocale(Locale.ENGLISH);
-
-                    while (scanner.hasNext()) {
-                        defaultValue.add(scanner.nextFloat());
-                    }
-                }
-            } catch (Exception e) {
-                Log.e(TAG, String.format("Error parsing default values for key: %s", getKey()), e);
-            }
-        }
-        Log.d(TAG, String.format("Default values for key: %s: %s", getKey(), Arrays.toString(defaultValue.toArray())));
-        return defaultValue;
-    }
-
 }
