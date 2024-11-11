@@ -14,17 +14,21 @@
      limitations under the License.
 -->
 
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:aapt="http://schemas.android.com/aapt"
   xmlns:tools="http://schemas.android.com/tools"
-  android:width="@dimen/switch_track_width"
-  android:height="@dimen/switch_track_height"
-  android:viewportWidth="@integer/switch_track_viewport_width"
-  android:viewportHeight="@integer/switch_track_viewport_height"
+  android:drawable="@drawable/switch_thumb_checked"
   tools:ignore="NewApi">
 
-  <path
-    android:name="track"
-    android:fillColor="#FFFFFFFF"
-    android:pathData="@string/switch_track_path" />
-
-</vector>
+  <target android:name="@string/switch_thumb_path_name">
+    <aapt:attr name="android:animation">
+      <objectAnimator
+        android:duration="@integer/switch_thumb_pressed_duration"
+        android:interpolator="@interpolator/sys_motion_easing_standard"
+        android:propertyName="pathData"
+        android:valueFrom="@string/switch_thumb_path_checked"
+        android:valueTo="@string/switch_thumb_path_pressed"
+        android:valueType="pathType" />
+    </aapt:attr>
+  </target>
+</animated-vector>

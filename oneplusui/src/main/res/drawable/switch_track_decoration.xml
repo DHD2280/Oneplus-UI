@@ -23,8 +23,9 @@
   tools:ignore="NewApi">
 
   <path
-    android:name="track"
-    android:fillColor="#FFFFFFFF"
-    android:pathData="@string/switch_track_path" />
+    android:name="outline"
+    android:strokeColor="?attr/colorOutline"
+    android:strokeWidth="2"
+    android:pathData="@string/switch_track_decoration_path" />
 
 </vector>

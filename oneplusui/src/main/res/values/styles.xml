@@ -107,14 +107,18 @@
     </style>
 
     <style name="Widget.App.Material3.Switch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:scaleX">0.8</item>
+        <item name="android:scaleY">0.8</item>
+        <item name="android:thumb">@drawable/switch_thumb</item>
+        <item name="track">@drawable/switch_track</item>
         <item name="thumbTint">@color/white</item>
         <item name="trackDecorationTint">@color/transparent</item>
-        <item name="trackTint">@drawable/switch_track</item>
+        <item name="trackTint">@drawable/switch_track_selector</item>
     </style>
 
     <style name="Widget.App.AppCompat.Switch" parent="Widget.AppCompat.CompoundButton.Switch">
-        <item name="track">@drawable/switch_track</item>
-        <item name="trackTint">@drawable/switch_track</item>
+        <item name="track">@drawable/switch_track_selector</item>
+        <item name="trackTint">@drawable/switch_track_selector</item>
         <item name="android:thumb">@drawable/switch_thumb</item>
     </style>
 

@@ -16,15 +16,20 @@
 
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:tools="http://schemas.android.com/tools"
-  android:width="@dimen/switch_track_width"
-  android:height="@dimen/switch_track_height"
-  android:viewportWidth="@integer/switch_track_viewport_width"
-  android:viewportHeight="@integer/switch_track_viewport_height"
+  android:width="@dimen/switch_thumb_size"
+  android:height="@dimen/switch_thumb_size"
+  android:viewportHeight="@integer/switch_thumb_viewport_size"
+  android:viewportWidth="@integer/switch_thumb_viewport_size"
   tools:ignore="NewApi">
 
-  <path
-    android:name="track"
-    android:fillColor="#FFFFFFFF"
-    android:pathData="@string/switch_track_path" />
+  <group
+    android:name="@string/switch_thumb_group_name"
+    android:pivotX="@integer/switch_thumb_viewport_center_coordinate"
+    android:pivotY="@integer/switch_thumb_viewport_center_coordinate">
+    <path
+      android:name="@string/switch_thumb_path_name"
+      android:fillColor="#ffffffff"
+      android:pathData="@string/switch_thumb_path_pressed" />
+  </group>
 
 </vector>

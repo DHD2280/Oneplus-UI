@@ -57,5 +57,12 @@
     <dimen name="simple_menu_margin">15dp</dimen>
     <dimen name="simple_menu_dialog_max_width">600dp</dimen>
     <integer name="simple_menu_max_units">5</integer>
+    
+    <!-- Switch -->
+    <dimen name="switch_thumb_size">32dp</dimen>
+    <dimen name="switch_thumb_icon_size">16dp</dimen>
+    <dimen name="switch_track_width">@dimen/m3_comp_switch_track_width</dimen>
+    <dimen name="switch_track_height">@dimen/m3_comp_switch_track_height</dimen>
+    <dimen name="switch_text_padding">16dp</dimen>
 
 </resources>
