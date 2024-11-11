@@ -27,6 +27,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -38,12 +39,12 @@ import it.dhd.oneplusui.R;
 
 public class OplusSliderPreference extends OplusPreference {
     @SuppressWarnings("unused")
-    private static final String TAG = "Slider Preference";
+    private static final String TAG = "OplusSliderPreference";
     private float valueFrom;
     private float valueTo;
     private final float tickInterval;
     private boolean showResetButton;
-    public final List<Float> defaultValue = new ArrayList<>();
+    public static List<Float> defaultValue = new ArrayList<>();
     public RangeSlider slider;
     private MaterialButton mResetButton;
     int valueCount;
@@ -80,24 +81,26 @@ public class OplusSliderPreference extends OplusPreference {
         }
         if (TextUtils.isEmpty(decimalFormat) || decimalFormat.equals("null")) decimalFormat = "#.#";
         outputScale = a.getFloat(R.styleable.OplusSliderPreference_outputScale, 1f);
-        String defaultValStr = a.getString(androidx.preference.R.styleable.Preference_defaultValue);
-
-        if (!TextUtils.isEmpty(defaultValStr) && !defaultValStr.equals("null")) {
-            try {
-                Scanner scanner = new Scanner(defaultValStr);
-                scanner.useDelimiter(",");
-                scanner.useLocale(Locale.ENGLISH);
-
-                while (scanner.hasNext()) {
-                    defaultValue.add(scanner.nextFloat());
-                }
-            } catch (Exception ignored) {
-                Log.e(TAG, String.format("OplusSliderPreference: Error parsing default values for key: %s", getKey()));
-            }
-        }
+//        String defaultValStr = a.getString(R.styleable.OplusSliderPreference_sliderDefaultValue);
+//        Log.d(TAG, String.format("OplusSliderPreference: Default values for key: %s", getKey()));
+//
+//        if (!TextUtils.isEmpty(defaultValStr) && !defaultValStr.equals("null")) {
+//            try {
+//                Scanner scanner = new Scanner(defaultValStr);
+//                scanner.useDelimiter(",");
+//                scanner.useLocale(Locale.ENGLISH);
+//
+//                while (scanner.hasNext()) {
+//                    defaultValue.add(scanner.nextFloat());
+//                }
+//            } catch (Exception ignored) {
+//                Log.e(TAG, String.format("OplusSliderPreference: Error parsing default values for key: %s", getKey()));
+//            }
+//        }
 
         a.recycle();
     }
+
 
     public void savePrefs() {
         if (slider == null) return;
@@ -330,11 +333,17 @@ public class OplusSliderPreference extends OplusPreference {
 
     @Override
     protected void onSetInitialValue(Object defaultValueObj) {
-        List<Float> defaultValues = parseDefaultValue(defaultValueObj);
+        Log.d(TAG, String.format("onSetInitialValue: %s", getKey()));
         List<Float> savedValues = getValues(getSharedPreferences(), getKey(), valueFrom);
 
-        if (savedValues.isEmpty() && !defaultValues.isEmpty()) {
-            savedValues = defaultValues;
+        Log.d(TAG, String.format("Default values for key: %s: %s", getKey(), Arrays.toString(defaultValue.toArray())));
+
+        if (savedValues.isEmpty()) {
+            if (!defaultValue.isEmpty()) {
+                savedValues = defaultValue;
+            } else if (defaultValueObj instanceof List) {
+                savedValues = (List<Float>) defaultValueObj;
+            }
         }
 
         if (slider != null) {
@@ -346,25 +355,31 @@ public class OplusSliderPreference extends OplusPreference {
     @Override
     protected Object onGetDefaultValue(TypedArray a, int index) {
         String defaultValueStr = a.getString(index);
+        Log.d(TAG, "onGetDefaultValue: " + defaultValueStr);
         return parseDefaultValue(defaultValueStr);
     }
 
     private List<Float> parseDefaultValue(Object defaultValueObj) {
-        List<Float> parsedValues = new ArrayList<>();
-        if (defaultValueObj instanceof String) {
+        defaultValue = new ArrayList<>();
+        if (defaultValueObj instanceof String defaultValueStr) {
             try {
-                Scanner scanner = new Scanner((String) defaultValueObj);
-                scanner.useDelimiter(",");
-                scanner.useLocale(Locale.ENGLISH);
+                if (!defaultValueStr.contains(",")) {
+                    defaultValue.add(Float.parseFloat(defaultValueStr.trim()));
+                } else {
+                    Scanner scanner = new Scanner(defaultValueStr);
+                    scanner.useDelimiter(",");
+                    scanner.useLocale(Locale.ENGLISH);
 
-                while (scanner.hasNext()) {
-                    parsedValues.add(scanner.nextFloat());
+                    while (scanner.hasNext()) {
+                        defaultValue.add(scanner.nextFloat());
+                    }
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error parsing default values", e);
+                Log.e(TAG, String.format("Error parsing default values for key: %s", getKey()), e);
             }
         }
-        return parsedValues.isEmpty() ? Collections.singletonList(valueFrom) : parsedValues;
+        Log.d(TAG, String.format("Default values for key: %s: %s", getKey(), Arrays.toString(defaultValue.toArray())));
+        return defaultValue;
     }
 
 }
