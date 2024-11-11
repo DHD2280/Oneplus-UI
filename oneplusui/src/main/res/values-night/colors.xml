@@ -18,6 +18,7 @@
     <color name="btn_radio_color_on_disabled">#4dffffff</color>
 
     <color name="colorDivider">#33ffffff</color>
+    <color name="oplusColorControls">#4dffffff</color>
 
     <color name="oplusColorPrimaryNeutral">#e6ffffff</color>
     <color name="coui_color_secondary_neutral">#8affffff</color>
