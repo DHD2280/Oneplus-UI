@@ -1,3 +1,10 @@
+**1.3.3**  
+  
+**1.3.2**  
+- Reduce divider height  
+- Use MaterialSwitch and improve theme  
+- OplusSliderPreference: improve get and set default values and use android:defaultValue as attr  
+  
 **1.3.1**  
 - SimpleMenuPopupWindow: fix y position of dialog.  
 - Use different layout for colored summary.  
