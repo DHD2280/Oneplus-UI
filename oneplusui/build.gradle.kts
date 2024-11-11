@@ -53,7 +53,7 @@ publishing {
                 from(components["release"])
             }
 
-            groupId = "id.dhd"
+            groupId = "it.dhd"
             artifactId = "oneplusui"
             version = "1.3.1"
         }
