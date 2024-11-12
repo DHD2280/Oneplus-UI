@@ -11,7 +11,6 @@ import androidx.preference.PreferenceScreen;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class CardListHelper {
 
     public static final int FULL = 4;
