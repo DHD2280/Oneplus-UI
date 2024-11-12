@@ -258,15 +258,19 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         int y;
         int height;
         int elevation = this.elevation[POPUP_MENU];
+        int[] anchorLocation = new int[2];
+        anchor.getLocationInWindow(anchorLocation);
+        int popupX = rtl
+                ? location[0] + extraMargin + listPadding[POPUP_MENU][HORIZONTAL]
+                : anchorLocation[0] + extraMargin + anchor.getWidth() - width;
+        Log.d("SimpleMenuPopupWindow", "showPopupMenu: " + anchorLocation[0] + " " + extraMargin + " " + width + " " + anchor.getWidth());
         int centerX = rtl
                 ? location[0] + extraMargin - width + listPadding[POPUP_MENU][HORIZONTAL]
                 : location[0] + extraMargin + listPadding[POPUP_MENU][HORIZONTAL];
 
         if (measuredHeight > containerHeight) {
-            // Troppo alto, usa lo scroll
             y = containerTopInWindow + margin[POPUP_MENU][VERTICAL];
 
-            // Scorri per selezionare l'elemento
             final int scroll = itemHeight * index
                     - anchorTop + listPadding[POPUP_MENU][VERTICAL] + margin[POPUP_MENU][VERTICAL]
                     - anchorHeight / 2 + itemHeight / 2;
@@ -279,11 +283,9 @@ public class SimpleMenuPopupWindow extends PopupWindow {
 
             height = containerHeight - margin[POPUP_MENU][VERTICAL] * 2;
         } else {
-            // Calcola l'allineamento rispetto all'elemento selezionato
             y = containerTopInWindow + anchorTop + anchorHeight / 2 - itemHeight / 2
                     - listPadding[POPUP_MENU][VERTICAL] - index * itemHeight;
 
-            // Assicurati che la finestra sia all'interno della vista padre
             int maxY = containerTopInWindow + containerHeight
                     - measuredHeight - margin[POPUP_MENU][VERTICAL];
             y = Math.min(y, maxY);
@@ -300,8 +302,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         setHeight(height);
         setElevation(elevation);
         setAnimationStyle(R.style.Animation_Preference_SimpleMenuCenter);
-
-        super.showAtLocation(anchor, Gravity.NO_GRAVITY, centerX, y);
+        super.showAtLocation(anchor, Gravity.NO_GRAVITY, popupX, y);
     }
 
     /**
