@@ -96,11 +96,6 @@ class MenuListAdapter extends RecyclerView.Adapter<MenuListAdapter.ViewHolder> {
         }
 
         @Override
-        public View getDividerStartAlignView() {
-            return mCheckedTextView;
-        }
-
-        @Override
         public int getDividerStartInset() {
             return mDividerDefaultHorizontalPadding;
         }
