@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -255,41 +256,34 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         final int containerHeight = container.getHeight() - container.getPaddingTop() - container.getPaddingBottom();
 
         int y;
-
         int height;
         int elevation = this.elevation[POPUP_MENU];
         int centerX = rtl
                 ? location[0] + extraMargin - width + listPadding[POPUP_MENU][HORIZONTAL]
                 : location[0] + extraMargin + listPadding[POPUP_MENU][HORIZONTAL];
-        int centerY;
-        int animItemHeight = itemHeight + listPadding[POPUP_MENU][VERTICAL] * 2;
-        int animIndex = index;
-        Rect animStartRect;
 
         if (measuredHeight > containerHeight) {
-            // too high, use scroll
+            // Troppo alto, usa lo scroll
             y = containerTopInWindow + margin[POPUP_MENU][VERTICAL];
 
-            // scroll to select item
+            // Scorri per selezionare l'elemento
             final int scroll = itemHeight * index
                     - anchorTop + listPadding[POPUP_MENU][VERTICAL] + margin[POPUP_MENU][VERTICAL]
                     - anchorHeight / 2 + itemHeight / 2;
 
             getContentView().post(() -> {
-                getContentView().scrollBy(0, -measuredHeight); // to top
+                getContentView().scrollBy(0, -measuredHeight); // scroll in alto
                 getContentView().scrollBy(0, scroll);
             });
             getContentView().setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
 
             height = containerHeight - margin[POPUP_MENU][VERTICAL] * 2;
-
-            centerY = itemHeight * index;
         } else {
-            // calc align to selected
+            // Calcola l'allineamento rispetto all'elemento selezionato
             y = containerTopInWindow + anchorTop + anchorHeight / 2 - itemHeight / 2
                     - listPadding[POPUP_MENU][VERTICAL] - index * itemHeight;
 
-            // make sure window is in parent view
+            // Assicurati che la finestra sia all'interno della vista padre
             int maxY = containerTopInWindow + containerHeight
                     - measuredHeight - margin[POPUP_MENU][VERTICAL];
             y = Math.min(y, maxY);
@@ -300,9 +294,6 @@ public class SimpleMenuPopupWindow extends PopupWindow {
             getContentView().setOverScrollMode(View.OVER_SCROLL_NEVER);
 
             height = measuredHeight;
-
-            // center of selected item
-            centerY = (int) (listPadding[POPUP_MENU][VERTICAL] + index * itemHeight + itemHeight * 0.5);
         }
 
         setWidth(width);
@@ -310,8 +301,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         setElevation(elevation);
         setAnimationStyle(R.style.Animation_Preference_SimpleMenuCenter);
 
-        super.showAtLocation(anchor, rtl ? Gravity.START : Gravity.END, centerX, (int) anchor.getY());
-
+        super.showAtLocation(anchor, Gravity.NO_GRAVITY, centerX, y);
     }
 
     /**
