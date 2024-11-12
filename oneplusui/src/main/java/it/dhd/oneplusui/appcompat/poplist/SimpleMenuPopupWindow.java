@@ -276,7 +276,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
                     - anchorHeight / 2 + itemHeight / 2;
 
             getContentView().post(() -> {
-                getContentView().scrollBy(0, -measuredHeight); // scroll in alto
+                getContentView().scrollBy(0, -measuredHeight);
                 getContentView().scrollBy(0, scroll);
             });
             getContentView().setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
@@ -294,6 +294,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
             y = Math.max(y, minY);
 
             getContentView().setOverScrollMode(View.OVER_SCROLL_NEVER);
+            getContentView().post(() -> getContentView().scrollToPosition(index));
 
             height = measuredHeight;
         }
