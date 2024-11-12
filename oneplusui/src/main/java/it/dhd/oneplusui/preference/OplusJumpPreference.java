@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.preference.PreferenceViewHolder;
 
 import it.dhd.oneplusui.R;
@@ -17,6 +18,7 @@ public class OplusJumpPreference extends OplusPreference {
 
     private TextView mJumpText;
     private String mPendingJumpText;
+    private @StringRes int mPendingJumpTextRes;
     private int mJumpVisibility = View.VISIBLE;
     private View mJumpView;
 
@@ -45,10 +47,16 @@ public class OplusJumpPreference extends OplusPreference {
 
         if (!TextUtils.isEmpty(mPendingJumpText)) {
             mJumpText.setText(mPendingJumpText);
+        } else if (mPendingJumpTextRes != 0) {
+            mJumpText.setText(mPendingJumpTextRes);
         }
         mJumpView.setVisibility(mJumpVisibility);
     }
 
+    /**
+     * Set the text of the jump, before the arrow.
+     * @param text The text to set.
+     */
     public void setJumpText(String text) {
         mPendingJumpText = text;
         if (mJumpText != null) {
@@ -56,6 +64,21 @@ public class OplusJumpPreference extends OplusPreference {
         }
     }
 
+    /**
+     * Set the text of the jump, before the arrow.
+     * @param textRes The text resource to set.
+     */
+    public void setJumpText(@StringRes int textRes) {
+        mPendingJumpTextRes = textRes;
+        if (mJumpText != null) {
+            mJumpText.setText(textRes);
+        }
+    }
+
+    /**
+     * Set the visibility of the jump.
+     * @param enabled Whether the jump should be visible.
+     */
     public void setJumpEnabled(boolean enabled) {
         mJumpVisibility = enabled ? View.VISIBLE : View.GONE;
         if (mJumpView != null) {
