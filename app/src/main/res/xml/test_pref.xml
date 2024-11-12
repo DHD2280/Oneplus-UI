@@ -19,7 +19,7 @@
             android:summary="This is a test slider preference"
             app:maxVal="100"
             app:minVal="0"
-            android:defaultValue="50"
+            app:defaultValue="50"
             android:title="Test Slider Preference" />
 
         <it.dhd.oneplusui.preference.OplusJumpPreference
@@ -30,6 +30,8 @@
         <it.dhd.oneplusui.preference.OplusMenuPreference
             android:entries="@array/test_entries"
             android:entryValues="@array/test_values"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="0"
             android:key="test_menu_key"
             android:persistent="true"
             android:summary="This is a test menu preference"
