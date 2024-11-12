@@ -34,11 +34,13 @@
         <item name="android:lineSpacingMultiplier">1.05</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:textColor">@color/text_color_primary</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="PreferenceSummaryStyle" parent="@style/OplusTextAppearanceBody">
         <item name="android:typeface">normal</item>
         <item name="android:textColor">@color/text_color_secondary</item>
+        <item name="android:textAlignment">viewStart</item>
     </style>
 
     <style name="PreferenceIcon" parent="">
@@ -228,7 +230,7 @@
 
         <item name="listMarginHorizontal">@dimen/simple_menu_margin</item>
         <item name="listMarginVertical">8dp</item>
-        <item name="listItemPadding">16dp</item>
+        <item name="listItemPadding">@dimen/preference_card_margin_horizontal</item>
         <item name="listElevation">8dp</item>
 
         <item name="dialogMarginHorizontal">16dp</item>
