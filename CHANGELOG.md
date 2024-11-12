@@ -1,3 +1,12 @@
+**1.3.4**  
+- SimpleMenuPopupWindow: scroll to selected index when opened.  
+- Preference Texts: improve RTL-LTR behaviour  
+- SimpleMenuPopupWindow: improve RTL-LTR behaviour  
+- OplusJumpPreference: Added documentation and jump text with Resource ID.  
+- OplusMenuPreference: Fixed positioning.  
+- OplusSliderPreference: revert to previous default set.  
+- Min sdk version 31.  
+  
 **1.3.3**  
   
 **1.3.2**  
