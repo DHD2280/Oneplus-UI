@@ -1,3 +1,8 @@
+**1.3.5**  
+- OplusPreferenceCategory visible even when text empty, so now can be used as a divider itself.  
+- Added bottom padding to OplusRecyclerView in OplusPreferenceFragment.  
+- CardListHelper: no need to restrict.  
+  
 **1.3.4**  
 - SimpleMenuPopupWindow: scroll to selected index when opened.  
 - Preference Texts: improve RTL-LTR behaviour  
