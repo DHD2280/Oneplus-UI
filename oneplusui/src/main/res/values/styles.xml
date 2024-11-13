@@ -68,7 +68,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">@dimen/preference_category_text_height</item>
-        <item name="android:layout_marginTop">@dimen/preference_item_margin_top</item>
+<!--        <item name="android:layout_marginTop">@dimen/preference_item_margin_top</item>-->
         <item name="android:layout_marginBottom">@dimen/preference_item_margin_bottom</item>
         <item name="android:layout_marginLeft">@dimen/preference_item_padding_side</item>
         <item name="android:layout_marginRight">@dimen/preference_item_padding_side</item>
