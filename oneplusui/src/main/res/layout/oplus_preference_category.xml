@@ -2,10 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:visibility="visible"
-    android:layout_marginTop="@dimen/preference_item_margin_top" >
+    android:layout_marginTop="@dimen/preference_item_margin_top"
+    android:layout_marginBottom="@dimen/preference_item_margin_bottom"
+    android:visibility="visible">
 
     <TextView
         android:id="@android:id/title"
-        style="@style/OplusPreferenceCategoryStyle"/>
+        style="@style/OplusPreferenceCategoryStyle" />
 </FrameLayout>
