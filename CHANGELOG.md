@@ -1,3 +1,7 @@
+**1.3.6**  
+- OplusPreference layouts improve paddings  
+- OplusPreferenceCategory improve paddings  
+  
 **1.3.5**  
 - OplusPreferenceCategory visible even when text empty, so now can be used as a divider itself.  
 - Added bottom padding to OplusRecyclerView in OplusPreferenceFragment.  
