@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Backgrounds -->
+    <color name="colorBackground">#ECEFF1</color>
+    <color name="windowBackground">#ECEFF1</color>
+
+    <!-- Background only for dark theme -->
+    <color name="preferenceBackgroundDarkHard">#1A1A1A</color>
+    <color name="colorBackgroundDarkMedium">#171717</color>
+    <color name="windowBackgroundDarkMedium">#171717</color>
+    <color name="preferenceBackgroundDarkMedium">#2F2F2F</color>
+    <color name="colorBackgroundDarkSoft">#303030</color>
+    <color name="windowBackgroundDarkSoft">#303030</color>
+    <color name="preferenceBackgroundDarkSoft">#454545</color>
+
     <!-- Text -->
     <color name="textColorPrimary">#191919</color>
     <color name="textColorPrimaryDisabled">#4d000000</color>

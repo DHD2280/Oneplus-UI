@@ -5,8 +5,8 @@
         <item name="android:navigationBarColor">?attr/backgroundColor</item>
         <item name="android:statusBarColor">?attr/backgroundColor</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowBackground">#000000</item>
-        <item name="android:colorBackground">#000000</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
         <item name="preferenceBackgroundColor">#1A1A1A</item>
         <!-- Preference title -->
         <item name="android:textAppearanceListItem">?textAppearanceSubtitle1</item>
@@ -49,21 +49,21 @@
     </style>
 
     <style name="Theme.Oneplus.Dark.Hard" parent="Theme.Oneplus.Dark.NoActionBar">
-        <item name="android:windowBackground">#000000</item>
-        <item name="android:colorBackground">#000000</item>
-        <item name="preferenceBackgroundColor">#1A1A1A</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="preferenceBackgroundColor">@color/preferenceBackgroundDarkHard</item>
     </style>
 
     <style name="Theme.Oneplus.Dark.Medium" parent="Theme.Oneplus.Dark.NoActionBar">
-        <item name="android:windowBackground">#171717</item>
-        <item name="android:colorBackground">#171717</item>
-        <item name="preferenceBackgroundColor">#2F2F2F</item>
+        <item name="android:windowBackground">@color/windowBackgroundDarkMedium</item>
+        <item name="android:colorBackground">@color/colorBackgroundDarkMedium</item>
+        <item name="preferenceBackgroundColor">@color/preferenceBackgroundDarkMedium</item>
     </style>
 
     <style name="Theme.Oneplus.Dark.Soft" parent="Theme.Oneplus.Dark.NoActionBar">
-        <item name="android:windowBackground">#303030</item>
-        <item name="android:colorBackground">#303030</item>
-        <item name="preferenceBackgroundColor">#454545</item>
+        <item name="android:windowBackground">@color/windowBackgroundDarkSoft</item>
+        <item name="android:colorBackground">@color/colorBackgroundDarkSoft</item>
+        <item name="preferenceBackgroundColor">@color/preferenceBackgroundDarkSoft</item>
     </style>
 
 </resources>

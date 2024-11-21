@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Backgrounds -->
+    <color name="colorBackground">#000000</color>
+    <color name="windowBackground">#000000</color>
+
     <!-- Text -->
     <color name="textColorPrimary">#E9E9E9</color>
     <color name="textColorPrimaryDisabled">#4dffffff</color>

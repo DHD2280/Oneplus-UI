@@ -6,9 +6,8 @@
         <item name="android:statusBarColor">?attr/backgroundColor</item>
         <item name="android:windowLightStatusBar">true</item>
         <!-- Background color. -->
-        <!-- Background color. -->
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="android:colorBackground">@android:color/white</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
         <!-- Preference title -->
         <item name="android:textAppearanceListItem">?textAppearanceSubtitle1</item>
 
