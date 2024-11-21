@@ -1,3 +1,6 @@
+**1.3.7**  
+- Improved colors  
+  
 **1.3.6**  
 - OplusPreference layouts improve paddings  
 - OplusPreferenceCategory improve paddings  
