@@ -20,10 +20,11 @@ import it.dhd.oneplusui.R;
 public class SummaryAdapter extends BaseAdapter {
 
     private static final int LAYOUT = R.layout.oplus_alert_dialog_summary_item;
-    private Context mContext;
-    private CharSequence[] mItems;
-    private CharSequence[] mSummaries;
-    private int[] mTextColor;
+    private final Context mContext;
+    private final CharSequence[] mItems;
+    private final CharSequence[] mSummaries;
+    private final int[] mTextColor;
+    private boolean mTextCentered = true;
 
     public static class ViewHolder {
         public ImageView mDivider;
@@ -137,11 +138,13 @@ public class SummaryAdapter extends BaseAdapter {
         } else {
             viewHolder.mSummaryView.setVisibility(View.VISIBLE);
             viewHolder.mSummaryView.setText(summary);
+            viewHolder.mSummaryView.setTextAlignment(mTextCentered ? View.TEXT_ALIGNMENT_CENTER : View.TEXT_ALIGNMENT_VIEW_START);
         }
         resetPadding(viewHolder.mMainLayout);
         if (mTextColor != null && position >= 0 && position < mTextColor.length) {
             viewHolder.mItemView.setTextColor(mTextColor[position]);
         }
+        viewHolder.mItemView.setTextAlignment(mTextCentered ? View.TEXT_ALIGNMENT_CENTER : View.TEXT_ALIGNMENT_VIEW_START);
         if (viewHolder.mDivider != null) {
             if (getCount() > 1 && position != getCount() - 1) {
                 viewHolder.mDivider.setVisibility(View.VISIBLE);
@@ -151,6 +154,10 @@ public class SummaryAdapter extends BaseAdapter {
         }
         view.requestLayout();
         return view;
+    }
+
+    public void setTextCentered(boolean centered) {
+        mTextCentered = centered;
     }
 
     @Override

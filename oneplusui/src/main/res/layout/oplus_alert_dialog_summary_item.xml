@@ -22,7 +22,7 @@
             android:id="@android:id/text1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:textAlignment="center"
             android:textAppearance="@style/OplusTextAppearanceHeadline6"
             android:textColor="@color/text_color_primary" />
 
@@ -30,7 +30,8 @@
             android:id="@+id/summary_text2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="top|center_horizontal"
+            android:gravity="top"
+            android:textAlignment="center"
             android:lineSpacingMultiplier="1.15"
             android:paddingTop="@dimen/oplus_option_dialog_listview_text2_padding_top"
             android:textColor="@color/coui_color_secondary_neutral"
