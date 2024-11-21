@@ -17,6 +17,7 @@
         <item name="android:textSize">16sp</item>
         <item name="android:lineSpacingMultiplier">1.05</item>
         <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/text_color_primary</item>
     </style>
 
     <style name="OplusTextAppearanceArticleBody" parent="@style/OplusTextAppearance">
@@ -83,6 +84,7 @@
     <style name="AppTheme.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
         <item name="android:dialogCornerRadius">32dp</item>
         <item name="android:background">@color/oplusColorSurfaces</item>
+        <item name="android:textColor">@color/text_color_primary</item>
         <item name="android:backgroundDimAmount">0.40</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Title.Text</item>
     </style>
@@ -125,10 +127,20 @@
     </style>
 
     <style name="Widget.App.PopupMenu" parent="Widget.Material3.PopupMenu">
+        <item name="textAppearanceLargePopupMenu">@style/TextAppearance.App.BodyLarge</item>
+        <item name="textAppearanceSmallPopupMenu">@style/TextAppearance.App.BodySmall</item>
         <item name="popupMenuBackground">@drawable/custom_popup_background</item>
         <item name="android:textColor">@color/text_color_primary</item>
         <item name="divider">@color/colorDivider</item>
         <item name="android:dividerHeight">@dimen/list_divider_height</item>
+    </style>
+
+    <style name="TextAppearance.App.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/text_color_primary</item>
+    </style>
+
+    <style name="TextAppearance.App.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/text_color_primary</item>
     </style>
 
     <style name="Widget.CompoundButton.RadioButton" parent="@style/Widget.AppCompat.CompoundButton.RadioButton">
