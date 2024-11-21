@@ -1,3 +1,6 @@
+**1.3.8**  
+- SummaryAdapter: added an option to center text views  
+  
 **1.3.7**  
 - Improved colors  
   
