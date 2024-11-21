@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -24,18 +26,16 @@ import it.dhd.oneplusui.R;
 public class ChoiceListAdapter extends BaseAdapter {
 
     private boolean[] mCheckBoxStates;
-    private Context mContext;
+    private final Context mContext;
     private boolean[] mDisableStatus;
     private int[] mIcons;
-    private boolean mIsBottom;
-    private boolean mIsMultiChoice;
-    private boolean mIsTop;
-    private CharSequence[] mItems;
-    private int mLayoutResId;
+    private final int mLayoutResId;
+    private final CharSequence[] mItems;
+    private final CharSequence[] mSummaries;
+    private final boolean mIsMultiChoice;
+    private final int mMaxCheckedNum;
     private MaxCheckedListener mMaxCheckedListener;
-    private int mMaxCheckedNum;
     private MultiChoiceItemClickListener mMultiChoiceItemClickListener;
-    private CharSequence[] mSummaries;
 
     public interface MaxCheckedListener {
         void maxCheckedNotice(int i);
@@ -56,8 +56,33 @@ public class ChoiceListAdapter extends BaseAdapter {
         public LinearLayout textLayout;
     }
 
-    public ChoiceListAdapter(Context context, int i, CharSequence[] charSequenceArr, CharSequence[] charSequenceArr2, boolean[] zArr, boolean isMultiSelect) {
-        this(context, i, charSequenceArr, charSequenceArr2, zArr, null, isMultiSelect);
+    public ChoiceListAdapter(Context context, @LayoutRes int layoutResource, CharSequence[] items, CharSequence[] summaries, boolean[] checkboxStates, boolean isMultiSelect) {
+        this(context, layoutResource, items, summaries, checkboxStates, null, isMultiSelect);
+    }
+
+    public ChoiceListAdapter(Context context, @LayoutRes int layoutResource, CharSequence[] items, CharSequence[] summaries) {
+        this(context, layoutResource, items, summaries, null, false);
+    }
+
+    public ChoiceListAdapter(Context context, @LayoutRes int layoutResource, CharSequence[] charSequenceArr, CharSequence[] charSequenceArr2, boolean[] checkboxStates, boolean[] checkboxDisabled, boolean isMultiSelect) {
+        this(context, layoutResource, charSequenceArr, charSequenceArr2, checkboxStates, checkboxDisabled, isMultiSelect, 0);
+    }
+
+    public ChoiceListAdapter(Context context, @LayoutRes int layoutResource, CharSequence[] items, CharSequence[] summaries, boolean[] checkboxStates, boolean[] checkboxDisabled, boolean isMultiSelect, int maxCheckedItems) {
+        this.mContext = context;
+        this.mLayoutResId = layoutResource;
+        this.mItems = items;
+        this.mSummaries = summaries;
+        this.mIsMultiChoice = isMultiSelect;
+        this.mCheckBoxStates = new boolean[items.length];
+        if (checkboxStates != null) {
+            initCheckboxStates(checkboxStates);
+        }
+        this.mDisableStatus = new boolean[this.mItems.length];
+        if (checkboxDisabled != null) {
+            initCheckboxStatesDisable(checkboxDisabled);
+        }
+        this.mMaxCheckedNum = maxCheckedItems;
     }
 
     public int getCheckedNum() {
@@ -135,7 +160,7 @@ public class ChoiceListAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int i, View view, ViewGroup viewGroup) {
+    public View getView(final int position, View view, ViewGroup viewGroup) {
         View view2;
         ViewHolder viewHolder;
         if (view == null) {
@@ -154,7 +179,7 @@ public class ChoiceListAdapter extends BaseAdapter {
                 viewHolder.radioButton = view2.findViewById(R.id.radio_button);
             }
 
-            if (this.mDisableStatus[i]) {
+            if (this.mDisableStatus[position]) {
                 viewHolder.itemText.setEnabled(false);
                 viewHolder.summaryText.setEnabled(false);
                 if (this.mIsMultiChoice) {
@@ -171,28 +196,28 @@ public class ChoiceListAdapter extends BaseAdapter {
         }
 
         if (this.mIsMultiChoice) {
-            viewHolder.checkBox.setChecked(this.mCheckBoxStates[i]);
+            viewHolder.checkBox.setChecked(this.mCheckBoxStates[position]);
             view2.setOnClickListener(v -> {
                 boolean newCheckedState = !viewHolder.checkBox.isChecked();
                 viewHolder.checkBox.setChecked(newCheckedState);
-                this.mCheckBoxStates[i] = newCheckedState;
+                this.mCheckBoxStates[position] = newCheckedState;
 
                 if (newCheckedState && this.mMaxCheckedNum > 0 && getCheckedNum() > this.mMaxCheckedNum) {
                     viewHolder.checkBox.setChecked(false);
-                    this.mCheckBoxStates[i] = false;
+                    this.mCheckBoxStates[position] = false;
                     if (this.mMaxCheckedListener != null) {
                         this.mMaxCheckedListener.maxCheckedNotice(this.mMaxCheckedNum);
                     }
                 } else if (this.mMultiChoiceItemClickListener != null) {
-                    this.mMultiChoiceItemClickListener.onClick(i, newCheckedState);
+                    this.mMultiChoiceItemClickListener.onClick(position, newCheckedState);
                 }
             });
         } else {
-            viewHolder.radioButton.setChecked(this.mCheckBoxStates[i]);
+            viewHolder.radioButton.setChecked(this.mCheckBoxStates[position]);
         }
 
-        CharSequence item = getItem(i);
-        CharSequence summary = getSummary(i);
+        CharSequence item = getItem(position);
+        CharSequence summary = getSummary(position);
         viewHolder.itemText.setText(item);
         if (TextUtils.isEmpty(summary)) {
             viewHolder.summaryText.setVisibility(View.GONE);
@@ -202,11 +227,11 @@ public class ChoiceListAdapter extends BaseAdapter {
         }
 
         if (viewHolder.divider != null) {
-            viewHolder.divider.setVisibility((getCount() != 1 && i != getCount() - 1) ? View.VISIBLE : View.GONE);
+            viewHolder.divider.setVisibility((getCount() != 1 && position != getCount() - 1) ? View.VISIBLE : View.GONE);
         }
 
         if (mIcons != null) {
-            Drawable drawable = AppCompatResources.getDrawable(mContext, mIcons[i]);
+            Drawable drawable = AppCompatResources.getDrawable(mContext, mIcons[position]);
             if (drawable != null) {
                 viewHolder.icon.setVisibility(View.VISIBLE);
                 viewHolder.icon.setImageDrawable(drawable);
@@ -241,24 +266,12 @@ public class ChoiceListAdapter extends BaseAdapter {
         this.mIcons = icons;
     }
 
-    public void setIsBottom(boolean isBottom) {
-        this.mIsBottom = isBottom;
-    }
-
-    public void setIsTop(boolean isTop) {
-        this.mIsTop = isTop;
-    }
-
     public void setMaxCheckedListener(MaxCheckedListener maxCheckedListener) {
         this.mMaxCheckedListener = maxCheckedListener;
     }
 
     public void setMultiChoiceItemClickListener(MultiChoiceItemClickListener multiChoiceItemClickListener) {
         this.mMultiChoiceItemClickListener = multiChoiceItemClickListener;
-    }
-
-    public ChoiceListAdapter(Context context, int i, CharSequence[] charSequenceArr, CharSequence[] charSequenceArr2, boolean[] zArr, boolean[] zArr2, boolean z) {
-        this(context, i, charSequenceArr, charSequenceArr2, zArr, zArr2, z, 0);
     }
 
     @Override
@@ -270,26 +283,4 @@ public class ChoiceListAdapter extends BaseAdapter {
         return charSequenceArr[i];
     }
 
-    public ChoiceListAdapter(Context context, int i, CharSequence[] charSequenceArr, CharSequence[] charSequenceArr2, boolean[] zArr, boolean[] zArr2, boolean isMultiSelect, int maxCheckedItems) {
-        this.mIsTop = false;
-        this.mIsBottom = false;
-        this.mContext = context;
-        this.mLayoutResId = i;
-        this.mItems = charSequenceArr;
-        this.mSummaries = charSequenceArr2;
-        this.mIsMultiChoice = isMultiSelect;
-        this.mCheckBoxStates = new boolean[charSequenceArr.length];
-        if (zArr != null) {
-            initCheckboxStates(zArr);
-        }
-        this.mDisableStatus = new boolean[this.mItems.length];
-        if (zArr2 != null) {
-            initCheckboxStatesDisable(zArr2);
-        }
-        this.mMaxCheckedNum = maxCheckedItems;
-    }
-
-    public ChoiceListAdapter(Context context, int i, CharSequence[] charSequenceArr, CharSequence[] charSequenceArr2) {
-        this(context, i, charSequenceArr, charSequenceArr2, null, false);
-    }
 }
