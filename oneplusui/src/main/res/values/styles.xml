@@ -177,6 +177,11 @@
         <item name="backgroundTint">@color/oplusColorSurfaces</item>
     </style>
 
+    <!-- AppBarLayout -->
+    <style name="Widget.App.AppBarLayout" parent="Widget.Material3.AppBarLayout">
+        <item name="background">@drawable/top_appbar_bg</item>
+    </style>
+
     <!-- Toolbar -->
     <style name="Widget.App.Toolbar" parent="Widget.Material3.Toolbar">
         <item name="colorOnSurface">@color/text_color_primary</item>

@@ -32,6 +32,9 @@
         <!-- Slider -->
         <item name="sliderStyle">@style/Widget.App.Slider</item>
 
+        <!-- AppBarLayout -->
+        <item name="appBarLayoutStyle">@style/Widget.App.AppBarLayout</item>
+
         <!-- Toolbar -->
         <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
 
