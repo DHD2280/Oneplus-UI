@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewOutlineProvider;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -183,7 +184,6 @@ public class SimpleMenuPopupWindow extends PopupWindow {
             setMode(DIALOG);
         } else if (measuredWidth != 0) {
             setMode(POPUP_MENU);
-
             mMeasuredWidth = measuredWidth;
         }
 
@@ -247,7 +247,7 @@ public class SimpleMenuPopupWindow extends PopupWindow {
 
         final int anchorTop = anchor.getTop() - container.getPaddingTop();
         final int anchorHeight = anchor.getHeight();
-        final int measuredHeight = itemHeight * count + listPadding[POPUP_MENU][VERTICAL] * 2;
+        final int measuredHeight = itemHeight * count + (listPadding[POPUP_MENU][VERTICAL] * (count+1));
 
         int[] location = new int[2];
         container.getLocationInWindow(location);
@@ -267,6 +267,8 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         int centerX = rtl
                 ? location[0] + extraMargin - width + listPadding[POPUP_MENU][HORIZONTAL]
                 : location[0] + extraMargin + listPadding[POPUP_MENU][HORIZONTAL];
+
+        Log.d("SimpleMenuPopupWindow", "measuredHeight > containerHeight: " +(measuredHeight > containerHeight));
 
         if (measuredHeight > containerHeight) {
             y = containerTopInWindow + margin[POPUP_MENU][VERTICAL];
@@ -341,22 +343,26 @@ public class SimpleMenuPopupWindow extends PopupWindow {
         maxWidth = Math.min(unit * maxUnits, maxWidth);
 
         Rect bounds = new Rect();
-        TextView view = LayoutInflater.from(context).inflate(R.layout.oplus_menu_item, null, false).findViewById(android.R.id.text1);
 
-        // Calculate width based on the longest entry
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View menuItemView = inflater.inflate(R.layout.oplus_menu_item, null, false);
+        ImageView checkmark = menuItemView.findViewById(R.id.check_mark);
+
         for (CharSequence entry : entries) {
-            view.setText(entry);
-            view.measure(0, 0);
-            bounds.set(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-            width = Math.max(width, bounds.width());
+            TextView textView = menuItemView.findViewById(android.R.id.text1);
+            textView.setText(entry);
+            menuItemView.measure(0, 0);
+            bounds.set(0, 0, menuItemView.getMeasuredWidth(), menuItemView.getMeasuredHeight());
+            int measuredWidth = bounds.width() + checkmark.getMeasuredWidth();
+            width = Math.max(width, measuredWidth);
         }
 
         // Ensure width is not smaller than a certain threshold (e.g., 200dp)
-        int minWidth = (int) (context.getResources().getDisplayMetrics().density * 200);  // 200dp minimum width
+        int minWidth = (int) (context.getResources().getDisplayMetrics().density * 200);
         width = Math.max(width, minWidth);
 
         // Ensure the width does not exceed the max width
-        return Math.min(width, maxWidth);
+        return width;//Math.min(width, maxWidth);
     }
 
     @Override

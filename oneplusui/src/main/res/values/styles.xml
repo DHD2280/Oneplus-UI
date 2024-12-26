@@ -263,7 +263,7 @@
         <item name="listItemPadding">@dimen/preference_card_margin_horizontal</item>
         <item name="listElevation">8dp</item>
 
-        <item name="dialogMarginHorizontal">16dp</item>
+        <item name="dialogMarginHorizontal">12dp</item>
         <item name="dialogMarginVertical">24dp</item>
         <item name="dialogItemPadding">24dp</item>
         <item name="dialogElevation">24dp</item>

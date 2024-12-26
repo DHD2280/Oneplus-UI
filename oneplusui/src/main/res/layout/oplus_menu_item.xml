@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/oplus_alert_dialog_item_background"
-    android:layoutDirection="ltr"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/oplus_alert_dialog_item_background"
+    android:layoutDirection="ltr"
     android:orientation="horizontal">
 
     <LinearLayout
@@ -22,13 +22,15 @@
         <TextView
             android:id="@android:id/text1"
             android:layout_width="match_parent"
-            android:ellipsize="end"
-            android:maxLines="2"
-            android:layout_gravity="start"
             android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="none"
+            android:maxLines="1"
+            android:paddingHorizontal="12dp"
+            android:singleLine="true"
             android:textAppearance="@style/OplusTextAppearanceHeadline6"
             android:textColor="@color/text_color_primary"
-            tools:text="Title" />
+            tools:text="Material Rounded" />
 
         <!-- Second TextView: Summary -->
         <TextView
@@ -51,6 +53,8 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:src="@drawable/check_mark" />
+        android:importantForAccessibility="no"
+        android:src="@drawable/check_mark"
+        android:visibility="visible" />
 
 </LinearLayout>
