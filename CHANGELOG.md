@@ -1,3 +1,7 @@
+**1.3.9**  
+- Set AppBarLayout Style to improve toolbar color  
+- Improve Alert Dialog message style  
+  
 **1.3.8**  
 - SummaryAdapter: added an option to center text views  
   
