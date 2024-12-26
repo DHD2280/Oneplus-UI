@@ -1,3 +1,6 @@
+**1.3.10**  
+- Improved Menu PopUp  
+  
 **1.3.9**  
 - Set AppBarLayout Style to improve toolbar color  
 - Improve Alert Dialog message style  
