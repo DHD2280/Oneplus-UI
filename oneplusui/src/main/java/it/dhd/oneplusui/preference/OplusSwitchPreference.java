@@ -1,7 +1,11 @@
 package it.dhd.oneplusui.preference;
 
+import static android.os.VibrationEffect.EFFECT_HEAVY_CLICK;
+
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -95,6 +99,12 @@ public class OplusSwitchPreference extends SwitchPreferenceCompat implements Opl
     @Override
     public int getDividerStartInset() {
         return this.mDividerDefaultHorizontalPadding;
+    }
+
+    @Override
+    public boolean callChangeListener(Object newValue) {
+        getContext().getSystemService(Vibrator.class).vibrate(VibrationEffect.createPredefined(EFFECT_HEAVY_CLICK));
+        return super.callChangeListener(newValue);
     }
 
 }
