@@ -31,11 +31,11 @@ public class OplusListPreferenceDialogFragment extends ListPreferenceDialogFragm
 
     @NonNull
     public static OplusListPreferenceDialogFragment newInstance(String key) {
-        OplusListPreferenceDialogFragment cOUIListPreferenceDialogFragment = new OplusListPreferenceDialogFragment();
+        OplusListPreferenceDialogFragment oplusListPreferenceDialogFragment = new OplusListPreferenceDialogFragment();
         Bundle bundle = new Bundle(1);
         bundle.putString("key", key);
-        cOUIListPreferenceDialogFragment.setArguments(bundle);
-        return cOUIListPreferenceDialogFragment;
+        oplusListPreferenceDialogFragment.setArguments(bundle);
+        return oplusListPreferenceDialogFragment;
     }
 
     @Override

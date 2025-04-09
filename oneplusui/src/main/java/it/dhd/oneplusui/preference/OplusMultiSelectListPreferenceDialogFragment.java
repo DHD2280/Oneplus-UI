@@ -1,8 +1,6 @@
 package it.dhd.oneplusui.preference;
 
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.icu.text.LocaleDisplayNames;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -39,11 +37,11 @@ public class OplusMultiSelectListPreferenceDialogFragment extends MultiSelectLis
 
     @NonNull
     public static OplusMultiSelectListPreferenceDialogFragment newInstance(String key) {
-        OplusMultiSelectListPreferenceDialogFragment cOUIListPreferenceDialogFragment = new OplusMultiSelectListPreferenceDialogFragment();
+        OplusMultiSelectListPreferenceDialogFragment multiSelectListPreferenceDialogFragment = new OplusMultiSelectListPreferenceDialogFragment();
         Bundle bundle = new Bundle(1);
         bundle.putString("key", key);
-        cOUIListPreferenceDialogFragment.setArguments(bundle);
-        return cOUIListPreferenceDialogFragment;
+        multiSelectListPreferenceDialogFragment.setArguments(bundle);
+        return multiSelectListPreferenceDialogFragment;
     }
 
     @Override
