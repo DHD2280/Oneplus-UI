@@ -3,6 +3,7 @@ package it.dhd.oneplusui.appcompat.cardlist;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -19,6 +20,7 @@ public class CardListSelectedItemLayout extends LinearLayout {
     private int mInitPaddingTop;
     private int mMinimumHeight;
     private boolean mTopRounded;
+    private boolean mConsumeDispatchingEventForState;
 
     public interface ConfigurationChangedListener {
         void configurationChanged(Configuration configuration);
@@ -26,6 +28,23 @@ public class CardListSelectedItemLayout extends LinearLayout {
 
     public CardListSelectedItemLayout(Context context) {
         this(context, null);
+    }
+
+    public CardListSelectedItemLayout(Context context, @Nullable AttributeSet attributeSet) {
+        this(context, attributeSet, 0);
+    }
+
+    public CardListSelectedItemLayout(Context context, @Nullable AttributeSet attributeSet, int i) {
+        this(context, attributeSet, i, 0);
+    }
+
+    public CardListSelectedItemLayout(Context context, AttributeSet attributeSet, int i, int i2) {
+        super(context, attributeSet, i, i2);
+        this.mTopRounded = true;
+        this.mBottomRounded = true;
+        this.HEAD_OR_TAIL_PADDING = 2;
+        this.setForceDarkAllowed(false);
+        init(getContext());
     }
 
     private void init(Context context) {
@@ -100,23 +119,6 @@ public class CardListSelectedItemLayout extends LinearLayout {
         } else {
             setBackgroundResource(R.drawable.preference_background_middle);
         }
-    }
-
-    public CardListSelectedItemLayout(Context context, @Nullable AttributeSet attributeSet) {
-        this(context, attributeSet, 0);
-    }
-
-    public CardListSelectedItemLayout(Context context, @Nullable AttributeSet attributeSet, int i) {
-        this(context, attributeSet, i, 0);
-    }
-
-    public CardListSelectedItemLayout(Context context, AttributeSet attributeSet, int i, int i2) {
-        super(context, attributeSet, i, i2);
-        this.mTopRounded = true;
-        this.mBottomRounded = true;
-        this.HEAD_OR_TAIL_PADDING = 2;
-        this.setForceDarkAllowed(false);
-        init(getContext());
     }
 
 }
