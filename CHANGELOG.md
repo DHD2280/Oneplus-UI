@@ -1,3 +1,6 @@
+**1.3.11**  
+- Improved Switch disabled color  
+  
 **1.3.10**  
 - Improved Menu PopUp  
   
