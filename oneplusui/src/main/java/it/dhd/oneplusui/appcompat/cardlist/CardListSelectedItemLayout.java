@@ -3,11 +3,9 @@ package it.dhd.oneplusui.appcompat.cardlist;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RestrictTo;
 
 import it.dhd.oneplusui.R;
 
@@ -20,7 +18,6 @@ public class CardListSelectedItemLayout extends LinearLayout {
     private int mInitPaddingTop;
     private int mMinimumHeight;
     private boolean mTopRounded;
-    private boolean mConsumeDispatchingEventForState;
 
     public interface ConfigurationChangedListener {
         void configurationChanged(Configuration configuration);
