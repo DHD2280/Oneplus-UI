@@ -34,22 +34,21 @@ public class OplusRecyclerView extends RecyclerView {
         }
 
         private void init(Context context) {
-            this.mDividerColor = ContextCompat.getColor(context, R.color.colorDivider);
-            this.mDividerStrokeWidth = context.getResources().getDimensionPixelOffset(R.dimen.list_divider_height);
-            Paint paint = new Paint(1);
-            this.mPaint = paint;
-            paint.setColor(this.mDividerColor);
+            mDividerColor = ContextCompat.getColor(context, R.color.colorDivider);
+            mDividerStrokeWidth = context.getResources().getDimensionPixelOffset(R.dimen.list_divider_height);
+            mPaint = new Paint(1);
+            mPaint.setColor(mDividerColor);
         }
 
         public void drawDividerOuterBackground(Canvas canvas, RecyclerView recyclerView, View view) {
         }
 
         public Drawable getDivider() {
-            return this.mDivider;
+            return mDivider;
         }
 
         public int getDividerColor() {
-            return this.mDividerColor;
+            return mDividerColor;
         }
 
         public int getDividerInsetEnd(RecyclerView recyclerView, int i) {
@@ -61,11 +60,11 @@ public class OplusRecyclerView extends RecyclerView {
         }
 
         public int getDividerStrokeWidth() {
-            return this.mDividerStrokeWidth;
+            return mDividerStrokeWidth;
         }
 
         public Paint getPaint() {
-            return this.mPaint;
+            return mPaint;
         }
 
         @Override
@@ -80,7 +79,7 @@ public class OplusRecyclerView extends RecyclerView {
                     drawDividerOuterBackground(canvas, recyclerView, childAt);
                     isRtl = childAt.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
                     int y = (int) (childAt.getY() + childAt.getHeight());
-                    int max = Math.max(1, this.mDividerStrokeWidth) + y;
+                    int max = Math.max(1, mDividerStrokeWidth) + y;
                     float x = childAt.getX();
                     if (isRtl) {
                         dividerInsetStart = getDividerInsetEnd(recyclerView, i);
@@ -95,35 +94,35 @@ public class OplusRecyclerView extends RecyclerView {
                         dividerInsetEnd = getDividerInsetEnd(recyclerView, i);
                     }
                     int i3 = (int) (x2 - dividerInsetEnd);
-                    Drawable drawable = this.mDivider;
+                    Drawable drawable = mDivider;
                     if (drawable == null) {
-                        canvas.drawRect(i2, y, i3, max, this.mPaint);
+                        canvas.drawRect(i2, y, i3, max, mPaint);
                     } else {
                         drawable.setBounds(i2, y, i3, max);
-                        this.mDivider.draw(canvas);
+                        mDivider.draw(canvas);
                     }
                 }
             }
         }
 
         public void setDivider(RecyclerView recyclerView, Drawable drawable) {
-            this.mDivider = drawable;
+            mDivider = drawable;
             if (recyclerView != null) {
                 recyclerView.invalidateItemDecorations();
             }
         }
 
         public void setDividerColor(RecyclerView recyclerView, int i) {
-            this.mDividerColor = i;
-            this.mPaint.setColor(i);
+            mDividerColor = i;
+            mPaint.setColor(i);
             if (recyclerView != null) {
                 recyclerView.invalidateItemDecorations();
             }
         }
 
         public void setDividerStrokeWidth(RecyclerView recyclerView, int i) {
-            this.mDividerStrokeWidth = i;
-            this.mPaint.setStrokeWidth(i);
+            mDividerStrokeWidth = i;
+            mPaint.setStrokeWidth(i);
             if (recyclerView != null) {
                 recyclerView.invalidateItemDecorations();
             }
@@ -142,8 +141,8 @@ public class OplusRecyclerView extends RecyclerView {
 
         public OplusRecyclerViewItemDecoration(Context context) {
             super(context);
-            this.mItemLocation = new int[2];
-            this.mChildLocation = new int[2];
+            mItemLocation = new int[2];
+            mChildLocation = new int[2];
         }
 
         @Override
@@ -157,14 +156,14 @@ public class OplusRecyclerView extends RecyclerView {
                     boolean isRtl = childAt.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
                     View dividerEndAlignView = oplusDividerDecorationInterface.getDividerEndAlignView();
                     if (dividerEndAlignView != null) {
-                        childAt.getLocationInWindow(this.mItemLocation);
-                        dividerEndAlignView.getLocationInWindow(this.mChildLocation);
+                        childAt.getLocationInWindow(mItemLocation);
+                        dividerEndAlignView.getLocationInWindow(mChildLocation);
                         if (isRtl) {
-                            width = this.mChildLocation[0] + dividerEndAlignView.getPaddingEnd();
-                            width2 = this.mItemLocation[0];
+                            width = mChildLocation[0] + dividerEndAlignView.getPaddingEnd();
+                            width2 = mItemLocation[0];
                         } else {
-                            width = this.mItemLocation[0] + childAt.getWidth();
-                            width2 = (this.mChildLocation[0] + dividerEndAlignView.getWidth()) - dividerEndAlignView.getPaddingEnd();
+                            width = mItemLocation[0] + childAt.getWidth();
+                            width2 = (mChildLocation[0] + dividerEndAlignView.getWidth()) - dividerEndAlignView.getPaddingEnd();
                         }
                         return width - width2;
                     }
@@ -185,14 +184,14 @@ public class OplusRecyclerView extends RecyclerView {
                     boolean isRtl = childAt.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
                     View dividerStartAlignView = oplusDividerDecorationInterface.getDividerStartAlignView();
                     if (dividerStartAlignView != null) {
-                        childAt.getLocationInWindow(this.mItemLocation);
-                        dividerStartAlignView.getLocationInWindow(this.mChildLocation);
+                        childAt.getLocationInWindow(mItemLocation);
+                        dividerStartAlignView.getLocationInWindow(mChildLocation);
                         if (isRtl) {
-                            paddingStart = this.mItemLocation[0] + childAt.getWidth();
-                            i2 = (this.mChildLocation[0] + dividerStartAlignView.getWidth()) - dividerStartAlignView.getPaddingStart();
+                            paddingStart = mItemLocation[0] + childAt.getWidth();
+                            i2 = (mChildLocation[0] + dividerStartAlignView.getWidth()) - dividerStartAlignView.getPaddingStart();
                         } else {
-                            paddingStart = this.mChildLocation[0] + dividerStartAlignView.getPaddingStart();
-                            i2 = this.mItemLocation[0];
+                            paddingStart = mChildLocation[0] + dividerStartAlignView.getPaddingStart();
+                            i2 = mItemLocation[0];
                         }
                         return paddingStart - i2;
                     }
@@ -224,6 +223,7 @@ public class OplusRecyclerView extends RecyclerView {
         /**
          * Draw the divider
          * Use your custom logic to draw the divider
+         *
          * @return true if the divider should be drawn
          */
         default boolean drawDivider() {
@@ -232,6 +232,7 @@ public class OplusRecyclerView extends RecyclerView {
 
         /**
          * Return the view to align the end of the divider
+         *
          * @return the view to align the end of the divider
          */
         default View getDividerEndAlignView() {
@@ -240,6 +241,7 @@ public class OplusRecyclerView extends RecyclerView {
 
         /**
          * Return the inset for the end of the divider
+         *
          * @return the end padding
          */
         default int getDividerEndInset() {
@@ -248,6 +250,7 @@ public class OplusRecyclerView extends RecyclerView {
 
         /**
          * Return the view to align the start of the divider
+         *
          * @return the view to align the start of the divider
          */
         default View getDividerStartAlignView() {
@@ -256,6 +259,7 @@ public class OplusRecyclerView extends RecyclerView {
 
         /**
          * Return the inset for the start of the divider
+         *
          * @return the start padding
          */
         default int getDividerStartInset() {
