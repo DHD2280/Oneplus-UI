@@ -8,7 +8,6 @@ package it.dhd.oneplusui.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.JsonReader;
 import android.util.JsonWriter;
@@ -17,17 +16,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.RangeSlider;
 
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +36,8 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import it.dhd.oneplusui.R;
+import it.dhd.oneplusui.appcompat.seekbar.LabelFormatter;
+import it.dhd.oneplusui.appcompat.seekbar.OplusSlider;
 
 
 public class OplusSliderPreference extends OplusPreference {
@@ -47,28 +48,34 @@ public class OplusSliderPreference extends OplusPreference {
     private final float tickInterval;
     private final boolean showResetButton;
     public final List<Float> defaultValue = new ArrayList<>();
-    public RangeSlider slider;
+    public OplusSlider mOplusSlider;
     private MaterialButton mResetButton;
-    @SuppressWarnings("unused")
-    private TextView sliderValue;
     int valueCount;
     private String valueFormat;
     private final float outputScale;
-    private final boolean isDecimalFormat;
+    private boolean isDecimalFormat;
     private String decimalFormat = "#.#";
+    boolean updateConstantly;
 
-    boolean updateConstantly, showValueLabel;
 
-    @SuppressWarnings("unused")
-    public OplusSliderPreference(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-        setSelectable(false);
+    public OplusSliderPreference(@NonNull Context context) {
+        this(context, null);
     }
 
-    public OplusSliderPreference(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    public OplusSliderPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, R.attr.oplusSliderPreferenceStyle);
+    }
+
+    public OplusSliderPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+                                 int defStyleAttr) {
+        this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_Slider);
+    }
+
+    public OplusSliderPreference(
+            @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
+            int defStyleRes) {
+        super(context, attrs, defStyleAttr, defStyleRes);
         setSelectable(false);
-        setLayoutResource(R.layout.oplus_preference_slider);
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.OplusSliderPreference);
         updateConstantly = a.getBoolean(R.styleable.OplusSliderPreference_updatesContinuously, false);
@@ -77,10 +84,10 @@ public class OplusSliderPreference extends OplusPreference {
         valueTo = a.getFloat(R.styleable.OplusSliderPreference_maxVal, 100f);
         tickInterval = a.getFloat(R.styleable.OplusSliderPreference_tickInterval, 1f);
         showResetButton = a.getBoolean(R.styleable.OplusSliderPreference_showResetButton, true);
-        showValueLabel = a.getBoolean(R.styleable.OplusSliderPreference_showValueLabel, true);
         valueFormat = a.getString(R.styleable.OplusSliderPreference_valueFormat);
         isDecimalFormat = a.getBoolean(R.styleable.OplusSliderPreference_isDecimalFormat, false);
         if (a.hasValue(R.styleable.OplusSliderPreference_decimalFormat)) {
+            isDecimalFormat = true;
             decimalFormat = a.getString(R.styleable.OplusSliderPreference_decimalFormat);
         } else {
             decimalFormat = "#.#"; // Default decimal format
@@ -106,7 +113,7 @@ public class OplusSliderPreference extends OplusPreference {
     }
 
     public void savePrefs() {
-        setValues(getSharedPreferences(), getKey(), slider.getValues());
+        setValues(getSharedPreferences(), getKey(), mOplusSlider.getValues());
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -139,11 +146,11 @@ public class OplusSliderPreference extends OplusPreference {
         boolean needsCommit = false;
 
         List<Float> values = getValues(getSharedPreferences(), getKey(), valueFrom);
-        BigDecimal step = new BigDecimal(String.valueOf(slider.getStepSize())); //float and double are not accurate when it comes to decimal points
+        BigDecimal step = new BigDecimal(String.valueOf(mOplusSlider.getStepSize())); //float and double are not accurate when it comes to decimal points
 
         for (int i = 0; i < values.size(); i++) {
-            BigDecimal round = new BigDecimal(Math.round(values.get(i) / slider.getStepSize()));
-            double v = Math.min(Math.max(step.multiply(round).doubleValue(), slider.getValueFrom()), slider.getValueTo());
+            BigDecimal round = new BigDecimal(Math.round(values.get(i) / mOplusSlider.getStepSize()));
+            double v = Math.min(Math.max(step.multiply(round).doubleValue(), mOplusSlider.getValueFrom()), mOplusSlider.getValueTo());
             if (v != values.get(i)) {
                 values.set(i, (float) v);
                 needsCommit = true;
@@ -163,7 +170,7 @@ public class OplusSliderPreference extends OplusPreference {
         }
 
         try {
-            slider.setValues(values);
+            mOplusSlider.setValues(values);
             if (needsCommit) savePrefs();
         } catch (Throwable t) {
             values.clear();
@@ -171,22 +178,26 @@ public class OplusSliderPreference extends OplusPreference {
     }
 
     RangeSlider.OnChangeListener changeListener = (slider, value, fromUser) -> {
-        if (!getKey().equals(slider.getTag())) return;
 
-        if (updateConstantly && fromUser) {
-            savePrefs();
-        }
     };
 
-    RangeSlider.OnSliderTouchListener sliderTouchListener = new RangeSlider.OnSliderTouchListener() {
+    OplusSlider.OnSliderChangeListener sliderTouchListener = new OplusSlider.OnSliderChangeListener() {
         @Override
-        public void onStartTrackingTouch(@NonNull RangeSlider slider) {
-            slider.setLabelFormatter(labelFormatter);
+        public void onProgressChanged(OplusSlider oplusSlider, boolean fromUser) {
+            if (!getKey().equals(mOplusSlider.getTag())) return;
+
+            if (updateConstantly && fromUser) {
+                savePrefs();
+            }
         }
 
         @Override
-        public void onStopTrackingTouch(@NonNull RangeSlider slider) {
-            if (!getKey().equals(slider.getTag())) return;
+        public void onStartTrackingTouch(OplusSlider oplusSlider) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(OplusSlider oplusSlider) {
+            if (!getKey().equals(mOplusSlider.getTag())) return;
 
             handleResetButton();
 
@@ -201,15 +212,20 @@ public class OplusSliderPreference extends OplusPreference {
         @Override
         public String getFormattedValue(float value) {
             String result;
+            float scaledValue = value / outputScale;
+            DecimalFormat df = new DecimalFormat(decimalFormat);
+            df.setRoundingMode(RoundingMode.HALF_UP);
+            df.setMinimumFractionDigits(decimalFormat.split("\\.")[1].length());
             if (valueFormat != null && (valueFormat.isBlank() || valueFormat.isEmpty())) {
                 result = !isDecimalFormat
-                        ? Integer.toString((int) (slider.getValues().get(0) / outputScale))
-                        : new DecimalFormat(decimalFormat).format(slider.getValues().get(0) / outputScale);
+                        ? Integer.toString((int) scaledValue)
+                        : df.format(scaledValue);
             } else {
                 result = !isDecimalFormat
-                        ? Integer.toString((int) (slider.getValues().get(0) / 1f))
-                        : new DecimalFormat(decimalFormat).format(slider.getValues().get(0) / outputScale);
+                        ? Integer.toString((int) scaledValue)
+                        : df.format(scaledValue);
             }
+
             result += valueFormat;
 
             return result;
@@ -225,19 +241,18 @@ public class OplusSliderPreference extends OplusPreference {
             title.setTextColor(ContextCompat.getColor(getContext(), R.color.textColorPrimary));
         }
 
-        slider = holder.itemView.findViewById(R.id.slider);
-        slider.setTag(getKey());
+        mOplusSlider = holder.itemView.findViewById(R.id.slider);
+        mOplusSlider.setTag(getKey());
 
-        slider.addOnSliderTouchListener(sliderTouchListener);
-        slider.addOnChangeListener(changeListener);
+        mOplusSlider.addOnSliderChangeListener(sliderTouchListener);
 
-        slider.setLabelFormatter(labelFormatter);
+        mOplusSlider.setLabelFormatter(labelFormatter);
 
         mResetButton = holder.itemView.findViewById(R.id.reset_button);
         if (showResetButton) {
             mResetButton.setVisibility(View.VISIBLE);
             mResetButton.setOnClickListener(v -> {
-                slider.setValues(defaultValue);
+                mOplusSlider.setValues(defaultValue);
                 handleResetButton();
                 savePrefs();
             });
@@ -245,11 +260,9 @@ public class OplusSliderPreference extends OplusPreference {
             mResetButton.setVisibility(View.GONE);
         }
 
-        sliderValue = holder.itemView.findViewById(androidx.preference.R.id.seekbar_value);
-
-        slider.setValueFrom(valueFrom);
-        slider.setValueTo(valueTo);
-        slider.setStepSize(tickInterval);
+        mOplusSlider.setValueFrom(valueFrom);
+        mOplusSlider.setValueTo(valueTo);
+        mOplusSlider.setStepSize(tickInterval);
 
         syncState();
 
@@ -258,12 +271,16 @@ public class OplusSliderPreference extends OplusPreference {
 
     public void setMin(float value) {
         valueFrom = value;
-        if (slider != null) slider.setValueFrom(value);
+        if (mOplusSlider != null) mOplusSlider.setValueFrom(value);
     }
 
     public void setMax(float value) {
         valueTo = value;
-        if (slider != null) slider.setValueTo(value);
+        if (mOplusSlider != null) mOplusSlider.setValueTo(value);
+    }
+
+    public OplusSlider getOplusSlider() {
+        return mOplusSlider;
     }
 
     public static List<Float> getValues(SharedPreferences prefs, String key, float defaultValue) {
@@ -318,7 +335,11 @@ public class OplusSliderPreference extends OplusPreference {
 
         if (showResetButton) {
             mResetButton.setVisibility(View.VISIBLE);
-            mResetButton.setEnabled(isEnabled() && !Objects.equals(slider.getValues().get(0), defaultValue.get(0)));
+            if (defaultValue.size() == 2 && mOplusSlider.getValues().size() == 2) {
+                mResetButton.setEnabled(isEnabled() && (!Objects.equals(mOplusSlider.getValues().get(0), defaultValue.get(0)) || !Objects.equals(mOplusSlider.getValues().get(1), defaultValue.get(1))));
+            } else {
+                mResetButton.setEnabled(isEnabled() && !Objects.equals(mOplusSlider.getValues().get(0), defaultValue.get(0)));
+            }
         } else {
             mResetButton.setVisibility(View.GONE);
         }
