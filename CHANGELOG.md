@@ -1,3 +1,6 @@
+**1.4.1**  
+- Fixed OplusSlider preview  
+  
 **1.4.0**  
 - Added custom dialog for EditTextPreference  
 - Added OplusSeekbarPreference and OplusSectionSeekbarPreference  
