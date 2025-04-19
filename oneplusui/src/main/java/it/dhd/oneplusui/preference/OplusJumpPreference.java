@@ -45,10 +45,14 @@ public class OplusJumpPreference extends OplusPreference {
         mJumpText = (TextView) holder.findViewById(R.id.jump_text);
         mJumpView = holder.findViewById(android.R.id.widget_frame);
 
-        if (!TextUtils.isEmpty(mPendingJumpText)) {
-            mJumpText.setText(mPendingJumpText);
-        } else if (mPendingJumpTextRes != 0) {
-            mJumpText.setText(mPendingJumpTextRes);
+        if (mJumpText != null) {
+            if (!TextUtils.isEmpty(mPendingJumpText)) {
+                mJumpText.setText(mPendingJumpText);
+            } else if (mPendingJumpTextRes != 0) {
+                mJumpText.setText(mPendingJumpTextRes);
+            } else {
+                mJumpText.setText("");
+            }
         }
         mJumpView.setVisibility(mJumpVisibility);
     }
@@ -59,9 +63,11 @@ public class OplusJumpPreference extends OplusPreference {
      */
     public void setJumpText(String text) {
         mPendingJumpText = text;
+        mPendingJumpTextRes = 0;
         if (mJumpText != null) {
             mJumpText.setText(text);
         }
+        notifyChanged();
     }
 
     /**
@@ -70,9 +76,11 @@ public class OplusJumpPreference extends OplusPreference {
      */
     public void setJumpText(@StringRes int textRes) {
         mPendingJumpTextRes = textRes;
+        mPendingJumpText = "";
         if (mJumpText != null) {
             mJumpText.setText(textRes);
         }
+        notifyChanged();
     }
 
     /**
