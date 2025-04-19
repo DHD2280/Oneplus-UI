@@ -6,8 +6,10 @@ espressoCore = "3.6.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 preferencex = "1.2.1"
+reboundVersion = "0.3.8"
 
 [libraries]
+facebook-rebound = { module = "com.facebook.rebound:rebound", version.ref = "reboundVersion" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

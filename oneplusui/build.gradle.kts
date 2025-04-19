@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.preferencex)
+    implementation(libs.facebook.rebound)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -55,7 +56,7 @@ publishing {
 
             groupId = "it.dhd"
             artifactId = "oneplusui"
-            version = "1.3.11"
+            version = "1.4.0"
         }
     }
 }
