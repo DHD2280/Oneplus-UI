@@ -98,7 +98,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     private static final int SCALE_DEFORMATION_TIMES = 5;
     private static final float SCALE_MAX = 1.0f;
     private static final float SCALE_MIN = 0.0f;
-    private static final String TAG = "OplusSeekBar9";
+    private static final String TAG = "OplusSeekBar";
     private static final int TOUCH_ANIMATION_ENLARGE_DURATION = 183;
     private static final int VELOCITY_COMPUTE_TIME = 100;
     private final RectF mBackgroundRect;
@@ -1919,7 +1919,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         @Override
         public void onPopulateNodeForVirtualView(int virtualViewId, @NonNull AccessibilityNodeInfoCompat info) {
             info.setContentDescription("");
-            info.setClassName(OplusSeekBar9.class.getName());
+            info.setClassName(OplusSeekBar.class.getName());
             info.setBoundsInParent(getBoundsForVirtualView(virtualViewId));
         }
 
