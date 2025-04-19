@@ -1,3 +1,12 @@
+**1.4.0**  
+- Added custom dialog for EditTextPreference  
+- Added OplusSeekbarPreference and OplusSectionSeekbarPreference  
+- Migrated OplusSliderPreference from RangeSlider to OplusSlider  
+- Improved OplusJumpPreference  
+- Added OplusEditText and OplusInputView  
+- Added OplusSeekbar, OplusSectionSeekBar and OplusSlider  
+- OplusSwitchPreference: added vibration  
+  
 **1.3.11**  
 - Improved Switch disabled color  
   
