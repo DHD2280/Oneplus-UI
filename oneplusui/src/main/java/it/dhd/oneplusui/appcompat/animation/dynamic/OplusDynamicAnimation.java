@@ -5,13 +5,11 @@ import android.util.AndroidRuntimeException;
 import android.view.View;
 import androidx.annotation.FloatRange;
 import androidx.annotation.RestrictTo;
-import androidx.constraintlayout.motion.widget.Key;
 import androidx.core.view.ViewCompat;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import java.util.ArrayList;
 
-/* loaded from: classes4.dex */
 public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> implements OplusAnimationHandler.AnimationFrameCallback {
     
     public static final float MIN_VISIBLE_CHANGE_ALPHA = 0.00390625f;
@@ -34,216 +32,157 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
     float mValue;
     float mVelocity;
     public static final ViewProperty TRANSLATION_X = new ViewProperty("translationX") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.1
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public float getValue(View view) {
             return view.getTranslationX();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public void setValue(View view, float f2) {
             view.setTranslationX(f2);
         }
     };
     public static final ViewProperty TRANSLATION_Y = new ViewProperty("translationY") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.2
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public float getValue(View view) {
             return view.getTranslationY();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public void setValue(View view, float f2) {
             view.setTranslationY(f2);
         }
     };
     public static final ViewProperty TRANSLATION_Z = new ViewProperty("translationZ") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.3
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public float getValue(View view) {
             return ViewCompat.getTranslationZ(view);
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public void setValue(View view, float f2) {
             ViewCompat.setTranslationZ(view, f2);
         }
     };
     public static final ViewProperty SCALE_X = new ViewProperty("scaleX") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.4
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public float getValue(View view) {
             return view.getScaleX();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
-        @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
+        @Override
         public void setValue(View view, float f2) {
             view.setScaleX(f2);
         }
     };
     public static final ViewProperty SCALE_Y = new ViewProperty("scaleY") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.5
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getScaleY();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setScaleY(f2);
         }
     };
     public static final ViewProperty ROTATION = new ViewProperty("rotation") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.6
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getRotation();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setRotation(f2);
         }
     };
     public static final ViewProperty ROTATION_X = new ViewProperty("rotationX") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.7
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getRotationX();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setRotationX(f2);
         }
     };
     public static final ViewProperty ROTATION_Y = new ViewProperty("rotationY") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.8
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getRotationY();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setRotationY(f2);
         }
     };
 
-    /* renamed from: X */
-    public static final ViewProperty f4104X = new ViewProperty("x") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.9
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
+    public static final ViewProperty X = new ViewProperty("x") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.9
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getX();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setX(f2);
         }
     };
 
-    /* renamed from: Y */
-    public static final ViewProperty f4105Y = new ViewProperty("y") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.10
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
+    public static final ViewProperty Y = new ViewProperty("y") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.10
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getY();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setY(f2);
         }
     };
 
-    /* renamed from: Z */
-    public static final ViewProperty f4106Z = new ViewProperty("z") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.11
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
+    public static final ViewProperty Z = new ViewProperty("z") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.11
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return ViewCompat.getZ(view);
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             ViewCompat.setZ(view, f2);
         }
     };
     public static final ViewProperty ALPHA = new ViewProperty("alpha") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.12
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getAlpha();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setAlpha(f2);
         }
     };
     public static final ViewProperty SCROLL_X = new ViewProperty("scrollX") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.13
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getScrollX();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setScrollX((int) f2);
         }
     };
     public static final ViewProperty SCROLL_Y = new ViewProperty("scrollY") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.14
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: getValue(Ljava/lang/Object;)F */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public float getValue(View view) {
             return view.getScrollY();
         }
 
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
-        /* JADX DEBUG: Method merged with bridge method: setValue(Ljava/lang/Object;F)V */
         @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
         public void setValue(View view, float f2) {
             view.setScrollY((int) f2);
@@ -264,13 +203,11 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
     }
 
     public static abstract class ViewProperty extends FloatPropertyCompat<View> {
-        /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 2 */
         private ViewProperty(String str) {
             super(str);
         }
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public OplusDynamicAnimation(final FloatValueHolder floatValueHolder) {
         this.mVelocity = 0.0f;
         this.mValue = Float.MAX_VALUE;
@@ -284,13 +221,11 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         this.mUpdateListeners = new ArrayList<>();
         this.mTarget = null;
         this.mProperty = new FloatPropertyCompat("FloatValueHolder") { // from class: com.coui.appcompat.animation.dynamicanimation.COUIDynamicAnimation.15
-            /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
             @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
             public float getValue(Object obj) {
                 return floatValueHolder.getValue();
             }
 
-            /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
             @Override // androidx.dynamicanimation.animation.FloatPropertyCompat
             public void setValue(Object obj, float f2) {
                 floatValueHolder.setValue(f2);
@@ -299,7 +234,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         this.mMinVisibleChange = 1.0f;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     private void endAnimationInternal(boolean z2) {
         this.mRunning = false;
         OplusAnimationHandler.getInstance().removeCallback(this);
@@ -313,12 +247,10 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         removeNullEntries(this.mEndListeners);
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     private float getPropertyValue() {
         return this.mProperty.getValue(this.mTarget);
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     private static <T> void removeEntry(ArrayList<T> arrayList, T t2) {
         int indexOf = arrayList.indexOf(t2);
         if (indexOf >= 0) {
@@ -326,7 +258,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         }
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     private static <T> void removeNullEntries(ArrayList<T> arrayList) {
         for (int size = arrayList.size() - 1; size >= 0; size--) {
             if (arrayList.get(size) == null) {
@@ -335,7 +266,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         }
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     private void startAnimationInternal() {
         if (this.mRunning) {
             return;
@@ -351,7 +281,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         OplusAnimationHandler.getInstance().addAnimationFrameCallback(this, 0L);
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T addEndListener(OnAnimationEndListener onAnimationEndListener) {
         if (!this.mEndListeners.contains(onAnimationEndListener)) {
             this.mEndListeners.add(onAnimationEndListener);
@@ -359,7 +288,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T addUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
         if (isRunning()) {
             throw new UnsupportedOperationException("Error: Update listeners must be added beforethe animation.");
@@ -370,7 +298,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public void cancel() {
         if (!this.mEnableNonMainThread && Looper.myLooper() != Looper.getMainLooper()) {
             throw new AndroidRuntimeException("Animations may only be canceled on the main thread");
@@ -380,8 +307,7 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         }
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
-    @Override // com.coui.appcompat.animation.dynamicanimation.OplusAnimationHandler.AnimationFrameCallback
+    @Override
     @RestrictTo({RestrictTo.Scope.LIBRARY})
     public boolean doAnimationFrame(long j2) {
         long j3 = this.mLastFrameTime;
@@ -405,52 +331,43 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
 
     public abstract float getAcceleration(float f2, float f3);
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public float getMinimumVisibleChange() {
         return this.mMinVisibleChange;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public float getValueThreshold() {
         return this.mMinVisibleChange * 0.75f;
     }
 
     public abstract boolean isAtEquilibrium(float f2, float f3);
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public boolean isRunning() {
         return this.mRunning;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public void removeEndListener(OnAnimationEndListener onAnimationEndListener) {
         removeEntry(this.mEndListeners, onAnimationEndListener);
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public void removeUpdateListener(OnAnimationUpdateListener onAnimationUpdateListener) {
         removeEntry(this.mUpdateListeners, onAnimationUpdateListener);
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T setEnableNonMainThread(boolean z2) {
         this.mEnableNonMainThread = z2;
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T setMaxValue(float f2) {
         this.mMaxValue = f2;
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T setMinValue(float f2) {
         this.mMinValue = f2;
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T setMinimumVisibleChange(@FloatRange(from = 0.0d, fromInclusive = false) float f2) {
         if (f2 <= 0.0f) {
             throw new IllegalArgumentException("Minimum visible change must be positive.");
@@ -460,7 +377,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public void setPropertyValue(float f2) {
         this.mProperty.setValue(this.mTarget, f2);
         for (int i2 = 0; i2 < this.mUpdateListeners.size(); i2++) {
@@ -471,14 +387,12 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         removeNullEntries(this.mUpdateListeners);
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T setStartValue(float f2) {
         this.mValue = f2;
         this.mStartValueIsSet = true;
         return (T) this;
     }
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public T setStartVelocity(float f2) {
         this.mVelocity = f2;
         return (T) this;
@@ -486,7 +400,6 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
 
     public abstract void setValueThreshold(float f2);
 
-    /* JADX DEBUG: Don't trust debug lines info. Lines numbers was adjusted: min line is 1 */
     public void start() {
         if (!this.mEnableNonMainThread && Looper.myLooper() != Looper.getMainLooper()) {
             throw new AndroidRuntimeException("Animations may only be started on the main thread");
