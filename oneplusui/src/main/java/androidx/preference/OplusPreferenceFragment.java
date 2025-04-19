@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.OplusRecyclerView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import it.dhd.oneplusui.R;
+import it.dhd.oneplusui.preference.OplusEditTextPreference;
+import it.dhd.oneplusui.preference.OplusEditTextPreferenceDialogFragment;
 import it.dhd.oneplusui.preference.OplusListPreferenceDialogFragment;
 import it.dhd.oneplusui.preference.OplusMultiSelectListPreferenceDialogFragment;
 import it.dhd.oneplusui.preference.OplusPreferenceItemDecoration;
@@ -120,7 +122,9 @@ public class OplusPreferenceFragment extends PreferenceFragmentCompat {
         if (getFragmentManager().findFragmentByTag(DIALOG_FRAGMENT_TAG) != null) {
             return;
         }
-        if (preference instanceof MultiSelectListPreference) {
+        if (preference instanceof EditTextPreference) {
+            newInstance = OplusEditTextPreferenceDialogFragment.newInstance(preference.getKey());
+        } else if (preference instanceof MultiSelectListPreference) {
             newInstance = OplusMultiSelectListPreferenceDialogFragment.newInstance(preference.getKey());
         } else if (preference instanceof ListPreference) {
             newInstance = OplusListPreferenceDialogFragment.newInstance(preference.getKey());
