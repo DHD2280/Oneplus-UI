@@ -16,11 +16,47 @@
 
         <it.dhd.oneplusui.preference.OplusSliderPreference
             android:key="test_slider_key"
-            android:summary="This is a test slider preference"
+            android:summary="This is a test slider preference\nFrom 0 to 100 with step size 1"
+            android:title="Test Slider Preference"
+            app:defaultValue="0"
             app:maxVal="100"
             app:minVal="0"
-            app:defaultValue="50"
-            android:title="Test Slider Preference" />
+            app:tickInterval="1" />
+
+        <it.dhd.oneplusui.preference.OplusSliderPreference
+            android:key="test_slider_key_decimal"
+            android:summary="This is a test slider preference\nFrom 0.5 to 2.0 with step size 0.05"
+            android:title="Test Slider Preference"
+            app:decimalFormat="#.##"
+            app:defaultValue="1"
+            app:maxVal="2.0"
+            app:minVal="0.5"
+            app:tickInterval="0.05" />
+
+        <it.dhd.oneplusui.preference.OplusSliderPreference
+            android:key="test_slider_key"
+            android:summary="This is a test slider preference\nFrom -50 to 50 with step size 1 and 2 values"
+            android:title="Test Slider Preference"
+            app:defaultValue="-15,20"
+            app:maxVal="50"
+            app:minVal="-50"
+            app:valueCount="2" />
+
+        <it.dhd.oneplusui.preference.OplusSeekbarPreference
+            android:key="test_seekbar_key"
+            android:max="100"
+            android:min="0"
+            android:summary="This is a test seekbar preference\nFrom 0 to 100"
+            android:title="Test Seekbar Preference"
+            app:defaultValue="50" />
+
+        <it.dhd.oneplusui.preference.OplusSectionSeekbarPreference
+            android:key="test_section_seekbar_key"
+            android:max="4"
+            android:min="0"
+            android:summary="This is a test section seekbar preference\nFrom 0 to 4"
+            android:title="Test Section Seekbar Preference"
+            app:defaultValue="2" />
 
         <it.dhd.oneplusui.preference.OplusJumpPreference
             android:key="test_jump_key"
@@ -28,20 +64,20 @@
             android:title="Test Jump Preference" />
 
         <it.dhd.oneplusui.preference.OplusMenuPreference
+            android:defaultValue="0"
             android:entries="@array/test_entries"
             android:entryValues="@array/test_values"
-            app:useSimpleSummaryProvider="true"
-            android:defaultValue="0"
             android:key="test_menu_key"
             android:persistent="true"
             android:summary="This is a test menu preference"
-            android:title="Test Menu Preference" />
+            android:title="Test Menu Preference"
+            app:useSimpleSummaryProvider="true" />
 
         <it.dhd.oneplusui.preference.OplusEditTextPreference
             android:key="test_edittext_key"
-            app:iconSpaceReserved="false"
             android:summary="This is a test edittext preference"
-            android:title="Test EditText Preference" />
+            android:title="Test EditText Preference"
+            app:iconSpaceReserved="false" />
 
         <it.dhd.oneplusui.preference.OplusListPreference
             android:entries="@array/test_entries"
