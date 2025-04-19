@@ -31,14 +31,43 @@
     <color name="colorDivider">#1f000000</color>
     <color name="oplusColorControls">#33000000</color>
     <color name="colorPressBackground">#14000000</color>
+    <color name="oplus_color_error_text_bg">#4de82a18</color>
 
     <!-- Radio Button -->
     <color name="btn_radio_background_color">#4d000000</color>
     <color name="btn_radio_color_on_disabled">#ffffff</color>
 
     <color name="oplus_list_selector_color_disabled">#00000000</color>
-    <color name="colorDisabledNeutral">#4dffffff</color>
+    <color name="colorDisabledNeutral">#42000000</color>
     <color name="oplusColorPrimaryNeutral">#ff000000</color>
-    <color name="coui_color_secondary_neutral">#8a000000</color>
+    <color name="oplus_color_secondary_neutral">#8a000000</color>
+
+    <!-- SeekBar -->
+    <color name="oplus_seekbar_background_color_disabled">#ebebeb</color>
+    <color name="oplus_seekbar_background_color_normal">#0d000000</color>
+    <color name="oplus_seekbar_background_highlight_color">#05000000</color>
+    <color name="oplus_seekbar_mark_active_anim_end">#1e000000</color>
+    <color name="oplus_seekbar_mark_inactive_anim_end">#4cffffff</color>
+    <color name="oplus_seekbar_popup_text_color">#d9000000</color>
+    <color name="oplus_seekbar_progress_color_disabled">#ebebeb</color>
+    <color name="oplus_seekbar_progress_color_normal">#4d4d4d</color>
+    <color name="oplus_seekbar_progress_dark_color_disabled">#4d4d4d</color>
+    <color name="oplus_seekbar_progress_light_color_disabled">#ffe6e6e6</color>
+    <color name="oplus_seekbar_secondary_progress_color">#4dffffff</color>
+    <color name="oplus_seekbar_shadow_color">#1e000000</color>
+    <color name="oplus_seekbar_text_color">#ec3e50</color>
+    <color name="oplus_seekbar_thumb_color">#ffffffff</color>
+    <color name="oplus_seekbar_thumb_color_disabled">#ffffffff</color>
+    <color name="oplus_seekbar_thumb_shadow_color">#29000000</color>
+    <color name="oplus_seekbar_tick_mark_color">#f2f2f2</color>
+
+    <color name="oplus_color_container_solid">#ebebeb</color>
+    <color name="oplus_color_controls">#29000000</color>
+    <color name="oplus_color_fill_solid">#ebebeb</color>
+
+    <!-- Edit Text -->
+    <color name="oplus_color_label_tertiary">#42000000</color>
+    <color name="oplus_textinput_stroke_color_disabled">#19000000</color>
+    <color name="oplus_color_hint_neutral">#42000000</color>
 
 </resources>

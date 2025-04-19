@@ -30,6 +30,20 @@
         <item name="android:lineSpacingMultiplier">1.1</item>
     </style>
 
+    <style name="OplusInputTextAppearance" parent="@style/OplusTextAppearanceHeadline6">
+        <item name="android:fontFamily">sans-serif-regular</item>
+    </style>
+
+    <style name="OplusTextAppearanceCaption" parent="@style/OplusTextAppearance">
+        <item name="android:textSize">10sp</item>
+        <item name="android:lineSpacingMultiplier">@dimen/oplus_spacing_multiplier_cap</item>
+    </style>
+
+    <style name="OplusInputTitleStyle" parent="@style/OplusTextAppearanceHeadline6">
+        <item name="android:textColor">@color/oplus_input_title_color</item>
+        <item name="android:minHeight">@dimen/oplus_inputView_title_minheight</item>
+    </style>
+
     <style name="PreferenceTitleStyle" parent="@style/OplusTextAppearance">
         <item name="android:textSize">16sp</item>
         <item name="android:lineSpacingMultiplier">1.05</item>
@@ -88,6 +102,12 @@
         <item name="android:backgroundDimAmount">0.40</item>
         <item name="materialAlertDialogTitleTextStyle">@style/MaterialAlertDialog.Title.Text</item>
         <item name="materialAlertDialogBodyTextStyle">@style/MaterialAlertDialog.Body.Text</item>
+        <item name="android:animation">@style/Animation.Oplus.Dialog</item>
+    </style>
+
+    <style name="Animation.Oplus.Dialog" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@anim/oplus_bottom_dialog_enter</item>
+        <item name="android:windowExitAnimation">@anim/oplus_bottom_dialog_exit</item>
     </style>
 
     <style name="MaterialAlertDialog.Title.Text" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
@@ -171,10 +191,20 @@
         <item name="labelStyle">@style/Widget.App.Tooltip</item>
     </style>
 
+    <!-- Material ToolTip -->
     <style name="Widget.App.Tooltip" parent="Widget.Material3.Tooltip">
         <item name="android:padding">10dp</item>
         <item name="android:textColor">@color/text_color_primary</item>
         <item name="backgroundTint">@color/oplusColorSurfaces</item>
+    </style>
+
+    <!-- Oplus ToolTip -->
+    <style name="Widget.Oplus.Tooltip" parent="Widget.Material3.Tooltip">
+        <item name="android:textAppearance">@style/OplusTextAppearanceBody</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textColor">@color/text_color_primary</item>
+        <item name="backgroundTint">@color/oplusColorSurfaces</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.Material3.Tooltip</item>
     </style>
 
     <!-- AppBarLayout -->
@@ -213,6 +243,7 @@
 
     <style name="EditTextPreferenceStyle" parent="Preference.DialogPreference.EditTextPreference">
         <item name="iconSpaceReserved">false</item>
+        <item name="dialogLayout">@layout/oplus_preference_dialog_edittext</item>
     </style>
 
     <style name="Preferences.Oplus.Category" parent="">
@@ -242,6 +273,18 @@
 
     <style name="Preferences.Oplus.Preference.Jump" parent="Preferences.Oplus.Preference">
         <item name="android:widgetLayout">@layout/oplus_preference_widget_jump</item>
+    </style>
+
+    <style name="Preferences.Oplus.Preference.Slider" parent="@style/Preferences.Oplus.Preference">
+        <item name="android:layout">@layout/oplus_preference_slider</item>
+    </style>
+    
+    <style name="Preferences.Oplus.Preference.Seekbar" parent="@style/Preferences.Oplus.Preference">
+        <item name="android:layout">@layout/oplus_preference_seekbar</item>
+    </style>
+
+    <style name="Preferences.Oplus.Preference.SectionSeekbar" parent="@style/Preferences.Oplus.Preference">
+        <item name="android:layout">@layout/oplus_preference_sectionseekbar</item>
     </style>
 
     <style name="DefaultDialogItemTextStyle" parent="@style/TextAppearance.AppCompat.Medium">
@@ -282,5 +325,142 @@
         <item name="android:windowExitAnimation">@anim/oplus_popup_list_exit</item>
     </style>
 
+    <style name="Widget.Oplus.SeekBar" parent="">
+        <item name="oplusSeekBarAdaptiveVibrator">true</item>
+        <item name="oplusSeekBarBackgroundColor">@color/oplus_seekbar_background_selector</item>
+        <item name="oplusSeekBarBackgroundRadius">@dimen/oplus_seekbar_background_radius</item>
+        <item name="oplusSeekBarMaxWidth">@dimen/oplus_seekbar_view_max_width</item>
+        <item name="oplusSeekBarMinHeight">36dp</item>
+        <item name="oplusSeekBarPhysicsEnable">true</item>
+        <item name="oplusSeekBarProgressColor">@color/oplus_seekbar_progress_selector</item>
+        <item name="oplusSeekBarProgressFull">false</item>
+        <item name="oplusSeekBarProgressPaddingHorizontal">@dimen/oplus_seekbar_progress_padding_horizontal</item>
+        <item name="oplusSeekBarProgressRadius">@dimen/oplus_seekbar_progress_radius</item>
+        <item name="oplusSeekBarProgressScaleRadius">@dimen/oplus_seekbar_progress_scale_radius</item>
+        <item name="oplusSeekBarShowProgress">true</item>
+        <item name="oplusSeekBarShowThumb">true</item>
+        <item name="oplusSeekBarStartMiddle">false</item>
+        <item name="oplusSeekBarThumbColor">@color/oplus_seekbar_progress_selector</item>
+        <item name="oplusSeekBarThumbOutRadius">@dimen/oplus_seekbar_thumb_out_radius</item>
+        <item name="oplusSeekBarThumbShadowColor">@color/oplus_seekbar_thumb_shadow_color</item>
+        <item name="oplusLabelStyle">@style/Widget.Oplus.Tooltip</item>
+    </style>
+
+    <style name="Widget.Oplus.Slider" parent="">
+        <item name="oplusSeekBarAdaptiveVibrator">true</item>
+        <item name="oplusSeekBarBackgroundColor">@color/oplus_seekbar_background_selector</item>
+        <item name="oplusSeekBarBackgroundRadius">@dimen/oplus_seekbar_background_radius</item>
+        <item name="oplusSeekBarMaxWidth">@dimen/oplus_seekbar_view_max_width</item>
+        <item name="oplusSeekBarMinHeight">36dp</item>
+        <item name="oplusSeekBarPhysicsEnable">true</item>
+        <item name="oplusSeekBarProgressColor">@color/oplus_seekbar_progress_selector</item>
+        <item name="oplusSeekBarProgressFull">false</item>
+        <item name="oplusSeekBarProgressPaddingHorizontal">@dimen/oplus_seekbar_progress_padding_horizontal</item>
+        <item name="oplusSeekBarProgressRadius">@dimen/oplus_seekbar_progress_radius</item>
+        <item name="oplusSeekBarProgressScaleRadius">@dimen/oplus_seekbar_progress_scale_radius</item>
+        <item name="oplusSeekBarThumbColor">@color/oplus_seekbar_progress_selector</item>
+        <item name="oplusSeekBarThumbOutRadius">@dimen/oplus_seekbar_thumb_out_radius</item>
+        <item name="oplusSeekBarThumbShadowColor">@color/oplus_seekbar_thumb_shadow_color</item>
+        <item name="oplusLabelStyle">@style/Widget.Oplus.Tooltip</item>
+    </style>
+
+    <style name="Widget.Oplus.SectionSeekBar" parent="@style/Widget.Oplus.Slider">
+        <item name="oplusSeekBarPhysicsEnable">false</item>
+        <item name="oplusSeekBarProgressPaddingHorizontal">@dimen/oplus_section_seekbar_progress_padding_horizontal</item>
+    </style>
+
+    <style name="Widget.OplusComponents.Tooltip" parent="Widget.MaterialComponents.Tooltip">
+        <item name="android:textAppearance">@style/TextAppearance.OplusComponents.Tooltip</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.MaterialComponents.Tooltip</item>
+    </style>
+
+    <style name="TextAppearance.OplusComponents.Tooltip" parent="TextAppearance.MaterialComponents.Tooltip">
+        <item name="android:textColor">@color/text_color_primary</item>
+    </style>
+
+    <!-- Edit Text -->
+    <style name="Widget.Oplus.EditText" parent="@android:style/Widget.EditText">
+        <item name="android:textAppearance">@style/OplusInputTextAppearance</item>
+        <item name="android:textColorHint">@color/oplus_color_label_tertiary</item>
+        <item name="android:paddingTop">9dp</item>
+        <item name="android:paddingBottom">9dp</item>
+        <item name="android:minHeight">@dimen/oplus_edit_text_height_min</item>
+        <item name="android:editTextColor">@color/oplus_edit_text_color</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="collapsedTextColor">@color/oplus_color_secondary_neutral</item>
+        <item name="defaultStrokeColor">@color/colorDivider</item>
+        <item name="disabledStrokeColor">@color/oplus_textinput_stroke_color_disabled</item>
+        <item name="editTextDeleteIconNormal">@drawable/ic_edit_text_delete</item>
+        <item name="editTextDeleteIconPressed">@drawable/ic_edit_text_delete</item>
+        <item name="focusStrokeWidth">@dimen/oplus_textinput_focus_stroke_width</item>
+        <item name="strokeColor">@android:color/system_accent1_400</item>
+        <item name="strokeWidth">@dimen/oplus_textinput_stroke_width</item>
+    </style>
+
+
+    <style name="Widget.Oplus.EditText.HintAnim" parent="@style/Widget.Oplus.EditText">
+        <item name="collapsedTextSize">@dimen/oplus_textinput_hint_text_size</item>
+        <item name="cornerRadius">@dimen/oplus_textinput_corner_radius</item>
+        <item name="focusStrokeWidth">@dimen/oplus_textinput_focus_stroke_width</item>
+        <item name="hintEnabled">true</item>
+        <item name="strokeWidth">@dimen/oplus_textinput_stroke_width</item>
+    </style>
+
+    <style name="Widget.Oplus.EditText.HintAnim.Line" parent="@style/Widget.Oplus.EditText.HintAnim">
+        <item name="android:paddingLeft">0dp</item>
+        <item name="android:paddingTop">27dp</item>
+        <item name="android:paddingRight">0dp</item>
+        <item name="android:paddingBottom">15dp</item>
+        <item name="backgroundMode">line</item>
+    </style>
+
+    <style name="Widget.Oplus.EditText.HintAnim.Rectangle" parent="@style/Widget.Oplus.EditText.HintAnim">
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="backgroundMode">rectangle</item>
+        <item name="rectModePaddingTop">12dp</item>
+    </style>
+
+    <style name="Widget.Oplus.Input" parent="@android:style/Widget.EditText">
+        <item name="android:textAppearance">@style/OplusTextAppearance</item>
+        <item name="android:paddingTop">@dimen/oplus_input_edit_text_no_title_padding_top</item>
+        <item name="android:paddingBottom">@dimen/oplus_input_edit_text_no_title_padding_bottom</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:editTextColor">@color/oplus_edit_text_color</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="collapsedTextColor">@color/oplus_color_secondary_neutral</item>
+        <item name="backgroundMode">line</item>
+        <item name="defaultStrokeColor">@color/colorDivider</item>
+        <item name="disabledStrokeColor">@color/oplus_textinput_stroke_color_disabled</item>
+        <item name="editTextDeleteIconNormal">@drawable/ic_edit_text_delete</item>
+        <item name="editTextDeleteIconPressed">@drawable/ic_edit_text_delete</item>
+        <item name="focusStrokeWidth">@dimen/oplus_textinput_focus_stroke_width</item>
+        <item name="hintEnabled">false</item>
+        <item name="strokeColor">@android:color/system_accent1_400</item>
+        <item name="strokeWidth">@dimen/oplus_input_preference_stroke_width</item>
+        <item name="quickDelete">true</item>
+    </style>
+
+    <style name="Animation.Slide" parent="@android:style/Animation.Activity">
+        <item name="android:taskOpenEnterAnimation">@anim/oplus_open_slide_enter</item>
+        <item name="android:taskOpenExitAnimation">@anim/oplus_open_slide_exit</item>
+        <item name="android:taskCloseEnterAnimation">@anim/oplus_close_slide_enter</item>
+        <item name="android:taskCloseExitAnimation">@anim/oplus_close_slide_exit</item>
+        <item name="android:taskToFrontEnterAnimation">@anim/oplus_open_slide_enter</item>
+        <item name="android:taskToFrontExitAnimation">@anim/oplus_open_slide_exit</item>
+        <item name="android:taskToBackEnterAnimation">@anim/oplus_close_slide_enter</item>
+        <item name="android:taskToBackExitAnimation">@anim/oplus_close_slide_exit</item>
+    </style>
+
+    <style name="Animation.Slide.Settings" parent="@style/Animation.Slide">
+        <item name="android:activityOpenEnterAnimation">@anim/oplus_open_slide_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/oplus_open_slide_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/oplus_close_slide_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/oplus_close_slide_exit</item>
+    </style>
 
 </resources>

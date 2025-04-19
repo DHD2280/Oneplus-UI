@@ -3,6 +3,15 @@
 
     <attr name="preferenceBackgroundColor" format="reference|color" />
     <attr name="preferenceBackgroundColorPressed" format="reference|color" />
+    <attr name="oplusSeekBarStyle" format="reference" />
+    <attr name="oplusSeekBarPreferenceStyle" format="reference" />
+    <attr name="oplusSectionSeekBarStyle" format="reference" />
+    <attr name="oplusSectionSeekBarPreferenceStyle" format="reference" />
+    <attr name="oplusSliderStyle" format="reference" />
+    <attr name="oplusTooltipStyle" format="reference" />
+    <attr name="oplusSliderPreferenceStyle" format="reference" />
+    <attr name="oplusEditTextStyle" format="reference" />
+    <attr name="oplusInputPreferenceEditTextStyle" format="reference" />
 
     <declare-styleable name="OplusPreference">
         <attr name="clickStyle" format="integer" />
@@ -34,12 +43,21 @@
         <attr name="minVal" format="float" />
         <attr name="maxVal" format="float" />
         <attr name="showResetButton" format="boolean" />
-        <attr name="showValueLabel" format="boolean" />
         <attr name="units" format="string" />
         <attr name="isDecimalFormat" format="boolean" />
         <attr name="decimalFormat" format="string" />
         <attr name="valueFormat" format="string" />
         <attr name="outputScale" format="float" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusSeekbarPreference">
+        <attr name="updatesContinuously"/>
+        <attr name="android:min"/>
+        <attr name="android:max" />
+        <attr name="showResetButton"/>
+        <attr name="seekBarIncrement" format="integer" />
+        <attr name="showSeekBarValue" format="boolean" />
+        <attr name="adjustable" format="boolean" />
     </declare-styleable>
 
     <declare-styleable name="ForegroundCheckTextView">
@@ -71,6 +89,127 @@
 
         <attr name="unit" format="dimension" />
         <attr name="maxUnits" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusSeekBar">
+        <attr name="oplusSeekBarEnableVibrator" format="boolean" />
+        <attr name="oplusSeekBarAdaptiveVibrator" format="boolean" />
+        <attr name="oplusSeekBarPhysicsEnable" format="boolean" />
+        <attr name="oplusSeekBarShowProgress" format="boolean" />
+        <attr name="oplusSeekBarShowThumb" format="boolean" />
+        <attr name="oplusSeekBarStartMiddle" format="boolean" />
+        <attr name="oplusSeekBarProgressFull" format="boolean" />
+        <attr name="oplusSeekBarBackgroundColor" format="color|reference" />
+        <attr name="oplusSeekBarProgressColor" format="color|reference" />
+        <attr name="oplusSeekBarThumbColor" format="color|reference" />
+        <attr name="oplusSeekBarShadowColor" format="color|reference" />
+        <attr name="oplusSeekBarThumbShadowColor" format="color|reference" />
+        <attr name="oplusSeekBarBackgroundRadius" format="dimension|reference" />
+        <attr name="oplusSeekBarProgressRadius" format="dimension|reference" />
+        <attr name="oplusSeekBarProgressScaleRadius" format="dimension|reference" />
+        <attr name="oplusSeekBarThumbOutRadius" format="dimension|reference" />
+        <attr name="oplusSeekBarBackgroundRoundCornerWeight" format="float" />
+        <attr name="oplusSeekBarProgressRoundCornerWeight" format="float" />
+        <attr name="oplusSeekBarShadowSize" format="dimension|reference" />
+        <attr name="oplusSeekBarThumbShadowSize" format="dimension|reference" />
+        <attr name="oplusSeekBarInnerShadowSize" format="dimension|reference" />
+        <attr name="oplusSeekBarProgressPaddingHorizontal" format="dimension|reference" />
+        <attr name="oplusSeekBarBackgroundHeight" format="dimension|reference" />
+        <attr name="oplusSeekBarProgressHeight" format="dimension|reference" />
+        <attr name="oplusSeekBarMinHeight" format="dimension|reference" />
+        <attr name="oplusSeekBarMaxWidth" format="dimension|reference" />
+        <attr name="oplusSeekBarBackGroundEnlargeScale" format="float" />
+        <attr name="oplusSeekBarProgressEnlargeScale" format="float" />
+        <attr name="oplusSeekBarDeformation" format="boolean" />
+        <attr name="android:valueFrom" format="float" />
+        <attr name="android:valueTo" format="float" />
+        <attr name="android:value" format="float" />
+        <attr name="oplusLabelStyle" format="reference" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusSlider">
+        <attr name="oplusSeekBarEnableVibrator"/>
+        <attr name="oplusSeekBarAdaptiveVibrator" />
+        <attr name="oplusSeekBarPhysicsEnable" />
+        <attr name="oplusSeekBarBackgroundColor" />
+        <attr name="oplusSeekBarProgressColor" />
+        <attr name="oplusSeekBarThumbColor" />
+        <attr name="oplusSeekBarShadowColor" />
+        <attr name="oplusSeekBarThumbShadowColor" />
+        <attr name="oplusSeekBarBackgroundRadius" />
+        <attr name="oplusSeekBarProgressRadius" />
+        <attr name="oplusSeekBarProgressScaleRadius" />
+        <attr name="oplusSeekBarThumbOutRadius" />
+        <attr name="oplusSeekBarBackgroundRoundCornerWeight" />
+        <attr name="oplusSeekBarProgressRoundCornerWeight" />
+        <attr name="oplusSeekBarShadowSize" />
+        <attr name="oplusSeekBarThumbShadowSize" />
+        <attr name="oplusSeekBarInnerShadowSize" />
+        <attr name="oplusSeekBarProgressPaddingHorizontal" />
+        <attr name="oplusSeekBarBackgroundHeight" />
+        <attr name="oplusSeekBarProgressHeight" />
+        <attr name="oplusSeekBarMinHeight" />
+        <attr name="oplusSeekBarMaxWidth" />
+        <attr name="oplusSeekBarBackGroundEnlargeScale" />
+        <attr name="oplusSeekBarProgressEnlargeScale" />
+        <attr name="oplusSeekBarDeformation" />
+        <attr name="android:valueFrom" />
+        <attr name="android:valueTo" />
+        <attr name="android:value" />
+        <attr name="oplusLabelStyle" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusToolTip">
+        <attr name="android:text" />
+        <attr name="android:textAppearance" />
+        <attr name="android:textColor" />
+        <attr name="android:layout_margin" />
+        <attr name="android:minWidth" />
+        <attr name="android:minHeight" />
+        <attr name="android:padding" />
+        <attr name="backgroundTint" format="color" />
+        <attr name="showMarker" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusEditText">
+        <attr name="hintEnabled" format="boolean" />
+        <attr name="hintAnimationEnabled" format="boolean" />
+        <attr name="rectModePaddingTop" format="dimension" />
+        <attr name="cornerRadius" format="dimension" />
+        <attr name="strokeColor" format="color" />
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="focusStrokeWidth" format="dimension" />
+        <attr name="backgroundMode">
+            <enum name="none" value="0" />
+            <enum name="line" value="1" />
+            <enum name="rectangle" value="2" />
+        </attr>
+        <attr name="android:hint" />
+        <attr name="android:textColorHint" />
+        <attr name="defaultStrokeColor" format="color" />
+        <attr name="disabledStrokeColor" format="color" />
+        <attr name="editTextNoEllipsisText" format="string" />
+        <attr name="collapsedTextSize" format="dimension" />
+        <attr name="collapsedTextColor" format="color|reference" />
+        <attr name="editTextErrorColor" format="color" />
+        <attr name="editTextDeleteIconNormal" format="reference" />
+        <attr name="editTextDeleteIconPressed" format="reference" />
+        <attr name="quickDelete" format="boolean" />
+        <attr name="editTextIsEllipsis" format="boolean" />
+        <attr name="editTextHintLines" format="integer" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusInputView">
+        <attr name="title" format="string" />
+        <attr name="hint" format="string" />
+        <attr name="enablePassword" format="boolean" />
+        <attr name="passwordType" format="integer" />
+        <attr name="enableError" format="boolean" />
+        <attr name="inputMaxCount" format="integer" />
+        <attr name="enableInputCount" format="boolean" />
+        <attr name="inputType" format="integer" />
+        <attr name="inputCustomFormat" format="boolean" />
+        <attr name="editLineColor" format="boolean" />
     </declare-styleable>
 
 </resources>

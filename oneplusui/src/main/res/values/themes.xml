@@ -31,6 +31,7 @@
 
         <!-- Slider -->
         <item name="sliderStyle">@style/Widget.App.Slider</item>
+        <item name="oplusSliderStyle">@style/Widget.Oplus.Slider</item>
 
         <!-- AppBarLayout -->
         <item name="appBarLayoutStyle">@style/Widget.App.AppBarLayout</item>
@@ -46,10 +47,21 @@
         <item name="snackbarStyle">@style/Widget.App.Snackbar</item>
         <item name="snackbarTextViewStyle">@style/Widget.App.Snackbar.TextView</item>
 
+        <!-- SeekBar -->
+        <item name="oplusSeekBarStyle">@style/Widget.Oplus.SeekBar</item>
+        <item name="oplusTooltipStyle">@style/Widget.Oplus.Tooltip</item>
+
+        <!-- EditText -->
+        <item name="oplusEditTextStyle">@style/Widget.Oplus.EditText.HintAnim.Line</item>
+
         <!-- Preferences -->
         <item name="preferenceCategoryStyle">@style/Preferences.Oplus.Category</item>
         <item name="preferenceStyle">@style/Preferences.Oplus.Preference</item>
+        <item name="oplusSliderPreferenceStyle">@style/Preferences.Oplus.Preference.Slider</item>
+        <item name="oplusSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.Seekbar</item>
+        <item name="oplusSectionSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.SectionSeekbar</item>
         <item name="switchPreferenceCompatStyle">@style/Preferences.Oplus.Preference.Switch</item>
+        <item name="android:windowAnimationStyle">@style/Animation.Slide.Settings</item>
     </style>
 
 </resources>

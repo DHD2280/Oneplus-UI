@@ -34,7 +34,7 @@
             android:textAlignment="center"
             android:lineSpacingMultiplier="1.15"
             android:paddingTop="@dimen/oplus_option_dialog_listview_text2_padding_top"
-            android:textColor="@color/coui_color_secondary_neutral"
+            android:textColor="@color/oplus_color_secondary_neutral"
             android:textSize="@dimen/oplus_alert_dialog_summary_text_size" />
     </LinearLayout>
 
@@ -42,7 +42,6 @@
         android:id="@+id/item_divider"
         android:layout_width="match_parent"
         android:layout_height="@dimen/list_divider_height"
-        android:layout_alignParentBottom="true"
         android:layout_marginHorizontal="@dimen/oplus_bottom_alert_dialog_horizontal_button_margin_default"
         android:background="@color/colorDivider"
         android:forceDarkAllowed="false"

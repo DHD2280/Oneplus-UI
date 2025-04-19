@@ -49,6 +49,16 @@
                 android:layout_alignStart="@android:id/title"
                 android:layout_marginTop="@dimen/preference_margin_between_line"
                 android:typeface="normal" />
+
+            <TextView
+                android:id="@+id/seekbar_value"
+                style="@style/PreferenceSummaryStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@android:id/summary"
+                android:layout_alignStart="@android:id/title"
+                android:layout_marginTop="@dimen/preference_margin_between_line"
+                android:typeface="normal" />
         </RelativeLayout>
 
         <LinearLayout
@@ -65,7 +75,7 @@
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical">
 
-            <it.dhd.oneplusui.appcompat.seekbar.OplusSlider
+            <it.dhd.oneplusui.appcompat.seekbar.OplusSeekBar
                 android:id="@+id/slider"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -65,4 +65,62 @@
     <dimen name="switch_track_height">@dimen/m3_comp_switch_track_height</dimen>
     <dimen name="switch_text_padding">16dp</dimen>
 
+    <!-- SeekBar dimens -->
+    <dimen name="oplus_seekbar_background_radius">2dp</dimen>
+    <dimen name="oplus_seekbar_progress_padding_horizontal">10dp</dimen>
+    <dimen name="oplus_seekbar_progress_pressed_padding_horizontal">4dp</dimen>
+    <dimen name="oplus_seekbar_progress_radius">2dp</dimen>
+    <dimen name="oplus_seekbar_progress_scale_radius">2dp</dimen>
+    <dimen name="oplus_seekbar_text_margin_top">6dp</dimen>
+    <dimen name="oplus_seekbar_text_size">12dp</dimen>
+    <dimen name="oplus_seekbar_thumb_out_radius">6dp</dimen>
+    <dimen name="oplus_seekbar_thumb_shadow_size">4dp</dimen>
+    <dimen name="oplus_seekbar_view_max_width">480dp</dimen>
+    <dimen name="oplus_seekbar_view_min_height">36dp</dimen>
+    <dimen name="oplus_section_seekbar_tick_mark_radius">4dp</dimen>
+    <dimen name="oplus_section_seekbar_progress_padding_horizontal">12dp</dimen>
+
+    <!-- Edit Text dimens -->
+    <dimen name="oplus_edit_text_height_min">62dp</dimen>
+    <dimen name="oplus_edit_text_hint_start_padding">0dp</dimen>
+    <dimen name="oplus_edit_text_shake_amplitude">5.33dp</dimen>
+    <dimen name="oplus_edittextdialog_marginbottom">14dp</dimen>
+    <dimen name="oplus_textinput_corner_radius">10dp</dimen>
+    <dimen name="oplus_textinput_focus_stroke_width">1dp</dimen>
+    <dimen name="oplus_textinput_hint_text_size">10sp</dimen>
+    <dimen name="oplus_textinput_label_cutout_padding">4dp</dimen>
+    <dimen name="oplus_textinput_line_padding">11dp</dimen>
+    <dimen name="oplus_textinput_line_padding_middle">5dp</dimen>
+    <dimen name="oplus_textinput_line_padding_top">10dp</dimen>
+    <dimen name="oplus_textinput_stroke_width">0.33dp</dimen>
+    <dimen name="oplus_input_preference_button_layout_padding_bottom">4dp</dimen>
+    <dimen name="oplus_input_preference_button_margin_start">16dp</dimen>
+    <dimen name="oplus_input_preference_padding_end">24dp</dimen>
+    <dimen name="oplus_input_preference_padding_start">24dp</dimen>
+    <dimen name="oplus_input_preference_single_title_padding_bottom">12dp</dimen>
+    <dimen name="oplus_input_preference_single_title_padding_top">12dp</dimen>
+    <dimen name="oplus_input_preference_stroke_width">0.33dp</dimen>
+    <dimen name="oplus_input_preference_text_size">16sp</dimen>
+    <dimen name="oplus_input_preference_title_max_width">126dp</dimen>
+    <dimen name="oplus_input_preference_title_padding_bottom">2dp</dimen>
+    <dimen name="oplus_input_preference_title_padding_top">10dp</dimen>
+    <dimen name="oplus_inputview_count_margin_end">6dp</dimen>
+    <dimen name="oplus_inputview_custom_button_size">22dp</dimen>
+    <dimen name="oplus_inputview_delete_button_margin_end_with_passwordicon">8dp</dimen>
+    <dimen name="oplus_inputview_password_size">28dp</dimen>
+    <dimen name="oplus_spacing_multiplier_cap">1.11</dimen>
+    <dimen name="oplus_inputView_title_minheight">22dp</dimen>
+    <dimen name="oplus_input_button_layout_margin_start">8dp</dimen>
+    <dimen name="oplus_input_edit_error_text_has_title_padding_bottom">10dp</dimen>
+    <dimen name="oplus_input_edit_text_no_title_padding_bottom">15dp</dimen>
+    <dimen name="oplus_input_edit_text_has_title_padding_top">2dp</dimen>
+    <dimen name="oplus_input_edit_text_no_title_padding_top">15dp</dimen>
+    <dimen name="oplus_inputView_edittext_content_minheight">22dp</dimen>
+    <dimen name="oplus_input_edit_text_no_title_padding_bottom_inPreference">13dp</dimen>
+    <dimen name="oplus_input_edit_text_no_title_padding_top_inPreference">13dp</dimen>
+    <dimen name="preference_category_layout_title_margin_start">32dp</dimen>
+    <dimen name="preference_category_layout_title_margin_end">32dp</dimen>
+    <dimen name="preference_dialog_edittext_min_height">34dp</dimen>
+    <dimen name="preference_dialog_edittext_margin_horizontal">24dp</dimen>
+
 </resources>

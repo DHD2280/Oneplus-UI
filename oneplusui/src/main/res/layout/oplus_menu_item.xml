@@ -39,7 +39,7 @@
             android:layout_height="wrap_content"
             android:lineSpacingMultiplier="1.15"
             android:paddingTop="@dimen/oplus_option_dialog_listview_text2_padding_top"
-            android:textColor="@color/coui_color_secondary_neutral"
+            android:textColor="@color/oplus_color_secondary_neutral"
             android:textSize="@dimen/oplus_alert_dialog_summary_text_size"
             android:visibility="gone"
             tools:text="Summary" />

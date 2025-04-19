@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shareInterpolator="false"
+    android:zAdjustment="normal">
+    <translate
+        android:interpolator="@anim/oplus_close_slide_enter_translate_interpolator"
+        android:duration="350"
+        android:fillBefore="false"
+        android:fillAfter="true"
+        android:fromXDelta="-100%"
+        android:toXDelta="0%"
+        android:fillEnabled="true"/>
+    <alpha
+        android:interpolator="@anim/oplus_ease"
+        android:duration="350"
+        android:fillBefore="false"
+        android:fillAfter="true"
+        android:fromAlpha="0.5"
+        android:toAlpha="1"
+        android:fillEnabled="true"/>
+</set>
