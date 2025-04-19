@@ -1567,7 +1567,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int labelSize = 0;
-        if (labelBehavior == LABEL_WITHIN_BOUNDS || shouldAlwaysShowLabel()) {
+        if ((labelBehavior == LABEL_WITHIN_BOUNDS || shouldAlwaysShowLabel()) && !labels.isEmpty()) {
             labelSize = labels.get(0).getIntrinsicHeight();
         }
         int seekbarHeight = mSeekbarMinHeight + getPaddingTop() + getPaddingBottom();
