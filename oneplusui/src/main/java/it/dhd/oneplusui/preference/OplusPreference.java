@@ -97,6 +97,7 @@ public class OplusPreference extends Preference implements OplusRecyclerView.IOp
      */
     public void setForcePosition(String forcePosition) {
         this.mForcePosition = forcePosition;
+        notifyChanged();
     }
 
     /**
@@ -107,6 +108,7 @@ public class OplusPreference extends Preference implements OplusRecyclerView.IOp
      */
     public void setTintTitle(boolean tintTitle) {
         this.mTintTitle = tintTitle;
+        notifyChanged();
     }
 
     /**
@@ -116,6 +118,7 @@ public class OplusPreference extends Preference implements OplusRecyclerView.IOp
      */
     public void setTitleCentered(boolean titleCentered) {
         this.mTitleCentered = titleCentered;
+        notifyChanged();
     }
 
     /**
