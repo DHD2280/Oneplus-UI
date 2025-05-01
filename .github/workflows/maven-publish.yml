@@ -40,6 +40,9 @@ jobs:
       - name: Build publish ⚙️🛠
         run: ./gradlew :oneplusui:publish
 
+      - name: Build Sample
+        run: ./gradlew assembleDebug
+
       - name: Create Release ✅
         uses: ncipollo/release-action@v1.14.0
         with:
@@ -49,7 +52,7 @@ jobs:
           makeLatest: true
           draft: false
           body: ${{ env.RMessage }}
-          artifacts: 'oneplusui/build/outputs/aar/*.aar'
+          artifacts: "oneplusui/build/outputs/aar/*.aar,app/build/outputs/apk/debug/*.apk"
 
       - name: Commit version bump
         uses: github-actions-x/commit@v2.9
