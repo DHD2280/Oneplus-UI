@@ -40,7 +40,7 @@ import it.dhd.oneplusui.appcompat.seekbar.OplusSeekBar;
  */
 public class OplusSectionSeekbarPreference extends OplusPreference {
 
-    private static final String TAG = "OplusSeekbarPreference";
+    private static final String TAG = "OplusSectionSeekbarPreference";
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             int mSectionSeekbarValue;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
