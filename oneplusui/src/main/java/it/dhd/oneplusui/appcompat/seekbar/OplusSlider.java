@@ -419,6 +419,10 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     protected void setActiveThumbIndex(int index) {
+        if (values.size() == 1) {
+            activeThumbIdx = 0;
+            return;
+        }
         activeThumbIdx = index;
     }
 
@@ -559,7 +563,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private void drawProgress(Canvas canvas, int i2, float f2, float f3) {
-        Log.d(TAG, "drawProgress: mCurProgressRadius:" + mCurProgressRadius + ",mCurProgressHeight:" + mCurProgressHeight);
         if (mInnerShadowRadiusSize > 0 && mCurProgressRadius > mProgressRadius) {
             mPaint.setStyle(Paint.Style.STROKE);
             mPaint.setStrokeWidth(0.0f);
@@ -570,7 +573,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
                     ((float) i2 - (mCurProgressHeight / SCALE_DEFORMATION_MAX)) - ((float) mInnerShadowRadiusSize / 2),
                     ((float) mInnerShadowRadiusSize / 2) + f3 + mCurProgressRadius,
                     (float) i2 + (mCurProgressHeight / SCALE_DEFORMATION_MAX) + ((float) mInnerShadowRadiusSize / 2));
-            Log.d(TAG, "drawProgress: mInnerShadowRadiusSize > 0 && mCurProgressRadius > mProgressRadius");
             canvas.drawRoundRect(mProgressRect, mCurProgressRadius, mCurProgressRadius, mPaint);
             mPaint.clearShadowLayer();
             mPaint.setStyle(Paint.Style.FILL);
@@ -646,7 +648,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private void flingBehaviorAfterEndDrag(float f2) {
-        Log.d(TAG, "flingBehaviorAfterEndDrag: f2:" + f2);
         int normalSeekBarWidth = getNormalSeekBarWidth();
         float i2 = valueTo - valueFrom;
         float f3 = i2 > 0 ? (float) normalSeekBarWidth / i2 : 0.0f;
@@ -781,7 +782,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         mPhysicalAnimator = PhysicalAnimator.create(context);
         mFlingValueHolder = new FloatValueHolder(0.0f);
         int normalSeekBarWidth = getNormalSeekBarWidth();
-        Log.i(TAG, "initPhysicsAnimator : setActiveFrame:" + normalSeekBarWidth);
         mFlingBehavior = new FlingBehavior(ConstraintBehavior.COLLISION_MODE_SIMPLE_LIMIT, 0.0f, (float) normalSeekBarWidth).withProperty(mFlingValueHolder).setSpringProperty(mFlingFrequency, mFlingDampingRatio).applyTo(null);
         mFlingBehavior.setLinearDamping(mFlingLinearDamping);
         mPhysicalAnimator.addBehavior(mFlingBehavior);
@@ -808,7 +808,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private void invalidateProgress(MotionEvent motionEvent) {
-        Log.d(TAG, "COUISeekBar invalidateProgress");
         float x2 = motionEvent.getX();
         float seekBarWidth = getSeekBarWidth();
         float f3 = seekBarWidth + (SCALE_DEFORMATION_MAX * mCurProgressRadius);
@@ -984,9 +983,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
 
     @SuppressLint({"RestrictedApi"})
     private void setValueForLabel(TooltipDrawable label, float value) {
-        Log.d(TAG, "setValueForLabel: " + labels.indexOf(label) + " label=" + label.hashCode() + " value=" + value + " activeThumbIdx=" + activeThumbIdx + " focusedThumbIdx=" + focusedThumbIdx);
         label.setText(formatValue(value));
-        Log.d("TooltipDrawable", "setText: " + value + " label=" + label.hashCode());
         label.invalidateSelf();
         positionLabel(label, value);
         ViewUtils.getContentViewOverlay(this).add(label);
@@ -1039,7 +1036,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private void trackTouchEvent(MotionEvent motionEvent) {
-        Log.i(TAG, "COUISeekBar trackTouchEvent : mIsSupportDeformation:" + mIsSupportDeformation + ",mScale:" + mScale);
         float x2 = motionEvent.getX();
         float f2 = x2 - this.mLastX;
         float diff = this.valueTo - this.valueFrom;
@@ -1216,10 +1212,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         float f4 = seekBarWidth + (SCALE_DEFORMATION_MAX * mCurProgressRadius);
         float f5 = mCurPaddingHorizontal - mCurProgressRadius;
         startTransitionAnim(getProgressLimit((((isLayoutRtl() ? (((getWidth() - f2) - getStart()) - f5) / f4 : ((f2 - getStart()) - f5) / f4) * (valueTo - valueFrom)) + valueFrom)), true);
-    }
-
-    public void checkThumbPosChange(float value) {
-        checkThumbPosChange(value, true, true);
     }
 
     @Override
@@ -1468,6 +1460,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         } else {
             flingBehaviorAfterEndDrag(mFlingVelocity);
         }
+        startTransitionAnim(values.get(activeThumbIdx), false);
         setPressed(false);
         releaseAnim();
         removeCallbacks(resetActiveThumbIndex);
@@ -1613,7 +1606,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         }
 
         int action = motionEvent.getAction();
-        Log.i(TAG, "COUISeekBar, onTouchEvent: action=" + action);
 
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -1626,15 +1618,12 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
                 requestFocus();
                 thumbIsPressed = true;
                 if (mClickAnimatorSet != null) {
-                    Log.d(TAG, "onTouchEvent, mClickAnimatorSet != null");
                     mClickAnimatorSet.removeAllListeners();
                     mClickAnimatorSet.cancel();
                 }
-                Log.d(TAG, "onTouchEvent, isDeformationFling? " + isDeformationFling());
                 if (!isDeformationFling()) {
                     stopPhysicsMove();
                 }
-                Log.d(TAG, "onTouchEvent, mIsPhysicsEnable = " + mIsPhysicsEnable + " mPhysicalAnimator == null " + (mPhysicalAnimator == null));
                 if (mIsPhysicsEnable && mPhysicalAnimator == null) {
                     initPhysicsAnimator(getContext());
                 }
@@ -1647,7 +1636,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                Log.i(TAG, "onTouchEvent: ACTION_MOVE, thumbIsPressed=" + thumbIsPressed + " activeThumbIdx=" + activeThumbIdx);
                 if (!thumbIsPressed) {
                     getParent().requestDisallowInterceptTouchEvent(true);
                     if (!determineActiveThumb(motionEvent)) {
@@ -1677,17 +1665,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         return true;
     }
 
-    private double snapPosition(float position) {
-        if (stepSize > 0.0f) {
-            int stepCount = (int) ((valueTo - valueFrom) / stepSize);
-            return Math.round(position * stepCount) / (double) stepCount;
-        }
-
-        return position;
-    }
-
     private boolean snapActiveThumbToValue(float value) {
-        Log.d(TAG, "COUISeekBar, snapActiveThumbToValue: value=" + value);
         return snapThumbToValue(activeThumbIdx, value);
     }
 
@@ -2121,7 +2099,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         Collections.sort(values);
         if (values.size() > 1) {
             mIsPhysicsEnable = false;
-            Log.d(TAG, "setValues, values: " + values.size());
         }
         if (this.values.size() == values.size()) {
             if (this.values.equals(values)) {
@@ -2203,7 +2180,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private void setLocalProgress(float localProgress) {
-        Log.d(TAG, "setLocalProgress: localProgress=" + localProgress);
         this.mProgress = localProgress;
         this.mRealProgress = getRealProgress(localProgress);
     }
@@ -2411,19 +2387,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         float x2 = motionEvent.getX();
         float y2 = motionEvent.getY();
         return x2 >= ((float) view.getPaddingLeft()) && x2 <= ((float) (view.getWidth() - view.getPaddingRight())) && y2 >= 0.0f && y2 <= ((float) view.getHeight());
-    }
-
-    public void checkThumbPosChange(float value, boolean z2, boolean fromUser) {
-        if (values.get(0) != value) {
-            float realProgress = mRealProgress;
-            setLocalProgress(value);
-            dispatchChangeListener(fromUser);
-            if (!z2 || realProgress == mRealProgress) {
-                return;
-            }
-            snapThumbToValue(0, mProgress);
-            performFeedback();
-        }
     }
 
     private void updateLabels() {
@@ -2745,7 +2708,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         mOldProgress = mProgress;
 
         float clampedProgress = Math.max(valueFrom, Math.min(progress, valueTo));
-        Log.i(TAG, "setProgress: clampedProgress=" + clampedProgress);
         if (mOldProgress != clampedProgress) {
             if (animate) {
                 startTransitionAnim(clampedProgress, fromUser);
