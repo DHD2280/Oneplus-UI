@@ -1,3 +1,6 @@
+**1.4.3**  
+- Added OplusInputPreference  
+  
 **1.4.2**  
 - Added OplusInputPreference  
 - OplusSlider: removed useless logs and improved handling on single value and small range  

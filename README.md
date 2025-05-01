@@ -15,7 +15,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.DHD2280:Oneplus-UI:1.4.2
+    implementation 'com.github.DHD2280:Oneplus-UI:1.4.3
 }
 ```
 
