@@ -1,3 +1,11 @@
+**1.4.2**  
+- Added OplusInputPreference  
+- OplusSlider: removed useless logs and improved handling on single value and small range  
+- OplusSectionSeekbarPreference: fixed TAG  
+- OplusSectionSeekBar: fixed stop tracking touch listener  
+- OplusSeekBar: fixed stop tracking touch  
+- Notify change in OplusPreference  
+  
 **1.4.1**  
 - Fixed OplusSlider preview  
   
