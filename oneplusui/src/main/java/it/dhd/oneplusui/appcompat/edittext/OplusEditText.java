@@ -1007,78 +1007,78 @@ public class OplusEditText extends AppCompatEditText {
         if (mShowDeleteIcon && mQuickDelete && !TextUtils.isEmpty(getText()) && hasFocus()) {
             Rect rect = new Rect();
             boolean z2 = getContentRect(rect) && rect.contains((int) motionEvent.getX(), (int) motionEvent.getY());
-            if (this.mDeletable && z2) {
+            if (mDeletable && z2) {
                 int action = motionEvent.getAction();
                 if (action == 0) {
-                    this.mShouldHandleDelete = true;
+                    mShouldHandleDelete = true;
                     return true;
                 }
                 if (action != 1) {
-                    if (action == 2 && this.mShouldHandleDelete) {
+                    if (action == 2 && mShouldHandleDelete) {
                         return true;
                     }
-                } else if (this.mShouldHandleDelete) {
-                    OnTextDeletedListener onTextDeletedListener = this.mTextDeleteListener;
+                } else if (mShouldHandleDelete) {
+                    OnTextDeletedListener onTextDeletedListener = mTextDeleteListener;
                     if (onTextDeletedListener != null && onTextDeletedListener.onTextDeleted()) {
                         return true;
                     }
                     onFastDelete();
-                    this.mShouldHandleDelete = false;
+                    mShouldHandleDelete = false;
                     return true;
                 }
             }
         }
-        OnTouchListener onTouchListener = this.mCustomEditTextTouchListener;
+        OnTouchListener onTouchListener = mCustomEditTextTouchListener;
         if (onTouchListener != null) {
             onTouchListener.onTouch(this, motionEvent);
         }
         boolean onTouchEvent = super.onTouchEvent(motionEvent);
-        this.mClickSelectionPosition = getSelectionEnd();
+        mClickSelectionPosition = getSelectionEnd();
         return onTouchEvent;
     }
 
     public void refresh() {
         TypedArray obtainStyledAttributes;
         Drawable drawable;
-        String resourceTypeName = getResources().getResourceTypeName(this.mRefreshStyle);
+        String resourceTypeName = getResources().getResourceTypeName(mRefreshStyle);
         if ("attr".equals(resourceTypeName)) {
-            obtainStyledAttributes = getContext().getTheme().obtainStyledAttributes(null, R.styleable.OplusEditText, this.mRefreshStyle, 0);
+            obtainStyledAttributes = getContext().getTheme().obtainStyledAttributes(null, R.styleable.OplusEditText, mRefreshStyle, 0);
         } else if (!TextUtils.equals(resourceTypeName, "style")) {
             return;
         } else {
-            obtainStyledAttributes = getContext().getTheme().obtainStyledAttributes(null, R.styleable.OplusEditText, 0, this.mRefreshStyle);
+            obtainStyledAttributes = getContext().getTheme().obtainStyledAttributes(null, R.styleable.OplusEditText, 0, mRefreshStyle);
         }
         int i2 = R.styleable.OplusEditText_android_textColorHint;
         if (obtainStyledAttributes.hasValue(i2)) {
             ColorStateList colorStateList = obtainStyledAttributes.getColorStateList(i2);
-            this.mDefaultHintTextColor = colorStateList;
-            this.mFocusedTextColor = colorStateList;
+            mDefaultHintTextColor = colorStateList;
+            mFocusedTextColor = colorStateList;
             if (colorStateList == null) {
-                this.mDefaultHintTextColor = getHintTextColors();
+                mDefaultHintTextColor = getHintTextColors();
             }
         }
-        this.mErrorColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_editTextErrorColor, getResources().getColor(R.color.oplus_color_error_text_bg, getContext().getTheme()));
-        this.mFocusedStrokeColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_strokeColor, getResources().getColor(android.R.color.system_accent1_400, getContext().getTheme()));
-        this.mDefaultStrokeColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_defaultStrokeColor, 0);
-        this.mDisabledColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_disabledStrokeColor, 0);
-        this.mErrorStateHelper.setErrorColor(this.mErrorColor);
-        this.mNormalPaint.setColor(this.mDefaultStrokeColor);
-        this.mDisabledPaint.setColor(this.mDisabledColor);
-        this.mFocusedPaint.setColor(this.mFocusedStrokeColor);
-        this.mDeleteNormal = obtainStyledAttributes.getDrawable(R.styleable.OplusEditText_editTextDeleteIconNormal);
-        this.mDeletePressed = obtainStyledAttributes.getDrawable(R.styleable.OplusEditText_editTextDeleteIconPressed);
-        Drawable drawable2 = this.mDeleteNormal;
+        mErrorColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_editTextErrorColor, getResources().getColor(R.color.oplus_color_error_text_bg, getContext().getTheme()));
+        mFocusedStrokeColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_strokeColor, getResources().getColor(android.R.color.system_accent1_400, getContext().getTheme()));
+        mDefaultStrokeColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_defaultStrokeColor, 0);
+        mDisabledColor = obtainStyledAttributes.getColor(R.styleable.OplusEditText_disabledStrokeColor, 0);
+        mErrorStateHelper.setErrorColor(mErrorColor);
+        mNormalPaint.setColor(mDefaultStrokeColor);
+        mDisabledPaint.setColor(mDisabledColor);
+        mFocusedPaint.setColor(mFocusedStrokeColor);
+        mDeleteNormal = obtainStyledAttributes.getDrawable(R.styleable.OplusEditText_editTextDeleteIconNormal);
+        mDeletePressed = obtainStyledAttributes.getDrawable(R.styleable.OplusEditText_editTextDeleteIconPressed);
+        Drawable drawable2 = mDeleteNormal;
         if (drawable2 != null) {
-            this.mDeleteIconWidth = drawable2.getIntrinsicWidth();
-            int intrinsicHeight = this.mDeleteNormal.getIntrinsicHeight();
-            this.mDeleteIconHeight = intrinsicHeight;
-            this.mDeleteNormal.setBounds(0, 0, this.mDeleteIconWidth, intrinsicHeight);
+            mDeleteIconWidth = drawable2.getIntrinsicWidth();
+            int intrinsicHeight = mDeleteNormal.getIntrinsicHeight();
+            mDeleteIconHeight = intrinsicHeight;
+            mDeleteNormal.setBounds(0, 0, mDeleteIconWidth, intrinsicHeight);
         }
-        Drawable drawable3 = this.mDeletePressed;
+        Drawable drawable3 = mDeletePressed;
         if (drawable3 != null) {
-            drawable3.setBounds(0, 0, this.mDeleteIconWidth, this.mDeleteIconHeight);
+            drawable3.setBounds(0, 0, mDeleteIconWidth, mDeleteIconHeight);
         }
-        if (this.mQuickDelete && this.mShowDeleteIcon && !TextUtils.isEmpty(getText()) && hasFocus() && this.mDeletable && (drawable = this.mDeleteNormal) != null) {
+        if (mQuickDelete && mShowDeleteIcon && !TextUtils.isEmpty(getText()) && hasFocus() && mDeletable && (drawable = mDeleteNormal) != null) {
             setCompoundDrawables(null, null, drawable, null);
         }
         updateTextInputBoxState();
@@ -1087,104 +1087,104 @@ public class OplusEditText extends AppCompatEditText {
     }
 
     public void removeOnErrorStateChangedListener(OnErrorStateChangedListener onErrorStateChangedListener) {
-        this.mErrorStateHelper.removeOnErrorStateChangedListener(onErrorStateChangedListener);
+        mErrorStateHelper.removeOnErrorStateChangedListener(onErrorStateChangedListener);
     }
 
     public void setBoxBackgroundMode(int i2) {
-        if (i2 == this.mBoxBackgroundMode) {
+        if (i2 == mBoxBackgroundMode) {
             return;
         }
-        this.mBoxBackgroundMode = i2;
+        mBoxBackgroundMode = i2;
         onApplyBoxBackgroundMode();
     }
 
     public void setCollapsedTextAppearance(int i2, ColorStateList colorStateList) {
-        this.mOplusCollapseTextHelper.setCollapsedTextAppearance(i2, colorStateList);
-        this.mFocusedTextColor = this.mOplusCollapseTextHelper.getCollapsedTextColor();
+        mOplusCollapseTextHelper.setCollapsedTextAppearance(i2, colorStateList);
+        mFocusedTextColor = mOplusCollapseTextHelper.getCollapsedTextColor();
         updateLabelState(false);
-        this.mErrorStateHelper.setCollapsedTextAppearance(i2, colorStateList);
+        mErrorStateHelper.setCollapsedTextAppearance(i2, colorStateList);
     }
 
     @Override
     public void setCompoundDrawables(Drawable drawable, Drawable drawable2, Drawable drawable3, Drawable drawable4) {
         setCompoundDrawablesRelative(drawable, drawable2, drawable3, drawable4);
         if (drawable3 != null) {
-            this.mDrawableSizeRight = drawable3.getBounds().width();
+            mDrawableSizeRight = drawable3.getBounds().width();
         } else {
-            this.mDrawableSizeRight = 0;
+            mDrawableSizeRight = 0;
         }
     }
 
     public void setCustomEditTextOnTouchListener(OnTouchListener onTouchListener) {
-        this.mCustomEditTextTouchListener = onTouchListener;
+        mCustomEditTextTouchListener = onTouchListener;
     }
 
     public void setDefaultStrokeColor(int i2) {
-        if (this.mDefaultStrokeColor != i2) {
-            this.mDefaultStrokeColor = i2;
-            this.mNormalPaint.setColor(i2);
+        if (mDefaultStrokeColor != i2) {
+            mDefaultStrokeColor = i2;
+            mNormalPaint.setColor(i2);
             updateTextInputBoxState();
         }
     }
 
     public void setDisabledStrokeColor(int i2) {
-        if (this.mDisabledColor != i2) {
-            this.mDisabledColor = i2;
-            this.mDisabledPaint.setColor(i2);
+        if (mDisabledColor != i2) {
+            mDisabledColor = i2;
+            mDisabledPaint.setColor(i2);
             updateTextInputBoxState();
         }
     }
 
     public void setEditFocusChangeListener(OnFocusChangeListener onFocusChangeListener) {
-        this.mEditFocusChangeListener = onFocusChangeListener;
+        mEditFocusChangeListener = onFocusChangeListener;
     }
 
     public void setEditTextColor(int i2) {
         setTextColor(i2);
-        this.mErrorStateHelper.setOriginalTextColors(getTextColors());
+        mErrorStateHelper.setOriginalTextColors(getTextColors());
     }
 
     public void setEditTextDeleteIconNormal(Drawable drawable) {
         if (drawable != null) {
-            this.mDeleteNormal = drawable;
-            this.mDeleteIconWidth = drawable.getIntrinsicWidth();
-            int intrinsicHeight = this.mDeleteNormal.getIntrinsicHeight();
-            this.mDeleteIconHeight = intrinsicHeight;
-            this.mDeleteNormal.setBounds(0, 0, this.mDeleteIconWidth, intrinsicHeight);
+            mDeleteNormal = drawable;
+            mDeleteIconWidth = drawable.getIntrinsicWidth();
+            int intrinsicHeight = mDeleteNormal.getIntrinsicHeight();
+            mDeleteIconHeight = intrinsicHeight;
+            mDeleteNormal.setBounds(0, 0, mDeleteIconWidth, intrinsicHeight);
             invalidate();
         }
     }
 
     public void setEditTextDeleteIconPressed(Drawable drawable) {
         if (drawable != null) {
-            this.mDeletePressed = drawable;
-            drawable.setBounds(0, 0, this.mDeleteIconWidth, this.mDeleteIconHeight);
+            mDeletePressed = drawable;
+            drawable.setBounds(0, 0, mDeleteIconWidth, mDeleteIconHeight);
             invalidate();
         }
     }
 
     public void setEditTextErrorColor(int i2) {
-        if (i2 != this.mErrorColor) {
-            this.mErrorColor = i2;
-            this.mErrorStateHelper.setErrorColor(i2);
+        if (i2 != mErrorColor) {
+            mErrorColor = i2;
+            mErrorStateHelper.setErrorColor(i2);
             invalidate();
         }
     }
 
     public void setInputConnectionListener(InputConnectionListener inputConnectionListener) {
-        this.mInputConnectionListener = inputConnectionListener;
+        mInputConnectionListener = inputConnectionListener;
     }
 
     public void setIsEllipsisEnabled(boolean z2) {
-        this.mIsEllipsisEnabled = z2;
+        mIsEllipsisEnabled = z2;
     }
 
     public void setJustShowFocusLine(boolean z2) {
-        this.mJustShowFocusLine = z2;
+        mJustShowFocusLine = z2;
     }
 
     public void setOnTextDeletedListener(OnTextDeletedListener onTextDeletedListener) {
-        this.mTextDeleteListener = onTextDeletedListener;
+        mTextDeleteListener = onTextDeletedListener;
     }
 
     @Override
@@ -1194,7 +1194,7 @@ public class OplusEditText extends AppCompatEditText {
     }
 
     public void setTextDeletedListener(OnPasswordDeletedListener onPasswordDeletedListener) {
-        this.mPasswordDeleteListener = onPasswordDeletedListener;
+        mPasswordDeleteListener = onPasswordDeletedListener;
     }
 
     public void setTopHint(CharSequence charSequence) {
@@ -1206,39 +1206,33 @@ public class OplusEditText extends AppCompatEditText {
     }
 
     private void updateLabelState(boolean z2, boolean z3) {
-        OplusCutoutDrawable.OplusCollapseTextHelper cOUICollapseTextHelper;
-        ColorStateList colorStateList;
-        boolean isEnabled = isEnabled();
         boolean z4 = !TextUtils.isEmpty(getText());
-        if (this.mDefaultHintTextColor != null) {
-            this.mDefaultHintTextColor = getHintTextColors();
-            OplusCutoutDrawable.OplusCollapseTextHelper cOUICollapseTextHelper2 = this.mOplusCollapseTextHelper;
-            if (cOUICollapseTextHelper2 != null) {
-                cOUICollapseTextHelper2.setCollapsedTextColor(this.mFocusedTextColor);
-                this.mOplusCollapseTextHelper.setExpandedTextColor(this.mDefaultHintTextColor);
+        if (mDefaultHintTextColor != null) {
+            mDefaultHintTextColor = getHintTextColors();
+            if (mOplusCollapseTextHelper != null) {
+                mOplusCollapseTextHelper.setCollapsedTextColor(mFocusedTextColor);
+                mOplusCollapseTextHelper.setExpandedTextColor(mDefaultHintTextColor);
             }
         }
-        OplusCutoutDrawable.OplusCollapseTextHelper cOUICollapseTextHelper3 = this.mOplusCollapseTextHelper;
-        if (cOUICollapseTextHelper3 != null) {
-            if (!isEnabled) {
-                cOUICollapseTextHelper3.setCollapsedTextColor(ColorStateList.valueOf(this.mDisabledColor));
-                this.mOplusCollapseTextHelper.setExpandedTextColor(ColorStateList.valueOf(this.mDisabledColor));
-            } else if (hasFocus() && (colorStateList = this.mFocusedTextColor) != null) {
-                this.mOplusCollapseTextHelper.setCollapsedTextColor(colorStateList);
+        if (mOplusCollapseTextHelper != null) {
+            if (!isEnabled()) {
+                mOplusCollapseTextHelper.setCollapsedTextColor(ColorStateList.valueOf(mDisabledColor));
+                mOplusCollapseTextHelper.setExpandedTextColor(ColorStateList.valueOf(mDisabledColor));
+            } else if (hasFocus() && (mFocusedTextColor != null)) {
+                mOplusCollapseTextHelper.setCollapsedTextColor(mFocusedTextColor);
             }
         }
         if (z4 || (isEnabled() && hasFocus())) {
-            if (z3 || this.mHintExpanded) {
+            if (z3 || mHintExpanded) {
                 collapseHint(z2);
             }
-        } else if ((z3 || !this.mHintExpanded) && isHintEnabled()) {
+        } else if ((z3 || !mHintExpanded) && isHintEnabled()) {
             expandHint(z2);
         }
-        OplusErrorEditTextHelper cOUIErrorEditTextHelper = this.mErrorStateHelper;
-        if (cOUIErrorEditTextHelper == null || (cOUICollapseTextHelper = this.mOplusCollapseTextHelper) == null) {
+        if (mErrorStateHelper == null || mOplusCollapseTextHelper == null) {
             return;
         }
-        cOUIErrorEditTextHelper.updateLabelState(cOUICollapseTextHelper);
+        mErrorStateHelper.updateLabelState(mOplusCollapseTextHelper);
     }
 
     public interface InputConnectionListener {
@@ -1279,7 +1273,7 @@ public class OplusEditText extends AppCompatEditText {
 
         private OplusSavedState(Parcel parcel) {
             super(parcel);
-            this.mText = parcel.readString();
+            mText = parcel.readString();
         }
 
         @Override
@@ -1288,13 +1282,13 @@ public class OplusEditText extends AppCompatEditText {
         }
 
         public void readFromParcel(Parcel parcel) {
-            this.mText = parcel.readString();
+            mText = parcel.readString();
         }
 
         @Override
         public void writeToParcel(Parcel parcel, int i2) {
             super.writeToParcel(parcel, i2);
-            parcel.writeString(this.mText);
+            parcel.writeString(mText);
         }
     }
 
@@ -1305,47 +1299,47 @@ public class OplusEditText extends AppCompatEditText {
 
         public AccessibilityTouchHelper(View view) {
             super(view);
-            this.mUninstallRect = null;
-            this.mViewRect = null;
-            this.mHostView = view;
+            mUninstallRect = null;
+            mViewRect = null;
+            mHostView = view;
         }
 
         private Rect getItemBounds(int i2) {
             if (i2 != 0) {
                 return new Rect();
             }
-            if (this.mUninstallRect == null) {
+            if (mUninstallRect == null) {
                 initUninstallRect();
             }
-            return this.mUninstallRect;
+            return mUninstallRect;
         }
 
         private void initUninstallRect() {
             Rect rect = new Rect();
-            this.mUninstallRect = rect;
+            mUninstallRect = rect;
             rect.left = getDeleteButtonLeft();
-            this.mUninstallRect.right = getWidth();
-            Rect rect2 = this.mUninstallRect;
+            mUninstallRect.right = getWidth();
+            Rect rect2 = mUninstallRect;
             rect2.top = 0;
             rect2.bottom = getHeight();
         }
 
         private void initViewRect() {
             Rect rect = new Rect();
-            this.mViewRect = rect;
+            mViewRect = rect;
             rect.left = 0;
             rect.right = getWidth();
-            Rect rect2 = this.mViewRect;
+            Rect rect2 = mViewRect;
             rect2.top = 0;
             rect2.bottom = getHeight();
         }
 
         @Override
         public int getVirtualViewAt(float f2, float f3) {
-            if (this.mUninstallRect == null) {
+            if (mUninstallRect == null) {
                 initUninstallRect();
             }
-            Rect rect = this.mUninstallRect;
+            Rect rect = mUninstallRect;
             return (f2 < ((float) rect.left) || f2 > ((float) rect.right) || f3 < ((float) rect.top) || f3 > ((float) rect.bottom) || !isDeleteButtonExist()) ? Integer.MIN_VALUE : 0;
         }
 
