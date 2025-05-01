@@ -79,6 +79,13 @@
             android:title="Test EditText Preference"
             app:iconSpaceReserved="false" />
 
+        <it.dhd.oneplusui.preference.OplusInputPreference
+            app:couiContent="default"
+            android:key="test_input_key"
+            android:summary="This is a test input preference"
+            android:title="Test Input Preference"
+            app:iconSpaceReserved="false" />
+
         <it.dhd.oneplusui.preference.OplusListPreference
             android:entries="@array/test_entries"
             android:entryValues="@array/test_values"

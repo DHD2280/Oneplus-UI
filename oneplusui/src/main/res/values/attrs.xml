@@ -12,6 +12,7 @@
     <attr name="oplusSliderPreferenceStyle" format="reference" />
     <attr name="oplusEditTextStyle" format="reference" />
     <attr name="oplusInputPreferenceEditTextStyle" format="reference" />
+    <attr name="oplusInputPreferenceStyle" format="reference" />
 
     <declare-styleable name="OplusPreference">
         <attr name="clickStyle" format="integer" />
@@ -51,10 +52,10 @@
     </declare-styleable>
 
     <declare-styleable name="OplusSeekbarPreference">
-        <attr name="updatesContinuously"/>
-        <attr name="android:min"/>
+        <attr name="updatesContinuously" />
+        <attr name="android:min" />
         <attr name="android:max" />
-        <attr name="showResetButton"/>
+        <attr name="showResetButton" />
         <attr name="seekBarIncrement" format="integer" />
         <attr name="showSeekBarValue" format="boolean" />
         <attr name="adjustable" format="boolean" />
@@ -70,6 +71,11 @@
         <attr name="android:popupMenuStyle" />
         <attr name="android:popupTheme" />
         <attr name="popupBackgroundRadius" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="OplusInputPreference">
+        <attr name="couiContent" format="string" />
+        <attr name="couiJustShowFocusLine" format="boolean"/>
     </declare-styleable>
 
     <declare-styleable name="SimpleMenuPopup">
@@ -128,7 +134,7 @@
     </declare-styleable>
 
     <declare-styleable name="OplusSlider">
-        <attr name="oplusSeekBarEnableVibrator"/>
+        <attr name="oplusSeekBarEnableVibrator" />
         <attr name="oplusSeekBarAdaptiveVibrator" />
         <attr name="oplusSeekBarPhysicsEnable" />
         <attr name="oplusSeekBarBackgroundColor" />
@@ -207,7 +213,11 @@
         <attr name="enableError" format="boolean" />
         <attr name="inputMaxCount" format="integer" />
         <attr name="enableInputCount" format="boolean" />
-        <attr name="inputType" format="integer" />
+        <attr name="inputType">
+            <enum name="number" value="1" />
+            <enum name="numberPassword" value="2" />
+            <enum name="text" value="0" />
+        </attr>
         <attr name="inputCustomFormat" format="boolean" />
         <attr name="editLineColor" format="boolean" />
     </declare-styleable>

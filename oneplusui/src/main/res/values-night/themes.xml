@@ -58,6 +58,8 @@
         <item name="oplusSliderPreferenceStyle">@style/Preferences.Oplus.Preference.Slider</item>
         <item name="oplusSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.Seekbar</item>
         <item name="oplusSectionSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.SectionSeekbar</item>
+        <item name="oplusInputPreferenceStyle">@style/Preferences.Oplus.Preference.Input</item>
+        <item name="oplusInputPreferenceEditTextStyle">@style/Widget.Oplus.InputPreference</item>
         <item name="switchPreferenceCompatStyle">@style/Preferences.Oplus.Preference.Switch</item>
         <item name="switchPreferenceStyle">@style/Preferences.Oplus.Preference.Switch</item>
         <item name="android:windowAnimationStyle">@style/Animation.Slide.Settings</item>
