@@ -227,26 +227,6 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         this.mMoveAnimator.start();
     }
 
-//    private void trackTouchEvent(float f2) {
-//        float subtract = subtract(f2, this.mTouchDownThumbX);
-//        float f3 = subtract < 0.0f ? subtract - 0.1f : subtract + 0.1f;
-//        float moveSectionWidth = getMoveSectionWidth();
-//        int floatValue = (int) new BigDecimal(Float.toString(f3)).divide(new BigDecimal(Float.toString(moveSectionWidth)), RoundingMode.FLOOR).floatValue();
-//        float f4 = floatValue * moveSectionWidth;
-//        if (isLayoutRtl()) {
-//            floatValue = -floatValue;
-//        }
-//        this.mCurrentOffset = f3;
-//        if (Math.abs((this.mTouchDownPos + floatValue) - this.mProgress) > 0) {
-//            float f5 = this.mTouchDownThumbX;
-//            startMoveAnimation(f5, f4 + f5, this.mMoveAnimationValue, 100);
-//        } else {
-//            this.mThumbX = this.mTouchDownThumbX + f4 + ((this.mCurrentOffset - f4) * 0.6f);
-//            invalidate();
-//        }
-//        this.mLastX = f2;
-//    }
-
     private void trackTouchEvent(float f2) {
         float subtract = subtract(f2, this.mTouchDownThumbX);
         float f3 = subtract < 0.0f ? subtract - 0.1f : subtract + 0.1f;
@@ -429,7 +409,7 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         if (!this.mIsFastMoving) {
             invalidateProgress(touchXOfDrawArea, true);
         }
-        onStopTrackingTouch(false);
+        onStopTrackingTouch();
         setPressed(false);
         releaseAnim();
     }
