@@ -80,8 +80,8 @@
             app:iconSpaceReserved="false" />
 
         <it.dhd.oneplusui.preference.OplusInputPreference
-            app:couiContent="default"
-            android:key="test_input_key"
+            android:defaultValue="test_default_value"
+            android:key="test_input_pref_key"
             android:summary="This is a test input preference"
             android:title="Test Input Preference"
             app:iconSpaceReserved="false" />

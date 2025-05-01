@@ -499,7 +499,7 @@ public class OplusInputView extends ConstraintLayout {
         });
     }
 
-    public OplusEditText instanceCOUIEditText(Context context, AttributeSet attributeSet) {
+    public OplusEditText instanceOplusEditText(Context context, AttributeSet attributeSet) {
         OplusEditText oplusEditText = new OplusEditText(context, attributeSet, R.attr.oplusInputPreferenceEditTextStyle);
         oplusEditText.setShowDeleteIcon(false);
         oplusEditText.setVerticalScrollBarEnabled(false);
@@ -521,7 +521,7 @@ public class OplusInputView extends ConstraintLayout {
     }
 
     public void lazyInit(Context context, AttributeSet attributeSet) {
-        mEditText = instanceCOUIEditText(context, attributeSet);
+        mEditText = instanceOplusEditText(context, attributeSet);
         mEditText.setMaxLines(MAX_LINE);
         mEdittextContainer.addView(mEditText, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         init();
