@@ -1785,7 +1785,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         if (!z2 || mOnSeekBarChangeListeners.isEmpty()) {
             return;
         }
-        dispatchStartTrackingTouch();
+        dispatchStopTrackingTouch();
     }
 
     @Override
