@@ -1,11 +1,13 @@
 package it.dhd.oneplusui.appcompat.edittext;
 
+import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN;
 import static android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -932,13 +934,24 @@ public class OplusEditText extends AppCompatEditText {
         if (mQuickDelete) {
             updateDeletableStatus(z2);
         }
+        Activity ac = getActivityFromContext(getContext());
         if (hasFocus()) {
-            ((Activity) getContext()).getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            if (ac != null) ac.getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        } else {
+            if (ac != null) ac.getWindow().setSoftInputMode(SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         }
         OnFocusChangeListener onFocusChangeListener = mEditFocusChangeListener;
         if (onFocusChangeListener != null) {
             onFocusChangeListener.onFocusChange(this, z2);
         }
+    }
+
+    public Activity getActivityFromContext(Context context) {
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) return (Activity) context;
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+        return null;
     }
 
     @Override
