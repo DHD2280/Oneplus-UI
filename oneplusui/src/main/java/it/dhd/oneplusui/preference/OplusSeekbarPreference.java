@@ -196,6 +196,7 @@ public class OplusSeekbarPreference extends OplusPreference {
             return;
         }
         mResetButton.setOnClickListener(mResetButtonClickListener);
+        mSeekBar.clearListeners();
         mSeekBar.addOnSeekBarChangeListener(mSeekBarChangeListener);
         mSeekBar.setMax(mMax - mMin);
         // If the increment is not zero, use that. Otherwise, use the default mKeyProgressIncrement

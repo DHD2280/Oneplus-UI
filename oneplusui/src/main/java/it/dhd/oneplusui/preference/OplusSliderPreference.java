@@ -244,6 +244,7 @@ public class OplusSliderPreference extends OplusPreference {
         mOplusSlider = holder.itemView.findViewById(R.id.slider);
         mOplusSlider.setTag(getKey());
 
+        mOplusSlider.clearSliderChangeListeners();
         mOplusSlider.addOnSliderChangeListener(sliderTouchListener);
 
         mOplusSlider.setLabelFormatter(labelFormatter);
