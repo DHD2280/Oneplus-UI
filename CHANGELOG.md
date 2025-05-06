@@ -1,3 +1,6 @@
+**1.4.4**  
+- OplusEditText: fixed activity in onFocusChanged  
+  
 **1.4.3**  
 - Added OplusInputPreference  
   
