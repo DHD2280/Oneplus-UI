@@ -1,3 +1,6 @@
+**1.4.5**  
+- Slider preferences: clear listeners before adding the one we need  
+  
 **1.4.4**  
 - OplusEditText: fixed activity in onFocusChanged  
   
