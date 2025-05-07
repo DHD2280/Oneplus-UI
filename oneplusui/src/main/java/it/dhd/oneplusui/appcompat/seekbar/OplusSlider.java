@@ -1464,7 +1464,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         setPressed(false);
         releaseAnim();
         removeCallbacks(resetActiveThumbIndex);
-        setActiveThumbIndex(-1);
     }
 
     public boolean isLayoutRtl() {
@@ -2313,10 +2312,12 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
             public void onAnimationCancel(@NonNull Animator animator) {
                 dispatchChangeListener(fromUser);
                 onStopTrackingTouch(fromUser);
+                setActiveThumbIndex(-1);
             }
 
             @Override
             public void onAnimationEnd(@NonNull Animator animator) {
+                setActiveThumbIndex(-1);
                 setLocalProgress(targetValue);
                 dispatchChangeListener(fromUser);
                 onStopTrackingTouch(fromUser);
@@ -2483,7 +2484,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
             boolean gainFocus, int direction, @Nullable Rect previouslyFocusedRect) {
         super.onFocusChanged(gainFocus, direction, previouslyFocusedRect);
         if (!gainFocus) {
-            activeThumbIdx = -1;
             mAccessibilityHelper.clearKeyboardFocusForVirtualView(focusedThumbIdx);
         } else {
             focusThumbOnFocusGained(direction);
