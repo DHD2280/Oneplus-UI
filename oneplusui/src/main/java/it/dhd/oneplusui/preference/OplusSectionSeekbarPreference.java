@@ -131,7 +131,9 @@ public class OplusSectionSeekbarPreference extends OplusPreference {
     private final View.OnClickListener mResetButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            setValue(mDefaultValue);
+            if (callChangeListener(mDefaultValue)) {
+                setValueInternal(mDefaultValue, true);
+            }
         }
     };
 
