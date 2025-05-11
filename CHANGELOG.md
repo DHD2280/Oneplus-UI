@@ -1,3 +1,7 @@
+**1.4.6**  
+- OplusSlider: fixed crash due to animation when slider has two values  
+- Section Seekbar and Seekbar preferences: call change listener even on reset button  
+  
 **1.4.5**  
 - Slider preferences: clear listeners before adding the one we need  
   
