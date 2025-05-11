@@ -1,3 +1,6 @@
+**1.4.7**  
+- OplusSeekbarPreference and OplusSectionSeekbarPreference use android:defaultValue instead of app attrs  
+  
 **1.4.6**  
 - OplusSlider: fixed crash due to animation when slider has two values  
 - Section Seekbar and Seekbar preferences: call change listener even on reset button  
