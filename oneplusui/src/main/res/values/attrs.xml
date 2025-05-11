@@ -56,6 +56,7 @@
         <attr name="android:min" />
         <attr name="android:max" />
         <attr name="showResetButton" />
+        <attr name="android:defaultValue" />
         <attr name="seekBarIncrement" format="integer" />
         <attr name="showSeekBarValue" format="boolean" />
         <attr name="adjustable" format="boolean" />

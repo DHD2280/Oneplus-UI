@@ -157,7 +157,7 @@ public class OplusSectionSeekbarPreference extends OplusPreference {
                 false);
         mShowSeekBarValue = a.getBoolean(R.styleable.OplusSeekbarPreference_showSeekBarValue, true);
         mShowResetButton = a.getBoolean(R.styleable.OplusSeekbarPreference_showResetButton, true);
-        mDefaultValue = a.getInt(androidx.preference.R.styleable.Preference_defaultValue, 2);
+        mDefaultValue = a.getInt(R.styleable.OplusSeekbarPreference_android_defaultValue, 2);
         a.recycle();
     }
 
@@ -218,9 +218,8 @@ public class OplusSectionSeekbarPreference extends OplusPreference {
     }
 
     private void handleResetButton() {
-        Log.d(TAG, "handleResetButton: mSectionSeekbarValue = " + mSectionSeekbarValue);
         if (mResetButton == null) return;
-        mResetButton.setEnabled(mSectionSeekbar.getProgress() != mDefaultValue);
+        mResetButton.setEnabled(mSectionSeekbarValue != mDefaultValue);
     }
 
     @Override
