@@ -1,3 +1,6 @@
+**1.4.8**  
+- OplusSeekbarPreference: fixed setting default value  
+  
 **1.4.7**  
 - OplusSeekbarPreference and OplusSectionSeekbarPreference use android:defaultValue instead of app attrs  
   
