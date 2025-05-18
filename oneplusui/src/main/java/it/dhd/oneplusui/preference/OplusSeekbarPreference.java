@@ -132,6 +132,7 @@ public class OplusSeekbarPreference extends OplusPreference {
         @Override
         public void onClick(View v) {
             if (callChangeListener(mDefaultValue)) {
+                mSeekBar.setProgress(mDefaultValue);
                 setValueInternal(mDefaultValue, false);
             }
         }
