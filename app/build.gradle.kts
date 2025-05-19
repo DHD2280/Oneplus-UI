@@ -10,8 +10,8 @@ android {
         applicationId = "it.dhd.oneplusui.sample"
         minSdk = 33
         targetSdk = 35
-        versionCode = 30
-        versionName = "1.4.8"
+        versionCode = 31
+        versionName = "1.4.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
