@@ -219,7 +219,7 @@ public class OplusSectionSeekbarPreference extends OplusPreference {
 
     private void handleResetButton() {
         if (mResetButton == null) return;
-        mResetButton.setEnabled(mSectionSeekbarValue != mDefaultValue);
+        mResetButton.setEnabled(isEnabled() && mSectionSeekbarValue != mDefaultValue);
     }
 
     @Override
