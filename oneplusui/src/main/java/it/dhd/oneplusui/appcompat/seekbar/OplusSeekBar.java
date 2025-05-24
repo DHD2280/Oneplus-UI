@@ -1519,7 +1519,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void setLocalProgress(int localProgress) {
-        Log.d(TAG, "setLocalProgress: localProgress=" + localProgress);
         this.mProgress = localProgress;
         this.mRealProgress = getRealProgress(localProgress);
         super.setProgress(localProgress);
