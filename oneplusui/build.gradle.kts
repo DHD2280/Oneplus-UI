@@ -56,7 +56,7 @@ publishing {
 
             groupId = "it.dhd"
             artifactId = "oneplusui"
-            version = "1.4.8"
+            version = "1.4.9"
         }
     }
 }

@@ -1,3 +1,7 @@
+**1.4.9**  
+- Bump dependencies  
+- OplusSeekbarPreference and OplusSectionSeekbarPreference: improved reset button enabled state  
+  
 **1.4.8**  
 - OplusSeekbarPreference: fixed setting default value  
   
