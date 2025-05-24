@@ -1,3 +1,8 @@
+**1.4.10**  
+- Removed useless OplusSeekBar log  
+- Use android:defaultValue for Seekbar in sample  
+- Fixed OplusSeekBar animation  
+  
 **1.4.9**  
 - Bump dependencies  
 - OplusSeekbarPreference and OplusSectionSeekbarPreference: improved reset button enabled state  
