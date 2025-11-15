@@ -21,7 +21,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.slider.RangeSlider;
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -50,13 +49,14 @@ public class OplusSliderPreference extends OplusPreference {
     public final List<Float> defaultValue = new ArrayList<>();
     public OplusSlider mOplusSlider;
     private MaterialButton mResetButton;
+    private TextView mValueText;
     int valueCount;
     private String valueFormat;
     private final float outputScale;
     private boolean isDecimalFormat;
     private String decimalFormat = "#.#";
     boolean updateConstantly;
-
+    boolean showSeekBarValue;
 
     public OplusSliderPreference(@NonNull Context context) {
         this(context, null);
@@ -79,6 +79,7 @@ public class OplusSliderPreference extends OplusPreference {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.OplusSliderPreference);
         updateConstantly = a.getBoolean(R.styleable.OplusSliderPreference_updatesContinuously, false);
+        showSeekBarValue = a.getBoolean(R.styleable.OplusSliderPreference_showSeekBarValue, false);
         valueCount = a.getInteger(R.styleable.OplusSliderPreference_valueCount, 1);
         valueFrom = a.getFloat(R.styleable.OplusSliderPreference_minVal, 0f);
         valueTo = a.getFloat(R.styleable.OplusSliderPreference_maxVal, 100f);
@@ -172,20 +173,31 @@ public class OplusSliderPreference extends OplusPreference {
         try {
             mOplusSlider.setValues(values);
             if (needsCommit) savePrefs();
+            updateLabel();
         } catch (Throwable t) {
             values.clear();
         }
     }
 
-    RangeSlider.OnChangeListener changeListener = (slider, value, fromUser) -> {
+    private void updateLabel() {
+        List<Float> values = mOplusSlider.getValues();
+        if (values.size() > 1) mValueText.setText(labelFormatter.getFormattedValue(mOplusSlider.getValues().get(0)) + " - " + labelFormatter.getFormattedValue(mOplusSlider.getValues().get(1)));
+        else mValueText.setText(labelFormatter.getFormattedValue(mOplusSlider.getValues().get(0)));
+    }
 
-    };
+    public void setShowValue(boolean show) {
+        showSeekBarValue = show;
+        if (mValueText != null) {
+            mValueText.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
 
     OplusSlider.OnSliderChangeListener sliderTouchListener = new OplusSlider.OnSliderChangeListener() {
         @Override
         public void onProgressChanged(OplusSlider oplusSlider, boolean fromUser) {
             if (!getKey().equals(mOplusSlider.getTag())) return;
 
+            updateLabel();
             if (updateConstantly && fromUser) {
                 savePrefs();
             }
@@ -200,6 +212,7 @@ public class OplusSliderPreference extends OplusPreference {
             if (!getKey().equals(mOplusSlider.getTag())) return;
 
             handleResetButton();
+            updateLabel();
 
             if (!updateConstantly) {
                 savePrefs();
@@ -260,6 +273,9 @@ public class OplusSliderPreference extends OplusPreference {
         } else {
             mResetButton.setVisibility(View.GONE);
         }
+
+        mValueText = holder.itemView.findViewById(R.id.seekbar_value);
+        mValueText.setVisibility(showSeekBarValue ? View.VISIBLE : View.GONE);
 
         mOplusSlider.setValueFrom(valueFrom);
         mOplusSlider.setValueTo(valueTo);
