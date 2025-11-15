@@ -1522,7 +1522,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         this.mProgress = localProgress;
         this.mRealProgress = getRealProgress(localProgress);
         super.setProgress(localProgress);
-
     }
 
     public void setMaxHeightDeformed(float f2) {
@@ -1699,12 +1698,12 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
             public void onAnimationRepeat(@NonNull Animator animator) {
             }
         });
-        int i3 = mProgress;
+        int currentProgress = mProgress;
         final int seekBarWidth = getSeekBarWidth();
-        int i4 = mMax - mMin;
-        final float f2 = i4 > 0 ? seekBarWidth / i4 : 0.0f;
-        if (f2 > 0.0f) {
-            ValueAnimator ofFloat = ValueAnimator.ofFloat(i3 * f2, targetValue * f2);
+        int total = mMax - mMin;
+        final float scaleFactor = total > 0 ? seekBarWidth / total : SCALE_MIN;
+        if (scaleFactor > 0.0f) {
+            ValueAnimator ofFloat = ValueAnimator.ofFloat(currentProgress * scaleFactor, targetValue * scaleFactor);
             if (z2 || (interpolator = mCustomProgressAnimInterpolator) == null) {
                 ofFloat.setInterpolator(THUMB_ANIMATE_INTERPOLATOR);
             } else {
@@ -1712,8 +1711,8 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
             }
             ofFloat.addUpdateListener(valueAnimator -> {
                 float floatValue = (Float) valueAnimator.getAnimatedValue();
-                setLocalProgress((int) (floatValue / f2));
-                mScale = (floatValue - (mMin * f2)) / seekBarWidth;
+                setLocalProgress((int) (floatValue / scaleFactor));
+                mScale = (float) mProgress / (float) (mMax - mMin);
                 invalidate();
             });
             if (!z2) {
@@ -1723,7 +1722,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
                     mClickAnimatorSet.start();
                 }
             }
-            long abs = (long) ((i4 > 0 ? Math.abs(targetValue - i3) / i4 : 0.0f) * DURATION_483);
+            long abs = (long) ((total > 0 ? Math.abs(targetValue - currentProgress) / total : 0.0f) * DURATION_483);
             if (abs < DURATION_150) {
                 abs = DURATION_150;
             }
@@ -1789,15 +1788,15 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     @Override
-    public void setProgress(int i2, boolean z2) {
-        setProgress(i2, z2, false);
+    public void setProgress(int i2, boolean animate) {
+        setProgress(i2, animate, false);
     }
 
-    public void setProgress(int i2, boolean z2, boolean fromUser) {
+    public void setProgress(int i2, boolean animate, boolean fromUser) {
         mOldProgress = mProgress;
         int max = Math.max(mMin, Math.min(i2, mMax));
         if (mOldProgress != max) {
-            if (z2) {
+            if (animate) {
                 startTransitionAnim(max, fromUser);
             } else {
                 setLocalProgress(max);

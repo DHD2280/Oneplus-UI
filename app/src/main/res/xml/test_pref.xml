@@ -48,7 +48,7 @@
             android:min="0"
             android:summary="This is a test seekbar preference\nFrom 0 to 100"
             android:title="Test Seekbar Preference"
-            app:defaultValue="50" />
+            android:defaultValue="100" />
 
         <it.dhd.oneplusui.preference.OplusSectionSeekbarPreference
             android:key="test_section_seekbar_key"
@@ -56,7 +56,7 @@
             android:min="0"
             android:summary="This is a test section seekbar preference\nFrom 0 to 4"
             android:title="Test Section Seekbar Preference"
-            app:defaultValue="2" />
+            android:defaultValue="2" />
 
         <it.dhd.oneplusui.preference.OplusJumpPreference
             android:key="test_jump_key"

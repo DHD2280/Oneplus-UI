@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace = "it.dhd.oneplusui.sample"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "it.dhd.oneplusui.sample"
         minSdk = 33
-        targetSdk = 36
-        versionCode = 29
-        versionName = "1.4.7"
+        targetSdk = 35
+        versionCode = 32
+        versionName = "1.4.10"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
