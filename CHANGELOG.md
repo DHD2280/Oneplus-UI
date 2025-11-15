@@ -1,3 +1,6 @@
+**1.5.0**  
+- Added label to OplusSliderPreference  
+  
 **1.4.10**  
 - Removed useless OplusSeekBar log  
 - Use android:defaultValue for Seekbar in sample  
