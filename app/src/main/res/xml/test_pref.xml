@@ -27,6 +27,7 @@
             android:key="test_slider_key_decimal"
             android:summary="This is a test slider preference\nFrom 0.5 to 2.0 with step size 0.05"
             android:title="Test Slider Preference"
+            app:showSeekBarValue="true"
             app:decimalFormat="#.##"
             app:defaultValue="1"
             app:maxVal="2.0"
