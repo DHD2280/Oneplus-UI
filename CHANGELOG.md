@@ -1,3 +1,6 @@
+**1.5.1**  
+- show slider value initialized as true in OplusSliderPreference  
+  
 **1.5.0**  
 - Added label to OplusSliderPreference  
   
