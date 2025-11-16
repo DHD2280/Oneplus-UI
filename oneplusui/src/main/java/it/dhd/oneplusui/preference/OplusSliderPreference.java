@@ -79,7 +79,7 @@ public class OplusSliderPreference extends OplusPreference {
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.OplusSliderPreference);
         updateConstantly = a.getBoolean(R.styleable.OplusSliderPreference_updatesContinuously, false);
-        showSeekBarValue = a.getBoolean(R.styleable.OplusSliderPreference_showSeekBarValue, false);
+        showSeekBarValue = a.getBoolean(R.styleable.OplusSliderPreference_showSeekBarValue, true);
         valueCount = a.getInteger(R.styleable.OplusSliderPreference_valueCount, 1);
         valueFrom = a.getFloat(R.styleable.OplusSliderPreference_minVal, 0f);
         valueTo = a.getFloat(R.styleable.OplusSliderPreference_maxVal, 100f);
