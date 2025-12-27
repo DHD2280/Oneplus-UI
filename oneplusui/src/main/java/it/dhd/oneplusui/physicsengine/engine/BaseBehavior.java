@@ -21,9 +21,9 @@ public abstract class BaseBehavior {
     public static final int BEHAVIOR_TYPE_SNAP = 4;
     private static final float DEFAULT_DAMPING_RATIO = 0.2f;
     private static final float DEFAULT_FREQUENCY = 4.0f;
-    protected UIItem mActiveUIItem;
+    protected UIItem<?> mActiveUIItem;
     protected Body mPropertyBody;
-    protected HashMap<String, FloatPropertyHolder> mPropertyMap;
+    protected HashMap<String, FloatPropertyHolder<?>> mPropertyMap;
     protected SpringDef mSpringDef;
     protected Runnable mStartAction;
     protected Runnable mStopAction;
@@ -32,7 +32,7 @@ public abstract class BaseBehavior {
     protected boolean mIsSpringApplied = false;
     protected boolean mIsStarted = false;
     protected boolean mHasCustomStartVelocity = false;
-    protected FloatPropertyHolder mFirstProperty = null;
+    protected FloatPropertyHolder<?> mFirstProperty = null;
     protected PhysicalAnimator mAnimator = null;
     protected Spring mSpring = null;
 
@@ -40,35 +40,33 @@ public abstract class BaseBehavior {
         onBehaviorCreated();
     }
 
-    private void addProperty(FloatPropertyHolder floatPropertyHolder) {
-        if (this.mPropertyMap == null) {
-            this.mPropertyMap = new HashMap<>(1);
+    private void addProperty(FloatPropertyHolder<?> floatPropertyHolder) {
+        if (mPropertyMap == null) {
+            mPropertyMap = new HashMap<>(1);
         }
-        if (this.mFirstProperty == null) {
-            this.mFirstProperty = floatPropertyHolder;
+        if (mFirstProperty == null) {
+            mFirstProperty = floatPropertyHolder;
             verifyBodyProperty();
         }
-        this.mPropertyMap.put(floatPropertyHolder.mPropertyName, floatPropertyHolder);
-        this.mValueThreshold = MathUtils.min(this.mValueThreshold, floatPropertyHolder.mValueThreshold);
+        mPropertyMap.put(floatPropertyHolder.mPropertyName, floatPropertyHolder);
+        mValueThreshold = MathUtils.min(mValueThreshold, floatPropertyHolder.mValueThreshold);
     }
 
     private Body createSubBody(Vector vector, int i2, int i3, float f2, float f3, String str) {
-        return this.mAnimator.createBody(vector, i2, i3, f2, f3, str);
+        return mAnimator.createBody(vector, i2, i3, f2, f3, str);
     }
 
-    private void updateProperty(UIItem uIItem, FloatPropertyHolder floatPropertyHolder) {
+    private void updateProperty(UIItem<?> uIItem, FloatPropertyHolder<?> floatPropertyHolder) {
         floatPropertyHolder.update(uIItem);
     }
 
     private void verifyBodyProperty() {
-        PhysicalAnimator physicalAnimator = this.mAnimator;
-        if (mAnimator != null && this.mPropertyBody == null) {
-            mActiveUIItem = mAnimator.getOrCreateUIItem(this.mTarget);
-            FloatPropertyHolder floatPropertyHolder = this.mFirstProperty;
-            this.mPropertyBody = mAnimator.getOrCreatePropertyBody(mActiveUIItem, mFirstProperty != null ? mFirstProperty.mPropertyType : 1);
+        if (mAnimator != null && mPropertyBody == null) {
+            mActiveUIItem = mAnimator.getOrCreateUIItem(mTarget);
+            mPropertyBody = mAnimator.getOrCreatePropertyBody(mActiveUIItem, mFirstProperty != null ? mFirstProperty.mPropertyType : 1);
             onPropertyBodyCreated();
             if (Debug.isDebugMode()) {
-                Debug.logD("verifyBodyProperty : mActiveUIItem =:" + this.mActiveUIItem + ",mPropertyBody =:" + this.mPropertyBody + ",this =:" + this);
+                Debug.logD("verifyBodyProperty : mActiveUIItem =:" + mActiveUIItem + ",mPropertyBody =:" + mPropertyBody + ",this =:" + this);
             }
         }
     }
@@ -77,57 +75,55 @@ public abstract class BaseBehavior {
         if (Debug.isDebugMode()) {
             Debug.logD("applySizeChanged : width =:" + f2 + ",height =:" + f3);
         }
-        UIItem uIItem = this.mActiveUIItem;
-        if (uIItem != null) {
-            uIItem.setSize(f2, f3);
+        if (mActiveUIItem != null) {
+            mActiveUIItem.setSize(f2, f3);
         }
-        Body body = this.mPropertyBody;
-        if (body != null) {
-            body.setSize(Compat.pixelsToPhysicalSize(f2), Compat.pixelsToPhysicalSize(f3));
-            this.mPropertyBody.updateActiveRect(this);
+        if (mPropertyBody != null) {
+            mPropertyBody.setSize(Compat.pixelsToPhysicalSize(f2), Compat.pixelsToPhysicalSize(f3));
+            mPropertyBody.updateActiveRect(this);
         }
         return this;
     }
 
     public <T extends BaseBehavior> T applyTo(Object obj) {
-        this.mTarget = obj;
+        mTarget = obj;
         verifyBodyProperty();
         return (T) this;
     }
 
     public void bindAnimator(PhysicalAnimator physicalAnimator) {
-        this.mAnimator = physicalAnimator;
+        mAnimator = physicalAnimator;
         verifyBodyProperty();
-        linkGroundToSpring(this.mAnimator.getGround());
+        linkGroundToSpring(mAnimator.getGround());
     }
 
     public Body copyBodyFromPropertyBody(String str, Body body) {
         if (body == null) {
-            Body body2 = this.mPropertyBody;
+            Body body2 = mPropertyBody;
             Vector vector = body2.mOriginPosition;
             int type = body2.getType();
-            int property = this.mPropertyBody.getProperty();
-            Body body3 = this.mPropertyBody;
+            int property = mPropertyBody.getProperty();
+            Body body3 = mPropertyBody;
             body = createSubBody(vector, type, property, body3.mWidth, body3.mHeight, str);
         } else {
-            Body body4 = this.mPropertyBody;
+            Body body4 = mPropertyBody;
             body.setSize(body4.mWidth, body4.mHeight);
         }
-        body.setLinearVelocity(this.mPropertyBody.getLinearVelocity());
+        body.setLinearVelocity(mPropertyBody.getLinearVelocity());
         body.setAwake(false);
         return body;
     }
 
     public boolean createDefaultSpring(SpringDef springDef) {
-        if (this.mIsSpringApplied) {
+        if (mIsSpringApplied) {
             return false;
         }
-        Spring createSpring = createSpring(springDef, this.mPropertyBody);
-        this.mSpring = createSpring;
+        Spring createSpring = createSpring(springDef, mPropertyBody);
+        mSpring = createSpring;
         if (createSpring == null) {
             return false;
         }
-        this.mIsSpringApplied = true;
+        mIsSpringApplied = true;
         return true;
     }
 
@@ -136,77 +132,79 @@ public abstract class BaseBehavior {
             return null;
         }
         springDef.target.set(body.getWorldCenter());
-        return this.mAnimator.createSpring(springDef);
+        return mAnimator.createSpring(springDef);
     }
 
     public void createSpringDef(float frequency, float dampingRatio) {
         SpringDef springDef = new SpringDef();
-        this.mSpringDef = springDef;
+        mSpringDef = springDef;
         springDef.frequencyHz = frequency;
         springDef.dampingRatio = dampingRatio;
     }
 
     public boolean destroyBody(Body body) {
-        return this.mAnimator.destroyBody(body);
+        return mAnimator.destroyBody(body);
     }
 
     public boolean destroyDefaultSpring() {
-        if (!this.mIsSpringApplied) {
+        if (!mIsSpringApplied) {
             return false;
         }
-        destroySpring(this.mSpring);
-        this.mSpring = null;
-        this.mIsSpringApplied = false;
+        destroySpring(mSpring);
+        mSpring = null;
+        mIsSpringApplied = false;
         return true;
     }
 
     public void destroySpring(Spring spring) {
-        this.mAnimator.destroySpring(spring);
+        mAnimator.destroySpring(spring);
     }
 
     public void dispatchChanging() {
-        this.mActiveUIItem.setTransformPosition(Compat.physicalSizeToPixels(this.mPropertyBody.getPosition().mX - this.mPropertyBody.getHookPosition().mX), Compat.physicalSizeToPixels(this.mPropertyBody.getPosition().mY - this.mPropertyBody.getHookPosition().mY));
+        mActiveUIItem.setTransformPosition(Compat.physicalSizeToPixels(mPropertyBody.getPosition().mX - mPropertyBody.getHookPosition().mX), Compat.physicalSizeToPixels(mPropertyBody.getPosition().mY - mPropertyBody.getHookPosition().mY));
     }
 
     public Object getAnimatedValue() {
-        FloatPropertyHolder floatPropertyHolder = this.mFirstProperty;
+        FloatPropertyHolder<?> floatPropertyHolder = mFirstProperty;
         if (floatPropertyHolder != null) {
-            return Float.valueOf(getPropertyValue(this.mActiveUIItem, floatPropertyHolder));
+            return getPropertyValue(mActiveUIItem, floatPropertyHolder);
         }
         if (getTransform() != null) {
-            return Float.valueOf(getTransform().x);
+            return getTransform().x;
         }
         return null;
     }
 
     public Vector getMoverTarget() {
-        UIItem uIItem = this.mActiveUIItem;
-        if (uIItem == null) {
+        if (mActiveUIItem == null) {
             return null;
         }
-        return uIItem.mMoveTarget;
+        return mActiveUIItem.mMoveTarget;
     }
 
     public Body getPropertyBody() {
-        return this.mPropertyBody;
+        return mPropertyBody;
     }
 
     public float getPropertyBodyLinearDamping() {
-        Body body = this.mPropertyBody;
-        if (body != null) {
-            return body.getLinearDamping();
+        if (mPropertyBody != null) {
+            return mPropertyBody.getLinearDamping();
         }
         return -1.0f;
     }
+
+    public Vector getPropertyBodyVelocity() {
+        return mPropertyBody != null ? mPropertyBody.getLinearVelocity() : new Vector();
+    }
+
 
     public float getPropertyValue(Object obj, FloatPropertyHolder floatPropertyHolder) {
         return floatPropertyHolder.getValue(obj);
     }
 
     public Transform getTransform() {
-        UIItem uIItem = this.mActiveUIItem;
-        if (uIItem != null) {
-            return uIItem.getTransform();
+        if (mActiveUIItem != null) {
+            return mActiveUIItem.getTransform();
         }
         return null;
     }
@@ -214,15 +212,14 @@ public abstract class BaseBehavior {
     public abstract int getType();
 
     public boolean isCloseToConstraint(Vector vector) {
-        Spring spring = this.mSpring;
-        if (spring != null) {
-            return Compat.lessThanSteadyAccuracy(MathUtils.abs(spring.getTarget().mX - vector.mX) + MathUtils.abs(this.mSpring.getTarget().mY - vector.mY));
+        if (mSpring != null) {
+            return Compat.lessThanSteadyAccuracy(MathUtils.abs(mSpring.getTarget().mX - vector.mX) + MathUtils.abs(mSpring.getTarget().mY - vector.mY));
         }
         return true;
     }
 
     public boolean isSteady() {
-        return isVelocitySteady(this.mPropertyBody.mLinearVelocity) && isCloseToConstraint(this.mPropertyBody.getPosition());
+        return isVelocitySteady(mPropertyBody.mLinearVelocity) && isCloseToConstraint(mPropertyBody.getPosition());
     }
 
     public boolean isVelocitySteady(Vector vector) {
@@ -230,43 +227,38 @@ public abstract class BaseBehavior {
     }
 
     public void linkGroundToSpring(Body body) {
-        SpringDef springDef = this.mSpringDef;
-        if (springDef != null) {
-            springDef.bodyA = body;
+        if (mSpringDef != null) {
+            mSpringDef.bodyA = body;
             body.setAwake(true);
         }
     }
 
     public void moveToStartValue() {
-        UIItem uIItem = this.mActiveUIItem;
-        uIItem.mMoveTarget.set((Compat.pixelsToPhysicalSize(uIItem.mStartPosition.mX) + this.mPropertyBody.getHookPosition().mX) / this.mValueThreshold, (Compat.pixelsToPhysicalSize(this.mActiveUIItem.mStartPosition.mY) + this.mPropertyBody.getHookPosition().mY) / this.mValueThreshold);
-        transformBodyTo(this.mPropertyBody, this.mActiveUIItem.mMoveTarget);
+        mActiveUIItem.mMoveTarget.set((Compat.pixelsToPhysicalSize(mActiveUIItem.mStartPosition.mX) + mPropertyBody.getHookPosition().mX) / mValueThreshold, (Compat.pixelsToPhysicalSize(mActiveUIItem.mStartPosition.mY) + mPropertyBody.getHookPosition().mY) / mValueThreshold);
+        transformBodyTo(mPropertyBody, mActiveUIItem.mMoveTarget);
     }
 
     public void onPropertyBodyCreated() {
-        SpringDef springDef = this.mSpringDef;
-        if (springDef != null) {
-            springDef.bodyB = this.mPropertyBody;
+        if (mSpringDef != null) {
+            mSpringDef.bodyB = mPropertyBody;
         }
     }
 
     public void onRemove() {
         if (Debug.isDebugMode()) {
-            Debug.logD("onRemove mIsStarted =:" + this.mIsStarted + ",this =:" + this);
+            Debug.logD("onRemove mIsStarted =:" + mIsStarted + ",this =:" + this);
         }
-        this.mStopAction = null;
+        mStopAction = null;
         stopBehavior();
     }
 
     public <T extends BaseBehavior> T setSpringProperty(float f2, float f3) {
-        SpringDef springDef = this.mSpringDef;
-        if (springDef != null) {
-            springDef.frequencyHz = f2;
-            springDef.dampingRatio = f3;
-            Spring spring = this.mSpring;
-            if (spring != null) {
-                spring.setFrequency(f2);
-                this.mSpring.setDampingRatio(f3);
+        if (mSpringDef != null) {
+            mSpringDef.frequencyHz = f2;
+            mSpringDef.dampingRatio = f3;
+            if (mSpring != null) {
+                mSpring.setFrequency(f2);
+                mSpring.setDampingRatio(f3);
             }
         }
         return (T) this;
@@ -277,32 +269,32 @@ public abstract class BaseBehavior {
     }
 
     public void startBehavior() {
-        if (this.mIsStarted) {
+        if (mIsStarted) {
             return;
         }
         updateStartVelocity();
         updateStartValue();
         moveToStartValue();
         dispatchChanging();
-        this.mAnimator.updateValue(this);
-        this.mAnimator.startBehavior(this);
-        this.mIsStarted = true;
-        Runnable runnable = this.mStartAction;
+        mAnimator.updateValue(this);
+        mAnimator.startBehavior(this);
+        mIsStarted = true;
+        Runnable runnable = mStartAction;
         if (runnable != null) {
             runnable.run();
         }
     }
 
     public boolean stopBehavior() {
-        if (!this.mIsStarted) {
+        if (!mIsStarted) {
             return false;
         }
         if (getType() != BEHAVIOR_TYPE_DRAG) {
-            this.mActiveUIItem.mStartVelocity.setZero();
+            mActiveUIItem.mStartVelocity.setZero();
         }
-        this.mAnimator.stopBehavior(this);
-        this.mIsStarted = false;
-        Runnable runnable = this.mStopAction;
+        mAnimator.stopBehavior(this);
+        mIsStarted = false;
+        Runnable runnable = mStopAction;
         if (runnable == null) {
             return true;
         }
@@ -313,7 +305,7 @@ public abstract class BaseBehavior {
     @NonNull
     @Override
     public String toString() {
-        return "Behavior{type=" + getType() + ", mValueThreshold=" + this.mValueThreshold + ", mTarget=" + this.mTarget + ", mPropertyBody=" + this.mPropertyBody + "}@" + hashCode();
+        return "Behavior{type=" + getType() + ", mValueThreshold=" + mValueThreshold + ", mTarget=" + mTarget + ", mPropertyBody=" + mPropertyBody + "}@" + hashCode();
     }
 
     public void transformBodyTo(Body body, Vector vector) {
@@ -321,35 +313,34 @@ public abstract class BaseBehavior {
     }
 
     public void updateProperties() {
-        HashMap<String, FloatPropertyHolder> hashMap = this.mPropertyMap;
+        HashMap<String, FloatPropertyHolder<?>> hashMap = mPropertyMap;
         if (hashMap == null) {
             return;
         }
-        for (FloatPropertyHolder floatPropertyHolder : hashMap.values()) {
+        for (FloatPropertyHolder<?> floatPropertyHolder : hashMap.values()) {
             if (floatPropertyHolder != null) {
-                updateProperty(this.mActiveUIItem, floatPropertyHolder);
+                updateProperty(mActiveUIItem, floatPropertyHolder);
             }
         }
     }
 
     public void updateStartValue() {
-        HashMap<String, FloatPropertyHolder> hashMap = this.mPropertyMap;
+        HashMap<String, FloatPropertyHolder<?>> hashMap = mPropertyMap;
         if (hashMap == null) {
-            UIItem uIItem = this.mActiveUIItem;
-            uIItem.setStartPosition(uIItem.getTransform().x, this.mActiveUIItem.getTransform().y);
+            mActiveUIItem.setStartPosition(mActiveUIItem.getTransform().x, mActiveUIItem.getTransform().y);
             return;
         }
         for (FloatPropertyHolder floatPropertyHolder : hashMap.values()) {
             if (floatPropertyHolder != null) {
-                floatPropertyHolder.verifyStartValue(this.mActiveUIItem);
+                floatPropertyHolder.verifyStartValue(mActiveUIItem);
             }
         }
     }
 
     public void updateStartVelocity() {
-        if (this.mHasCustomStartVelocity) {
-            this.mHasCustomStartVelocity = false;
-            this.mPropertyBody.getLinearVelocity().set(Compat.pixelsToPhysicalSize(this.mActiveUIItem.mStartVelocity.mX), Compat.pixelsToPhysicalSize(this.mActiveUIItem.mStartVelocity.mY));
+        if (mHasCustomStartVelocity) {
+            mHasCustomStartVelocity = false;
+            mPropertyBody.getLinearVelocity().set(Compat.pixelsToPhysicalSize(mActiveUIItem.mStartVelocity.mX), Compat.pixelsToPhysicalSize(mActiveUIItem.mStartVelocity.mY));
         }
     }
 
@@ -361,19 +352,19 @@ public abstract class BaseBehavior {
     }
 
     public <T extends BaseBehavior> T withStartAction(Runnable runnable) {
-        this.mStartAction = runnable;
+        mStartAction = runnable;
         return (T) this;
     }
 
     public <T extends BaseBehavior> T withStopAction(Runnable runnable) {
-        this.mStopAction = runnable;
+        mStopAction = runnable;
         return (T) this;
     }
 
     public <T extends BaseBehavior> T setStartVelocity(float f2, float f3) {
         if (getType() != 0) {
-            this.mHasCustomStartVelocity = true;
-            this.mActiveUIItem.setStartVelocity(f2, f3);
+            mHasCustomStartVelocity = true;
+            mActiveUIItem.setStartVelocity(f2, f3);
         }
         return (T) this;
     }
@@ -383,12 +374,12 @@ public abstract class BaseBehavior {
     }
 
     public Object getAnimatedValue(String str) {
-        FloatPropertyHolder floatPropertyHolder;
-        HashMap<String, FloatPropertyHolder> hashMap = this.mPropertyMap;
+        FloatPropertyHolder<?> floatPropertyHolder;
+        HashMap<String, FloatPropertyHolder<?>> hashMap = mPropertyMap;
         if (hashMap == null || (floatPropertyHolder = hashMap.get(str)) == null) {
             return null;
         }
-        return Float.valueOf(getPropertyValue(this.mActiveUIItem, floatPropertyHolder));
+        return getPropertyValue(mActiveUIItem, floatPropertyHolder);
     }
 
     public void onBehaviorCreated() {
