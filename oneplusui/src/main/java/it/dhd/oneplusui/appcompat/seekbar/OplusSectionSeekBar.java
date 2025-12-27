@@ -16,7 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -36,13 +35,13 @@ public class OplusSectionSeekBar extends OplusSeekBar {
     private static final long MOVE_ANIMATOR_DURATION = 100;
     private static final float MOVE_RATIO = 0.4f;
     private int mActionMoveDirection;
-    private final PorterDuffXfermode mPorterDuffXfermode;
     private int mActiveMarkColor;
-    private float mCurrentOffset;
     private ColorStateList mActiveMarkColorStateList;
+    private float mCurrentOffset;
     private OplusSpringAnimation mDeformedReleaseAnim;
     private FloatPropertyCompat<OplusSectionSeekBar> mDeformedReleaseTransition;
     private int mInactiveMarkColor;
+    private ColorStateList mInactiveMarkColorStateList;
     private boolean mIsFastMoving;
     private float mMarkRadius;
     private float mMoveAnimationEndThumbX;
@@ -50,61 +49,13 @@ public class OplusSectionSeekBar extends OplusSeekBar {
     private float mMoveAnimationValue;
     private ValueAnimator mMoveAnimator;
     private boolean mOnStopTrackingMask;
-    private ColorStateList mInactiveMarkColorStateList;
+    private final PorterDuffXfermode mPorterDuffXfermode;
     private float mThumbX;
     private int mTouchDownPos;
     private float mTouchDownThumbX;
 
     public OplusSectionSeekBar(Context context) {
         this(context, null);
-    }
-
-    public OplusSectionSeekBar(Context context, AttributeSet attributeSet) {
-        this(context, attributeSet, R.attr.oplusSectionSeekBarStyle);
-    }
-
-    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int i2) {
-        this(context, attributeSet, i2, R.style.Widget_Oplus_SectionSeekBar);
-    }
-
-    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int i2, int i3) {
-        super(context, attributeSet, i2, i3);
-        mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC);
-        mOnStopTrackingMask = false;
-        mThumbX = -1.0f;
-        mIsFastMoving = false;
-        mTouchDownPos = -1;
-        mTouchDownThumbX = INTERPOLATOR_CONTROL_X1;
-        mDeformedReleaseTransition = new FloatPropertyCompat<>("deformedReleaseTransition") {
-            @Override
-            public float getValue(OplusSectionSeekBar cOUISectionSeekBar) {
-                return cOUISectionSeekBar.getScale();
-            }
-
-            @Override
-            public void setValue(OplusSectionSeekBar cOUISectionSeekBar, float f2) {
-                cOUISectionSeekBar.setScale(f2);
-            }
-        };
-        mMarkRadius = getResources().getDimensionPixelSize(R.dimen.oplus_section_seekbar_tick_mark_radius);
-        mInactiveMarkColorStateList = createColorStateList(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector), ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_disable_color));
-        mActiveMarkColorStateList = createColorStateList(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector), ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_disable_color));
-        mInactiveMarkColor = getColor(this, mInactiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector));
-        mActiveMarkColor = getColor(this, mActiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector));
-        initDeformedReleaseAnim();
-    }
-
-    public static ColorStateList createColorStateList(int defaultColor, int disabledColor) {
-        return new ColorStateList(
-                new int[][]{
-                        new int[]{-android.R.attr.state_enabled},
-                        StateSet.WILD_CARD
-                },
-                new int[]{
-                        disabledColor,
-                        defaultColor
-                }
-        );
     }
 
     public void calculateCurIndex() {
@@ -196,19 +147,15 @@ public class OplusSectionSeekBar extends OplusSeekBar {
     }
 
     private float getMoveThumbXByIndex(int i2) {
-        float stepWidth = getSeekBarMoveWidth() / (float) mMax;
+        float stepWidth = getSeekBarMoveWidth() / (float) this.mMax;
+        float f2 = (i2 * stepWidth);
         float seekBarMoveWidth = getSeekBarMoveWidth();
-        float fMax = Math.max(INTERPOLATOR_CONTROL_X1, Math.min(stepWidth, seekBarMoveWidth));
-        return isLayoutRtl() ? seekBarMoveWidth - fMax : fMax;
+        float max = Math.max(0.0f, Math.min(f2, seekBarMoveWidth));
+        return isLayoutRtl() ? seekBarMoveWidth - max : max;
     }
 
     public float getScale() {
         return mScale * DEFORMATION_SCALE_FACTOR;
-    }
-
-    public void setScale(float scale) {
-        mScale = scale / DEFORMATION_SCALE_FACTOR;
-        calculateTouchDeformationValue();
     }
 
     private float getSectionWidth() {
@@ -271,6 +218,11 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         startMoveAnimation(thumbXByIndex, f3 + thumbXByIndex, f4, z2);
     }
 
+    public void setScale(float scale) {
+        mScale = scale / DEFORMATION_SCALE_FACTOR;
+        calculateTouchDeformationValue();
+    }
+
     private void startMoveAnimation(float f2, float f3, float f4, boolean z2) {
         ValueAnimator valueAnimator;
         if (Float.compare(mThumbX, f3) == 0 || ((valueAnimator = mMoveAnimator) != null && valueAnimator.isRunning() && Float.compare(mMoveAnimationEndThumbX, f3) == 0)) {
@@ -301,7 +253,7 @@ public class OplusSectionSeekBar extends OplusSeekBar {
             });
             mMoveAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
-                public void onAnimationCancel(Animator animator) {
+                public void onAnimationCancel(@NonNull Animator animator) {
                     if (mOnStopTrackingMask) {
                         onStopTrackingTouch(true);
                         mOnStopTrackingMask = false;
@@ -309,7 +261,7 @@ public class OplusSectionSeekBar extends OplusSeekBar {
                 }
 
                 @Override
-                public void onAnimationEnd(Animator animator) {
+                public void onAnimationEnd(@NonNull Animator animator) {
                     if (mOnStopTrackingMask) {
                         onStopTrackingTouch(true);
                         mOnStopTrackingMask = false;
@@ -321,12 +273,10 @@ public class OplusSectionSeekBar extends OplusSeekBar {
                 }
 
                 @Override
-                public void onAnimationRepeat(@NonNull Animator animator) {
-                }
+                public void onAnimationRepeat(@NonNull Animator animator) {}
 
                 @Override
-                public void onAnimationStart(@NonNull Animator animator) {
-                }
+                public void onAnimationStart(@NonNull Animator animator) {}
             });
         }
         mMoveAnimator.cancel();
@@ -579,6 +529,54 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         onStartTrackingTouch(true);
         mClickAnim.animateToFinalPosition(i4);
         mLastEndClickListener = onAnimationEndListener;
+    }
+
+    public OplusSectionSeekBar(Context context, AttributeSet attributeSet) {
+        this(context, attributeSet, R.attr.oplusSectionSeekBarStyle);
+    }
+
+    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int i2) {
+        this(context, attributeSet, i2, R.style.Widget_Oplus_SectionSeekBar);
+    }
+
+    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int i2, int i3) {
+        super(context, attributeSet, i2, i3);
+        mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC);
+        mOnStopTrackingMask = false;
+        mThumbX = -1.0f;
+        mIsFastMoving = false;
+        mTouchDownPos = -1;
+        mTouchDownThumbX = INTERPOLATOR_CONTROL_X1;
+        mDeformedReleaseTransition = new FloatPropertyCompat<>("deformedReleaseTransition") {
+            @Override
+            public float getValue(OplusSectionSeekBar cOUISectionSeekBar) {
+                return cOUISectionSeekBar.getScale();
+            }
+
+            @Override
+            public void setValue(OplusSectionSeekBar cOUISectionSeekBar, float f2) {
+                cOUISectionSeekBar.setScale(f2);
+            }
+        };
+        mMarkRadius = getResources().getDimensionPixelSize(R.dimen.oplus_section_seekbar_tick_mark_radius);
+        mInactiveMarkColorStateList = createColorStateList(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector), ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_disable_color));
+        mActiveMarkColorStateList = createColorStateList(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector), ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_disable_color));
+        mInactiveMarkColor = getColor(this, mInactiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector));
+        mActiveMarkColor = getColor(this, mActiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector));
+        initDeformedReleaseAnim();
+    }
+
+    public static ColorStateList createColorStateList(int defaultColor, int disabledColor) {
+        return new ColorStateList(
+                new int[][] {
+                        new int[] { -android.R.attr.state_enabled },
+                        StateSet.WILD_CARD
+                },
+                new int[] {
+                        disabledColor,
+                        defaultColor
+                }
+        );
     }
 
 }
