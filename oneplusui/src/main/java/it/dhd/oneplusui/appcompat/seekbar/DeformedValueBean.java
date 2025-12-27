@@ -2,6 +2,7 @@ package it.dhd.oneplusui.appcompat.seekbar;
 
 public class DeformedValueBean {
 
+    private float mDrawProgressScale;
     private float mHeightBottomDeformedDownValue;
     private float mHeightBottomDeformedUpValue;
     private float mHeightTopDeformedDownValue;
@@ -17,6 +18,10 @@ public class DeformedValueBean {
         this.mHeightBottomDeformedDownValue = f5;
         this.mHeightTopDeformedDownValue = f6;
         this.mProgress = i2;
+    }
+
+    public float getDrawProgressScale() {
+        return this.mDrawProgressScale;
     }
 
     public float getHeightBottomDeformedDownValue() {
@@ -69,6 +74,10 @@ public class DeformedValueBean {
 
     public float getWidthDeformedValue() {
         return this.mWidthDeformedValue;
+    }
+
+    public void setDrawProgressScale(float drawProgressScale) {
+        this.mDrawProgressScale = drawProgressScale;
     }
 
     public void setWidthDeformedValue(float widthDeformedValue) {
