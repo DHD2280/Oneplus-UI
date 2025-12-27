@@ -18,10 +18,10 @@
             android:key="test_slider_key"
             android:summary="This is a test slider preference\nFrom 0 to 100 with step size 1"
             android:title="Test Slider Preference"
-            app:showSeekBarValue="false"
             app:defaultValue="0"
             app:maxVal="100"
             app:minVal="0"
+            app:showSeekBarValue="false"
             app:tickInterval="1" />
 
         <it.dhd.oneplusui.preference.OplusSliderPreference
@@ -38,10 +38,10 @@
             android:key="test_slider_key"
             android:summary="This is a test slider preference\nFrom -50 to 50 with step size 1 and 2 values"
             android:title="Test Slider Preference"
-            app:showSeekBarValue="false"
             app:defaultValue="-15,20"
             app:maxVal="50"
             app:minVal="-50"
+            app:showSeekBarValue="false"
             app:valueCount="2" />
 
         <it.dhd.oneplusui.preference.OplusSeekbarPreference
@@ -53,20 +53,20 @@
             android:title="Test Seekbar Preference" />
 
         <it.dhd.oneplusui.preference.OplusSeekbarLegacyPreference
+            android:defaultValue="100"
             android:key="test_seekbar_key"
             android:max="100"
             android:min="0"
             android:summary="This is a test seekbar preference\nThis is for OOS14-15 style\nFrom 0 to 100"
-            android:title="Test Seekbar Preference"
-            android:defaultValue="100" />
+            android:title="Test Seekbar Preference" />
 
         <it.dhd.oneplusui.preference.OplusSectionSeekbarPreference
+            android:defaultValue="2"
             android:key="test_section_seekbar_new_key"
             android:max="4"
             android:min="0"
             android:summary="This is a test section seekbar preference\nFrom 0 to 4"
-            android:title="Test Section Seekbar Preference"
-            android:defaultValue="2" />
+            android:title="Test Section Seekbar Preference" />
 
         <it.dhd.oneplusui.preference.OplusSectionSeekbarLegacyPreference
             android:defaultValue="2"

@@ -59,13 +59,9 @@
         <item name="preferenceCategoryStyle">@style/Preferences.Oplus.Category</item>
         <item name="preferenceStyle">@style/Preferences.Oplus.Preference</item>
         <item name="oplusSliderPreferenceStyle">@style/Preferences.Oplus.Preference.Slider</item>
-        <item name="oplusSeekBarLegacyPreferenceStyle">
-            @style/Preferences.Oplus.Preference.SeekbarLegacy
-        </item>
+        <item name="oplusSeekBarLegacyPreferenceStyle">@style/Preferences.Oplus.Preference.SeekbarLegacy</item>
         <item name="oplusSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.Seekbar</item>
-        <item name="oplusSectionSeekBarLegacyPreferenceStyle">
-            @style/Preferences.Oplus.Preference.SectionSeekbar
-        </item>
+        <item name="oplusSectionSeekBarLegacyPreferenceStyle">@style/Preferences.Oplus.Preference.SectionSeekbar</item>
         <item name="oplusSectionSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.SectionSeekbar</item>
         <item name="oplusInputPreferenceStyle">@style/Preferences.Oplus.Preference.Input</item>
         <item name="oplusInputPreferenceEditTextStyle">@style/Widget.Oplus.InputPreference</item>
