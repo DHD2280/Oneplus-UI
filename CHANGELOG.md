@@ -1,3 +1,21 @@
+**1.5.1**  
+- show slider value initialized as true in OplusSliderPreference  
+  
+**1.5.0**  
+- Added label to OplusSliderPreference  
+  
+**1.4.10**  
+- Removed useless OplusSeekBar log  
+- Use android:defaultValue for Seekbar in sample  
+- Fixed OplusSeekBar animation  
+  
+**1.4.9**  
+- Bump dependencies  
+- OplusSeekbarPreference and OplusSectionSeekbarPreference: improved reset button enabled state  
+  
+**1.4.8**  
+- OplusSeekbarPreference: fixed setting default value  
+  
 **1.4.7**  
 - OplusSeekbarPreference and OplusSectionSeekbarPreference use android:defaultValue instead of app attrs  
   

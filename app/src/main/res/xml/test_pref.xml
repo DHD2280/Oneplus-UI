@@ -18,6 +18,7 @@
             android:key="test_slider_key"
             android:summary="This is a test slider preference\nFrom 0 to 100 with step size 1"
             android:title="Test Slider Preference"
+            app:showSeekBarValue="false"
             app:defaultValue="0"
             app:maxVal="100"
             app:minVal="0"
@@ -37,6 +38,7 @@
             android:key="test_slider_key"
             android:summary="This is a test slider preference\nFrom -50 to 50 with step size 1 and 2 values"
             android:title="Test Slider Preference"
+            app:showSeekBarValue="false"
             app:defaultValue="-15,20"
             app:maxVal="50"
             app:minVal="-50"
@@ -48,7 +50,7 @@
             android:min="0"
             android:summary="This is a test seekbar preference\nFrom 0 to 100"
             android:title="Test Seekbar Preference"
-            app:defaultValue="50" />
+            android:defaultValue="100" />
 
         <it.dhd.oneplusui.preference.OplusSectionSeekbarPreference
             android:key="test_section_seekbar_key"
@@ -56,7 +58,7 @@
             android:min="0"
             android:summary="This is a test section seekbar preference\nFrom 0 to 4"
             android:title="Test Section Seekbar Preference"
-            app:defaultValue="2" />
+            android:defaultValue="2" />
 
         <it.dhd.oneplusui.preference.OplusJumpPreference
             android:key="test_jump_key"

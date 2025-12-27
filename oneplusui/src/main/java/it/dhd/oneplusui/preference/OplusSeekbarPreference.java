@@ -132,6 +132,7 @@ public class OplusSeekbarPreference extends OplusPreference {
         @Override
         public void onClick(View v) {
             if (callChangeListener(mDefaultValue)) {
+                mSeekBar.setProgress(mDefaultValue, true);
                 setValueInternal(mDefaultValue, false);
             }
         }
@@ -219,7 +220,7 @@ public class OplusSeekbarPreference extends OplusPreference {
 
     private void handleResetButton() {
         if (mResetButton == null) return;
-        mResetButton.setEnabled(mSeekBarValue != mDefaultValue);
+        mResetButton.setEnabled(isEnabled() && mSeekBarValue != mDefaultValue);
     }
 
     @Override

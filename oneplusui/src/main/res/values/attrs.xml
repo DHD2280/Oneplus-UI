@@ -44,6 +44,7 @@
         <attr name="minVal" format="float" />
         <attr name="maxVal" format="float" />
         <attr name="showResetButton" format="boolean" />
+        <attr name="showSeekBarValue" format="boolean" />
         <attr name="units" format="string" />
         <attr name="isDecimalFormat" format="boolean" />
         <attr name="decimalFormat" format="string" />
@@ -58,7 +59,7 @@
         <attr name="showResetButton" />
         <attr name="android:defaultValue" />
         <attr name="seekBarIncrement" format="integer" />
-        <attr name="showSeekBarValue" format="boolean" />
+        <attr name="showSeekBarValue" />
         <attr name="adjustable" format="boolean" />
     </declare-styleable>
 
