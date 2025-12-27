@@ -45,20 +45,36 @@
             app:valueCount="2" />
 
         <it.dhd.oneplusui.preference.OplusSeekbarPreference
+            android:defaultValue="100"
+            android:key="test_seekbar_new_key"
+            android:max="100"
+            android:min="0"
+            android:summary="This is a test seekbar preference\nThis is for OOS16 style\nFrom 0 to 100"
+            android:title="Test Seekbar Preference" />
+
+        <it.dhd.oneplusui.preference.OplusSeekbarLegacyPreference
             android:key="test_seekbar_key"
             android:max="100"
             android:min="0"
-            android:summary="This is a test seekbar preference\nFrom 0 to 100"
+            android:summary="This is a test seekbar preference\nThis is for OOS14-15 style\nFrom 0 to 100"
             android:title="Test Seekbar Preference"
             android:defaultValue="100" />
 
         <it.dhd.oneplusui.preference.OplusSectionSeekbarPreference
-            android:key="test_section_seekbar_key"
+            android:key="test_section_seekbar_new_key"
             android:max="4"
             android:min="0"
             android:summary="This is a test section seekbar preference\nFrom 0 to 4"
             android:title="Test Section Seekbar Preference"
             android:defaultValue="2" />
+
+        <it.dhd.oneplusui.preference.OplusSectionSeekbarLegacyPreference
+            android:defaultValue="2"
+            android:key="test_section_seekbar_key"
+            android:max="4"
+            android:min="0"
+            android:summary="This is a test section seekbar preference\nFrom 0 to 4"
+            android:title="Test Section Seekbar Preference" />
 
         <it.dhd.oneplusui.preference.OplusJumpPreference
             android:key="test_jump_key"

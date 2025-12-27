@@ -3,9 +3,13 @@
 
     <attr name="preferenceBackgroundColor" format="reference|color" />
     <attr name="preferenceBackgroundColorPressed" format="reference|color" />
+    <attr name="oplusSeekBarLegacyStyle" format="reference" />
     <attr name="oplusSeekBarStyle" format="reference" />
+    <attr name="oplusSeekBarLegacyPreferenceStyle" format="reference" />
     <attr name="oplusSeekBarPreferenceStyle" format="reference" />
+    <attr name="oplusSectionSeekBarLegacyStyle" format="reference" />
     <attr name="oplusSectionSeekBarStyle" format="reference" />
+    <attr name="oplusSectionSeekBarLegacyPreferenceStyle" format="reference" />
     <attr name="oplusSectionSeekBarPreferenceStyle" format="reference" />
     <attr name="oplusSliderStyle" format="reference" />
     <attr name="oplusTooltipStyle" format="reference" />
@@ -105,6 +109,7 @@
         <attr name="oplusSeekBarPhysicsEnable" format="boolean" />
         <attr name="oplusSeekBarShowProgress" format="boolean" />
         <attr name="oplusSeekBarShowThumb" format="boolean" />
+        <attr name="oplusSeekBarShowGlitterEffect" format="boolean" />
         <attr name="oplusSeekBarStartMiddle" format="boolean" />
         <attr name="oplusSeekBarProgressFull" format="boolean" />
         <attr name="oplusSeekBarBackgroundColor" format="color|reference" />

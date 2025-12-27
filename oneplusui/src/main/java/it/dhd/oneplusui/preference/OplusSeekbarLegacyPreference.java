@@ -13,90 +13,49 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.button.MaterialButton;
 
 import it.dhd.oneplusui.R;
-import it.dhd.oneplusui.appcompat.seekbar.OplusSeekBar;
+import it.dhd.oneplusui.appcompat.seekbar.OplusSeekBarLegacy;
 
 /**
  * Preference based on android.preference.SeekBarPreference but uses support preference as a base
- * . It contains a title and a {@link OplusSeekBar} and an optional OplusSeekBar value {@link TextView}.
+ * . It contains a title and a {@link OplusSeekBarLegacy} and an optional OplusSeekBarLegacy value {@link TextView}.
  * The actual preference layout is customizable by setting {@code android:layout} on the
  * preference widget layout or {@code seekBarPreferenceStyle} attribute.
  *
- * <p>The {@link OplusSeekBar} within the preference can be defined adjustable or not by setting {@code
+ * <p>The {@link OplusSeekBarLegacy} within the preference can be defined adjustable or not by setting {@code
  * adjustable} attribute. If adjustable, the preference will be responsive to DPAD left/right keys.
  * Otherwise, it skips those keys.
  *
- * <p>The {@link OplusSeekBar} value view can be shown or disabled by setting {@code showSeekBarValue}
+ * <p>The {@link OplusSeekBarLegacy} value view can be shown or disabled by setting {@code showSeekBarValue}
  * attribute to true or false, respectively.
  *
- * <p>Other {@link OplusSeekBar} specific attributes (e.g. {@code title, summary, defaultValue, min,
+ * <p>Other {@link OplusSeekBarLegacy} specific attributes (e.g. {@code title, summary, defaultValue, min,
  * max})
  * can be set directly on the preference widget layout.
  */
-public class OplusSeekbarPreference extends OplusPreference {
+public class OplusSeekbarLegacyPreference extends OplusPreference {
 
-    private static final String TAG = "OplusSeekbarPreference";
+    private static final String TAG = "OplusSeekbarLegacyPreference";
+    private final int mDefaultValue;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             int mSeekBarValue;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             int mMin;
-    private int mMax;
-    private int mSeekBarIncrement;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             boolean mTrackingTouch;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-            OplusSeekBar mSeekBar;
-    private TextView mSeekBarValueTextView;
-    private MaterialButton mResetButton;
-    private final int mDefaultValue;
-    // Whether the OplusSeekBar should respond to the left/right keys
+            OplusSeekBarLegacy mSeekBar;
+    // Whether the OplusSeekBarLegacy should respond to the left/right keys
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             boolean mAdjustable;
-    // Whether to show the OplusSeekBar value TextView next to the bar
-    private boolean mShowSeekBarValue;
-    // Whether the SeekBarPreference should continuously save the OplusSeekBar value while it is being
-    // dragged.
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-            boolean mUpdatesContinuously;
-
-    // Whether the SeekBarPreference should show the reset button
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-            boolean mShowResetButton;
-    /**
-     * Listener reacting to the {@link OplusSeekBar} changing value by the user
-     */
-    private final OplusSeekBar.OnSeekBarChangeListener mSeekBarChangeListener = new OplusSeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(OplusSeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser && (mUpdatesContinuously || !mTrackingTouch)) {
-                syncValueInternal(seekBar);
-            } else {
-                // We always want to update the text while the seekbar is being dragged
-                updateLabelValue(progress + mMin);
-            }
-        }
-
-        @Override
-        public void onStartTrackingTouch(OplusSeekBar OplusSeekBar) {
-            mTrackingTouch = true;
-        }
-
-        @Override
-        public void onStopTrackingTouch(OplusSeekBar OplusSeekBar) {
-            mTrackingTouch = false;
-            if (OplusSeekBar.getProgress() + mMin != mSeekBarValue) {
-                syncValueInternal(OplusSeekBar);
-            }
-        }
-    };
-
     /**
      * Listener reacting to the user pressing DPAD left/right keys if {@code
-     * adjustable} attribute is set to true; it transfers the key presses to the {@link OplusSeekBar}
+     * adjustable} attribute is set to true; it transfers the key presses to the {@link OplusSeekBarLegacy}
      * to be handled accordingly.
      */
     private final View.OnKeyListener mSeekBarKeyListener = new View.OnKeyListener() {
@@ -112,32 +71,74 @@ public class OplusSeekbarPreference extends OplusPreference {
                 return false;
             }
 
-            // We don't want to propagate the click keys down to the OplusSeekBar view since it will
+            // We don't want to propagate the click keys down to the OplusSeekBarLegacy view since it will
             // create the ripple effect for the thumb.
             if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER || keyCode == KeyEvent.KEYCODE_ENTER) {
                 return false;
             }
 
             if (mSeekBar == null) {
-                Log.e(TAG, "OplusSeekBar view is null and hence cannot be adjusted.");
+                Log.e(TAG, "OplusSeekBarLegacy view is null and hence cannot be adjusted.");
                 return false;
             }
             return mSeekBar.onKeyDown(keyCode, event);
         }
     };
+    // Whether the SeekBarPreference should continuously save the OplusSeekBarLegacy value while it is being
+    // dragged.
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+            boolean mUpdatesContinuously;
+    // Whether the SeekBarPreference should show the reset button
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+            boolean mShowResetButton;
+    private int mMax;
+    private int mSeekBarIncrement;
+    private TextView mSeekBarValueTextView;
+    private MaterialButton mResetButton;
+    /**
+     * Listener reacting to the {@link OplusSeekBarLegacy} changing value by the user
+     */
+    private final OplusSeekBarLegacy.OnSeekBarChangeListener mSeekBarChangeListener = new OplusSeekBarLegacy.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(OplusSeekBarLegacy seekBar, int progress, boolean fromUser) {
+            if (fromUser && (mUpdatesContinuously || !mTrackingTouch)) {
+                syncValueInternal(seekBar);
+            } else {
+                // We always want to update the text while the seekbar is being dragged
+                updateLabelValue(progress + mMin);
+            }
+        }
 
-    /** Listener reacting to the reset button click */
+        @Override
+        public void onStartTrackingTouch(OplusSeekBarLegacy OplusSeekbar) {
+            mTrackingTouch = true;
+        }
+
+        @Override
+        public void onStopTrackingTouch(OplusSeekBarLegacy OplusSeekbar) {
+            mTrackingTouch = false;
+            if (OplusSeekbar.getProgress() + mMin != mSeekBarValue) {
+                syncValueInternal(OplusSeekbar);
+            }
+        }
+    };
+    /**
+     * Listener reacting to the reset button click
+     */
     private final View.OnClickListener mResetButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if (callChangeListener(mDefaultValue)) {
+                mSeekBar.setProgress(mDefaultValue, true);
                 setValueInternal(mDefaultValue, true);
             }
         }
     };
+    // Whether to show the OplusSeekBarLegacy value TextView next to the bar
+    private boolean mShowSeekBarValue;
 
     @SuppressLint("PrivateResource")
-    public OplusSeekbarPreference(
+    public OplusSeekbarLegacyPreference(
             @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -160,16 +161,16 @@ public class OplusSeekbarPreference extends OplusPreference {
         a.recycle();
     }
 
-    public OplusSeekbarPreference(@NonNull Context context, @Nullable AttributeSet attrs,
-                                  int defStyleAttr) {
-        this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_Seekbar);
+    public OplusSeekbarLegacyPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+                                        int defStyleAttr) {
+        this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_SeekbarLegacy);
     }
 
-    public OplusSeekbarPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, R.attr.oplusSeekBarPreferenceStyle);
+    public OplusSeekbarLegacyPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, R.attr.oplusSeekBarLegacyPreferenceStyle);
     }
 
-    public OplusSeekbarPreference(@NonNull Context context) {
+    public OplusSeekbarLegacyPreference(@NonNull Context context) {
         this(context, null);
     }
 
@@ -177,7 +178,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     public void onBindViewHolder(@NonNull PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         holder.itemView.setOnKeyListener(mSeekBarKeyListener);
-        mSeekBar = (OplusSeekBar) holder.findViewById(R.id.slider);
+        mSeekBar = (OplusSeekBarLegacy) holder.findViewById(R.id.slider);
         mSeekBarValueTextView = (TextView) holder.findViewById(R.id.seekbar_value);
         mResetButton = (MaterialButton) holder.findViewById(R.id.reset_button);
         if (mShowSeekBarValue) {
@@ -193,7 +194,7 @@ public class OplusSeekbarPreference extends OplusPreference {
         }
 
         if (mSeekBar == null) {
-            Log.e(TAG, "OplusSeekBar view is null in onBindViewHolder.");
+            Log.e(TAG, "OplusSeekBarLegacy view is null in onBindViewHolder.");
             return;
         }
         mResetButton.setOnClickListener(mResetButtonClickListener);
@@ -218,7 +219,7 @@ public class OplusSeekbarPreference extends OplusPreference {
 
     private void handleResetButton() {
         if (mResetButton == null) return;
-        mResetButton.setEnabled(mSeekBarValue != mDefaultValue);
+        mResetButton.setEnabled(isEnabled() && mSeekBarValue != mDefaultValue);
     }
 
     @Override
@@ -235,7 +236,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Gets the lower bound set on the {@link OplusSeekBar}.
+     * Gets the lower bound set on the {@link OplusSeekBarLegacy}.
      *
      * @return The lower bound set
      */
@@ -244,7 +245,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Sets the lower bound on the {@link OplusSeekBar}.
+     * Sets the lower bound on the {@link OplusSeekBarLegacy}.
      *
      * @param min The lower bound to set
      */
@@ -263,7 +264,7 @@ public class OplusSeekbarPreference extends OplusPreference {
      * user's specified increment value if it's not zero. Otherwise, the default value is picked
      * from the default mKeyProgressIncrement value in {@link android.widget.AbsSeekBar}.
      *
-     * @return The amount of increment on the {@link OplusSeekBar} performed after each user's arrow
+     * @return The amount of increment on the {@link OplusSeekBarLegacy} performed after each user's arrow
      * key press
      */
     public final int getSeekBarIncrement() {
@@ -271,7 +272,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Sets the increment amount on the {@link OplusSeekBar} for each arrow key press.
+     * Sets the increment amount on the {@link OplusSeekBarLegacy} for each arrow key press.
      *
      * @param seekBarIncrement The amount to increment or decrement when the user presses an
      *                         arrow key.
@@ -284,7 +285,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Gets the upper bound set on the {@link OplusSeekBar}.
+     * Gets the upper bound set on the {@link OplusSeekBarLegacy}.
      *
      * @return The upper bound set
      */
@@ -293,7 +294,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Sets the upper bound on the {@link OplusSeekBar}.
+     * Sets the upper bound on the {@link OplusSeekBarLegacy}.
      *
      * @param max The upper bound to set
      */
@@ -308,29 +309,29 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Gets whether the {@link OplusSeekBar} should respond to the left/right keys.
+     * Gets whether the {@link OplusSeekBarLegacy} should respond to the left/right keys.
      *
-     * @return Whether the {@link OplusSeekBar} should respond to the left/right keys
+     * @return Whether the {@link OplusSeekBarLegacy} should respond to the left/right keys
      */
     public boolean isAdjustable() {
         return mAdjustable;
     }
 
     /**
-     * Sets whether the {@link OplusSeekBar} should respond to the left/right keys.
+     * Sets whether the {@link OplusSeekBarLegacy} should respond to the left/right keys.
      *
-     * @param adjustable Whether the {@link OplusSeekBar} should respond to the left/right keys
+     * @param adjustable Whether the {@link OplusSeekBarLegacy} should respond to the left/right keys
      */
     public void setAdjustable(boolean adjustable) {
         mAdjustable = adjustable;
     }
 
     /**
-     * Gets whether the {@link OplusSeekbarPreference} should continuously save the {@link OplusSeekBar} value
+     * Gets whether the {@link OplusSeekbarLegacyPreference} should continuously save the {@link OplusSeekBarLegacy} value
      * while it is being dragged. Note that when the value is true,
-     * {@link OnPreferenceChangeListener} will be called continuously as well.
+     * {@link Preference.OnPreferenceChangeListener} will be called continuously as well.
      *
-     * @return Whether the {@link OplusSeekbarPreference} should continuously save the {@link OplusSeekBar}
+     * @return Whether the {@link OplusSeekbarLegacyPreference} should continuously save the {@link OplusSeekBarLegacy}
      * value while it is being dragged
      * @see #setUpdatesContinuously(boolean)
      */
@@ -339,11 +340,11 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Sets whether the {@link OplusSeekbarPreference} should continuously save the {@link OplusSeekBar} value
+     * Sets whether the {@link OplusSeekbarLegacyPreference} should continuously save the {@link OplusSeekBarLegacy} value
      * while it is being dragged.
      *
-     * @param updatesContinuously Whether the {@link OplusSeekbarPreference} should continuously save
-     *                            the {@link OplusSeekBar} value while it is being dragged
+     * @param updatesContinuously Whether the {@link OplusSeekbarLegacyPreference} should continuously save
+     *                            the {@link OplusSeekBarLegacy} value while it is being dragged
      * @see #getUpdatesContinuously()
      */
     public void setUpdatesContinuously(boolean updatesContinuously) {
@@ -351,9 +352,9 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Gets whether the current {@link OplusSeekBar} value is displayed to the user.
+     * Gets whether the current {@link OplusSeekBarLegacy} value is displayed to the user.
      *
-     * @return Whether the current {@link OplusSeekBar} value is displayed to the user
+     * @return Whether the current {@link OplusSeekBarLegacy} value is displayed to the user
      * @see #setShowSeekBarValue(boolean)
      */
     public boolean getShowSeekBarValue() {
@@ -361,9 +362,9 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Sets whether the current {@link OplusSeekBar} value is displayed to the user.
+     * Sets whether the current {@link OplusSeekBarLegacy} value is displayed to the user.
      *
-     * @param showSeekBarValue Whether the current {@link OplusSeekBar} value is displayed to the user
+     * @param showSeekBarValue Whether the current {@link OplusSeekBarLegacy} value is displayed to the user
      * @see #getShowSeekBarValue()
      */
     public void setShowSeekBarValue(boolean showSeekBarValue) {
@@ -400,6 +401,7 @@ public class OplusSeekbarPreference extends OplusPreference {
 
         if (seekBarValue != mSeekBarValue) {
             mSeekBarValue = seekBarValue;
+
             updateLabelValue(mSeekBarValue);
             persistInt(seekBarValue);
             handleResetButton();
@@ -410,29 +412,29 @@ public class OplusSeekbarPreference extends OplusPreference {
     }
 
     /**
-     * Gets the current progress of the {@link OplusSeekBar}.
+     * Gets the current progress of the {@link OplusSeekBarLegacy}.
      *
-     * @return The current progress of the {@link OplusSeekBar}
+     * @return The current progress of the {@link OplusSeekBarLegacy}
      */
     public int getValue() {
         return mSeekBarValue;
     }
 
     /**
-     * Sets the current progress of the {@link OplusSeekBar}.
+     * Sets the current progress of the {@link OplusSeekBarLegacy}.
      *
-     * @param seekBarValue The current progress of the {@link OplusSeekBar}
+     * @param seekBarValue The current progress of the {@link OplusSeekBarLegacy}
      */
     public void setValue(int seekBarValue) {
         setValueInternal(seekBarValue, true);
     }
 
     /**
-     * Persist the {@link OplusSeekBar}'s OplusSeekBar value if callChangeListener returns true, otherwise
-     * set the {@link OplusSeekBar}'s value to the stored value.
+     * Persist the {@link OplusSeekBarLegacy}'s OplusSeekBarLegacy value if callChangeListener returns true, otherwise
+     * set the {@link OplusSeekBarLegacy}'s value to the stored value.
      */
     @SuppressWarnings("WeakerAccess") /* synthetic access */
-    void syncValueInternal(@NonNull OplusSeekBar seekBar) {
+    void syncValueInternal(@NonNull OplusSeekBarLegacy seekBar) {
         int seekBarValue = mMin + seekBar.getProgress();
         if (seekBarValue != mSeekBarValue) {
             if (callChangeListener(seekBarValue)) {
@@ -448,7 +450,7 @@ public class OplusSeekbarPreference extends OplusPreference {
     /**
      * Attempts to update the TextView label that displays the current value.
      *
-     * @param value the value to display next to the {@link OplusSeekBar}
+     * @param value the value to display next to the {@link OplusSeekBarLegacy}
      */
     @SuppressWarnings("WeakerAccess") /* synthetic access */
     void updateLabelValue(int value) {
@@ -496,16 +498,16 @@ public class OplusSeekbarPreference extends OplusPreference {
      * <p>It is important to always call through to super methods.
      */
     private static class SavedState extends BaseSavedState {
-        public static final Creator<SavedState> CREATOR =
-                new Creator<>() {
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<>() {
                     @Override
-                    public OplusSeekbarPreference.SavedState createFromParcel(Parcel in) {
-                        return new OplusSeekbarPreference.SavedState(in);
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
                     }
 
                     @Override
-                    public OplusSeekbarPreference.SavedState[] newArray(int size) {
-                        return new OplusSeekbarPreference.SavedState[size];
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
                     }
                 };
 

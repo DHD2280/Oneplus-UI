@@ -1,38 +1,48 @@
 package it.dhd.oneplusui.appcompat.seekbar;
 
 import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
-import android.graphics.RectF;
 import android.util.AttributeSet;
+import android.util.StateSet;
 import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
+import androidx.dynamicanimation.animation.FloatPropertyCompat;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import it.dhd.oneplusui.R;
+import it.dhd.oneplusui.appcompat.animation.dynamic.OplusDynamicAnimation;
+import it.dhd.oneplusui.appcompat.animation.dynamic.OplusSpringAnimation;
+import it.dhd.oneplusui.appcompat.animation.dynamic.OplusSpringForce;
+
 
 public class OplusSectionSeekBar extends OplusSeekBar {
-
-    private static final String TAG = "OplusSectionSeekBar";
-    private static final float MARK_RADIUS_SCALE = 2.0f;
+    private static final float DEFORMATION_RELEASE_SPRING_RESPONSE = 0.35f;
+    private static final int DEFORMATION_SCALE_FACTOR = 1000;
+    private static final float INTERPOLATOR_CONTROL_X1 = 0.0f;
+    private static final float INTERPOLATOR_CONTROL_X2 = 0.25f;
+    private static final float INTERPOLATOR_CONTROL_Y1 = 0.0f;
+    private static final float INTERPOLATOR_CONTROL_Y2 = 1.0f;
+    private static final long MOVE_ANIMATOR_DURATION = 100;
     private static final float MOVE_RATIO = 0.4f;
-    private final PorterDuffXfermode mPorterDuffXfermode;
     private int mActionMoveDirection;
-    private int mCurActiveMarkColor;
-    private int mCurInactiveMarkColor;
-    private float mCurMarkRadius;
+    private final PorterDuffXfermode mPorterDuffXfermode;
+    private int mActiveMarkColor;
     private float mCurrentOffset;
+    private ColorStateList mActiveMarkColorStateList;
+    private OplusSpringAnimation mDeformedReleaseAnim;
+    private FloatPropertyCompat<OplusSectionSeekBar> mDeformedReleaseTransition;
+    private int mInactiveMarkColor;
     private boolean mIsFastMoving;
     private float mMarkRadius;
     private float mMoveAnimationEndThumbX;
@@ -40,7 +50,7 @@ public class OplusSectionSeekBar extends OplusSeekBar {
     private float mMoveAnimationValue;
     private ValueAnimator mMoveAnimator;
     private boolean mOnStopTrackingMask;
-    private float mOverstep;
+    private ColorStateList mInactiveMarkColorStateList;
     private float mThumbX;
     private int mTouchDownPos;
     private float mTouchDownThumbX;
@@ -53,69 +63,164 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         this(context, attributeSet, R.attr.oplusSectionSeekBarStyle);
     }
 
-    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int defStyleAttr) {
-        this(context, attributeSet, defStyleAttr, R.style.Widget_Oplus_SectionSeekBar);
+    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int i2) {
+        this(context, attributeSet, i2, R.style.Widget_Oplus_SectionSeekBar);
     }
 
-    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int defStyleAttr, int defStyleRes) {
-        super(context, attributeSet, defStyleAttr, defStyleRes);
-        this.mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC);
-        this.mOnStopTrackingMask = false;
-        this.mThumbX = -1.0f;
-        this.mIsFastMoving = false;
-        this.mTouchDownPos = -1;
-        this.mTouchDownThumbX = 0.0f;
-        this.mMarkRadius = 0.0f;
-        this.mCurMarkRadius = 0.0f;
-        float dimensionPixelSize = getResources().getDimensionPixelSize(R.dimen.oplus_section_seekbar_tick_mark_radius);
-        this.mMarkRadius = dimensionPixelSize;
-        this.mCurMarkRadius = dimensionPixelSize;
-        this.mCurActiveMarkColor = 0;
-        this.mCurInactiveMarkColor = 0;
-        PropertyValuesHolder ofInt = PropertyValuesHolder.ofInt("activeAlpha", 0, Color.alpha(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_mark_active_anim_end)));
-        PropertyValuesHolder ofInt2 = PropertyValuesHolder.ofInt("inactiveAlpha", 0, Color.alpha(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_mark_inactive_anim_end)));
-        ValueAnimator valueAnimator = new ValueAnimator();
-        valueAnimator.setValues(ofInt, ofInt2);
-        valueAnimator.addUpdateListener(valueAnimator2 -> {
-            int intValue = (Integer) valueAnimator2.getAnimatedValue("activeAlpha");
-            int intValue2 = (Integer) valueAnimator2.getAnimatedValue("inactiveAlpha");
-            mCurActiveMarkColor = Color.argb(intValue, 0, 0, 0);
-            mCurInactiveMarkColor = Color.argb(intValue2, 255, 255, 255);
-            invalidate();
-        });
-        this.mTouchAnimator.play(valueAnimator);
+    public OplusSectionSeekBar(Context context, AttributeSet attributeSet, int i2, int i3) {
+        super(context, attributeSet, i2, i3);
+        mPorterDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC);
+        mOnStopTrackingMask = false;
+        mThumbX = -1.0f;
+        mIsFastMoving = false;
+        mTouchDownPos = -1;
+        mTouchDownThumbX = INTERPOLATOR_CONTROL_X1;
+        mDeformedReleaseTransition = new FloatPropertyCompat<>("deformedReleaseTransition") {
+            @Override
+            public float getValue(OplusSectionSeekBar cOUISectionSeekBar) {
+                return cOUISectionSeekBar.getScale();
+            }
+
+            @Override
+            public void setValue(OplusSectionSeekBar cOUISectionSeekBar, float f2) {
+                cOUISectionSeekBar.setScale(f2);
+            }
+        };
+        mMarkRadius = getResources().getDimensionPixelSize(R.dimen.oplus_section_seekbar_tick_mark_radius);
+        mInactiveMarkColorStateList = createColorStateList(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector), ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_disable_color));
+        mActiveMarkColorStateList = createColorStateList(ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector), ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_disable_color));
+        mInactiveMarkColor = getColor(this, mInactiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector));
+        mActiveMarkColor = getColor(this, mActiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector));
+        initDeformedReleaseAnim();
+    }
+
+    public static ColorStateList createColorStateList(int defaultColor, int disabledColor) {
+        return new ColorStateList(
+                new int[][]{
+                        new int[]{-android.R.attr.state_enabled},
+                        StateSet.WILD_CARD
+                },
+                new int[]{
+                        disabledColor,
+                        defaultColor
+                }
+        );
+    }
+
+    public void calculateCurIndex() {
+        int iCeil = mProgress;
+        float f2 = mMoveAnimationEndThumbX;
+        float f3 = mMoveAnimationStartThumbX;
+        boolean z2 = true;
+        if (f2 - f3 > INTERPOLATOR_CONTROL_X1) {
+            iCeil = Math.round(mThumbX / (mIsDragging ? getMoveSectionWidth() : getSectionWidth()));
+        } else if (f2 - f3 < INTERPOLATOR_CONTROL_X1) {
+            iCeil = (int) Math.ceil(((int) mThumbX) / (mIsDragging ? getMoveSectionWidth() : getSectionWidth()));
+        } else {
+            z2 = false;
+        }
+        if (isLayoutRtl() && z2) {
+            iCeil = mMax - iCeil;
+        }
+        checkThumbPosChange(iCeil);
     }
 
     private void calculateThumbPositionByIndex() {
         int seekBarWidth = getSeekBarWidth();
-        this.mThumbX = ((this.mProgress * seekBarWidth) * 1.0f) / this.mMax;
+        mThumbX = ((mProgress * seekBarWidth) * 1.0f) / mMax;
         if (isLayoutRtl()) {
-            this.mThumbX = seekBarWidth - this.mThumbX;
+            mThumbX = seekBarWidth - mThumbX;
         }
     }
 
-    public float getMoveSectionWidth() {
-        return (float) getSeekBarMoveWidth() / this.mMax;
+    private void clearDeformationValue(MotionEvent motionEvent) {
+        float x2 = (motionEvent.getX() - getStart()) - mPaddingHorizontal;
+        if (x2 <= INTERPOLATOR_CONTROL_X1 || x2 >= getSeekBarWidth()) {
+            return;
+        }
+        resetDeformationValue();
+    }
+
+    private void drawMark(Canvas canvas, int i2, float f2) {
+        float width = (getWidth() - getEnd()) - mPaddingHorizontal;
+        float f3 = mThumbPosition;
+        float f4 = mCurThumbRadius;
+        float f5 = f3 - f4;
+        float f6 = f3 + f4;
+        int iSaveLayer = canvas.saveLayer(null, null, 31);
+        mPaint.setXfermode(mPorterDuffXfermode);
+        int i3 = (!mShowProgress || isLayoutRtl()) ? mInactiveMarkColor : mActiveMarkColor;
+        mPaint.setColor(i3);
+        float start = getStart() + mPaddingHorizontal;
+        float f7 = width - start;
+        int i4 = 0;
+        boolean z2 = false;
+        while (true) {
+            int i5 = mMax;
+            if (i4 > i5) {
+                mPaint.setXfermode(null);
+                canvas.restoreToCount(iSaveLayer);
+                return;
+            }
+            if (mShowProgress && !z2 && ((i4 * f7) / i5) + start > getStart() + mPaddingHorizontal + mThumbX) {
+                mPaint.setColor(isLayoutRtl() ? mActiveMarkColor : mInactiveMarkColor);
+                z2 = true;
+            }
+            float f8 = ((i4 * f7) / mMax) + start + (isLayoutRtl() ? -f2 : f2);
+            float f9 = mMarkRadius;
+            float f10 = f8 + f9;
+            if (f5 > f8 - f9 || f6 < f10) {
+                canvas.drawCircle(f8, i2, f9, mPaint);
+            }
+            i4++;
+        }
+    }
+
+    private void drawThumb(Canvas canvas, int i2) {
+        if (mShowThumb) {
+            if (mThumbShadowRadiusSize > 0 && isEnabled()) {
+                mPaint.setStyle(Paint.Style.FILL);
+                mPaint.setShadowLayer(mThumbShadowRadiusSize, INTERPOLATOR_CONTROL_X1, mThumbShadowOffsetY, mThumbShadowColor);
+            }
+            mPaint.setColor(mThumbColor);
+            canvas.drawCircle(mThumbPosition, i2, mCurThumbRadius, mPaint);
+            if (mThumbShadowRadiusSize <= 0 || !isEnabled()) {
+                return;
+            }
+            mPaint.clearShadowLayer();
+        }
+    }
+
+    private float getMoveSectionWidth() {
+        return getSeekBarMoveWidth() / mMax;
     }
 
     private float getMoveThumbXByIndex(int i2) {
-        float stepWidth = getSeekBarMoveWidth() / (float) this.mMax;
-        float f2 = (i2 * stepWidth);
+        float stepWidth = getSeekBarMoveWidth() / (float) mMax;
         float seekBarMoveWidth = getSeekBarMoveWidth();
-        float max = Math.max(0.0f, Math.min(f2, seekBarMoveWidth));
-        return isLayoutRtl() ? seekBarMoveWidth - max : max;
+        float fMax = Math.max(INTERPOLATOR_CONTROL_X1, Math.min(stepWidth, seekBarMoveWidth));
+        return isLayoutRtl() ? seekBarMoveWidth - fMax : fMax;
     }
 
-    public float getSectionWidth() {
-        return (float) getSeekBarNormalWidth() / this.mMax;
+    public float getScale() {
+        return mScale * DEFORMATION_SCALE_FACTOR;
+    }
+
+    public void setScale(float scale) {
+        mScale = scale / DEFORMATION_SCALE_FACTOR;
+        calculateTouchDeformationValue();
+    }
+
+    private float getSectionWidth() {
+        return getSeekBarNormalWidth() / mMax;
     }
 
     private int getSeekBarMoveWidth() {
-        return (int) (((getWidth() - getStart()) - getEnd()) - ((this.mPaddingHorizontal * this.mHorizontalPaddingScale) * 2.0f));
+        return (int) (((getWidth() - getStart()) - getEnd()) - (mPaddingHorizontal * 2.0f));
     }
 
     private int getSeekBarNormalWidth() {
-        return (int) (((getWidth() - getStart()) - getEnd()) - (this.mPaddingHorizontal * 2.0f));
+        return (int) (((getWidth() - getStart()) - getEnd()) - (mPaddingHorizontal * 2.0f));
     }
 
     private int getThumbPosByX(float f2) {
@@ -123,77 +228,80 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         if (isLayoutRtl()) {
             f2 = seekBarWidth - f2;
         }
-        return Math.max(0, Math.min(Math.round((f2 * this.mMax) / seekBarWidth), this.mMax));
+        return Math.max(0, Math.min(Math.round((f2 * mMax) / seekBarWidth), mMax));
     }
 
     private float getThumbXByIndex(int index) {
-        float moveWidth = getSeekBarNormalWidth();//getSeekBarMoveWidth();
-        float position = (index * moveWidth) / this.mMax;
-        float clampedPosition = Math.max(0.0f, Math.min(position, moveWidth));
-        return isLayoutRtl() ? moveWidth - clampedPosition : clampedPosition;
+        float seekBarWidth = getSeekBarNormalWidth();
+        float positionX = ((float) index * seekBarWidth) / (float) mMax;
+        float constrainedX = Math.max(INTERPOLATOR_CONTROL_X1, Math.min(positionX, seekBarWidth));
+        return (isLayoutRtl()) ?
+                seekBarWidth - constrainedX :
+                constrainedX;
     }
 
     private float getTouchXOfDrawArea(MotionEvent motionEvent) {
-        return Math.min(Math.max(0.0f, (motionEvent.getX() - getPaddingLeft()) - this.mCurPaddingHorizontal), getSeekBarWidth());
+        return Math.min(Math.max(INTERPOLATOR_CONTROL_X1, (motionEvent.getX() - getStart()) - mPaddingHorizontal), getSeekBarWidth());
+    }
+
+    private void initDeformedReleaseAnim() {
+        if (mDeformedReleaseAnim != null) {
+            return;
+        }
+        mDeformedReleaseAnim = new OplusSpringAnimation(this, mDeformedReleaseTransition);
+        OplusSpringForce oplusSpringForce = new OplusSpringForce();
+        oplusSpringForce.setBounce(INTERPOLATOR_CONTROL_X1);
+        oplusSpringForce.setResponse(DEFORMATION_RELEASE_SPRING_RESPONSE);
+        mDeformedReleaseAnim.setSpring(oplusSpringForce);
     }
 
     public void invalidateProgress(float f2, boolean z2) {
-        float thumbXByIndex = getThumbXByIndex(this.mProgress);
-        float subtract = subtract(f2, thumbXByIndex);
+        float thumbXByIndex = getThumbXByIndex(mProgress);
+        float fSubtract = subtract(f2, thumbXByIndex);
         float sectionWidth = getSectionWidth();
-        int round = this.mIsDragging ? (int) (subtract / sectionWidth) : Math.round(subtract / sectionWidth);
-        ValueAnimator valueAnimator = this.mMoveAnimator;
-        if (valueAnimator != null && valueAnimator.isRunning() && Float.compare(this.mMoveAnimationEndThumbX, (round * sectionWidth) + thumbXByIndex) == 0) {
+        int iRound = mIsDragging ? (int) (fSubtract / sectionWidth) : Math.round(fSubtract / sectionWidth);
+        ValueAnimator valueAnimator = mMoveAnimator;
+        if (valueAnimator != null && valueAnimator.isRunning() && Float.compare(mMoveAnimationEndThumbX, (iRound * sectionWidth) + thumbXByIndex) == 0) {
             return;
         }
-        float f3 = round * sectionWidth;
-        this.mCurrentOffset = f3;
-        this.mOverstep = thumbXByIndex;
-        float f4 = this.mThumbX - thumbXByIndex;
-        this.mOnStopTrackingMask = true;
-        startMoveAnimation(thumbXByIndex, f3 + thumbXByIndex, f4, z2 ? 100 : 0);
+        float f3 = iRound * sectionWidth;
+        mCurrentOffset = f3;
+        float f4 = mThumbX - thumbXByIndex;
+        mOnStopTrackingMask = true;
+        startMoveAnimation(thumbXByIndex, f3 + thumbXByIndex, f4, z2);
     }
 
-
-    private void startMoveAnimation(float f2, float f3, float f4, int i2) {
-        if (Float.compare(this.mThumbX, f3) == 0 || (this.mMoveAnimator != null && mMoveAnimator.isRunning() && Float.compare(this.mMoveAnimationEndThumbX, f3) == 0)) {
-            if (this.mOnStopTrackingMask) {
+    private void startMoveAnimation(float f2, float f3, float f4, boolean z2) {
+        ValueAnimator valueAnimator;
+        if (Float.compare(mThumbX, f3) == 0 || ((valueAnimator = mMoveAnimator) != null && valueAnimator.isRunning() && Float.compare(mMoveAnimationEndThumbX, f3) == 0)) {
+            if (mOnStopTrackingMask) {
                 onStopTrackingTouch(true);
-                this.mOnStopTrackingMask = false;
+                mOnStopTrackingMask = false;
                 return;
             }
             return;
         }
-        this.mMoveAnimationEndThumbX = f3;
-        this.mMoveAnimationStartThumbX = f2;
-        if (this.mMoveAnimator == null) {
+        mMoveAnimationEndThumbX = f3;
+        mMoveAnimationStartThumbX = f2;
+        if (!z2) {
+            mThumbX = (f3 + f2) - f2;
+            calculateCurIndex();
+            mOnStopTrackingMask = false;
+            return;
+        }
+        if (mMoveAnimator == null) {
             ValueAnimator valueAnimator2 = new ValueAnimator();
-            this.mMoveAnimator = valueAnimator2;
-            valueAnimator2.setInterpolator(PathInterpolatorCompat.create(0.0f, 0.0f, 0.25f, 1.0f));
-            this.mMoveAnimator.addUpdateListener(valueAnimator3 -> {
-                mMoveAnimationValue = (Float) valueAnimator3.getAnimatedValue();
-                mThumbX = mMoveAnimationStartThumbX + (mMoveAnimationValue * MOVE_RATIO) + (mCurrentOffset * 0.6f);
-                mOverstep = mThumbX;
+            mMoveAnimator = valueAnimator2;
+            valueAnimator2.setInterpolator(PathInterpolatorCompat.create(INTERPOLATOR_CONTROL_X1, INTERPOLATOR_CONTROL_Y1, INTERPOLATOR_CONTROL_X2, 1.0f));
+            mMoveAnimator.addUpdateListener(valueAnimator3 -> {
+                mMoveAnimationValue = ((Float) valueAnimator3.getAnimatedValue()).floatValue();
+                mThumbX = mMoveAnimationStartThumbX + (mMoveAnimationValue * 0.4f) + (mCurrentOffset * 0.6f);
                 invalidate();
-                int i3 = mProgress;
-                boolean z2 = true;
-                if (mMoveAnimationEndThumbX - mMoveAnimationStartThumbX > 0.0f) {
-                    float f5 = mThumbX;
-                    i3 = Math.round(f5 / (mIsDragging ? getMoveSectionWidth() : getSectionWidth()));
-                } else if (mMoveAnimationEndThumbX - mMoveAnimationStartThumbX < 0.0f) {
-                    float f6 = (int) mThumbX;
-                    i3 = (int) Math.ceil(f6 / (mIsDragging ? getMoveSectionWidth() : getSectionWidth()));
-                } else {
-                    z2 = false;
-                }
-                if (isLayoutRtl() && z2) {
-                    i3 = mMax - i3;
-                }
-                checkThumbPosChange(i3);
+                calculateCurIndex();
             });
-            this.mMoveAnimator.addListener(new Animator.AnimatorListener() {
+            mMoveAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
-                public void onAnimationCancel(@NonNull Animator animator) {
+                public void onAnimationCancel(Animator animator) {
                     if (mOnStopTrackingMask) {
                         onStopTrackingTouch(true);
                         mOnStopTrackingMask = false;
@@ -201,7 +309,7 @@ public class OplusSectionSeekBar extends OplusSeekBar {
                 }
 
                 @Override
-                public void onAnimationEnd(@NonNull Animator animator) {
+                public void onAnimationEnd(Animator animator) {
                     if (mOnStopTrackingMask) {
                         onStopTrackingTouch(true);
                         mOnStopTrackingMask = false;
@@ -221,216 +329,176 @@ public class OplusSectionSeekBar extends OplusSeekBar {
                 }
             });
         }
-        this.mMoveAnimator.cancel();
-        this.mMoveAnimator.setDuration(i2);
-        this.mMoveAnimator.setFloatValues(f4, f3 - f2);
-        this.mMoveAnimator.start();
+        mMoveAnimator.cancel();
+        mMoveAnimator.setDuration(100L);
+        mMoveAnimator.setFloatValues(f4, f3 - f2);
+        mMoveAnimator.start();
     }
 
-    private void trackTouchEvent(float f2) {
-        float subtract = subtract(f2, this.mTouchDownThumbX);
-        float f3 = subtract < 0.0f ? subtract - 0.1f : subtract + 0.1f;
+    private void trackTouchEvent(MotionEvent motionEvent, float f2) {
+        setTouchScale(isLayoutRtl() ? (((getWidth() - motionEvent.getX()) - getEnd()) - mPaddingHorizontal) / getSeekBarWidth() : ((motionEvent.getX() - getStart()) - mPaddingHorizontal) / getSeekBarWidth(), false);
+        executeTouchGlitterEffectAnim();
+        float fSubtract = subtract(f2, mTouchDownThumbX);
+        float f3 = fSubtract < INTERPOLATOR_CONTROL_X1 ? fSubtract - 0.1f : fSubtract + 0.1f;
         float moveSectionWidth = getMoveSectionWidth();
-        int floatValue = (int) new BigDecimal(Float.toString(f3)).divide(new BigDecimal(Float.toString(moveSectionWidth)), RoundingMode.FLOOR).floatValue();
-        float f4 = floatValue * moveSectionWidth;
+        int iFloatValue = (int) new BigDecimal(Float.toString(f3)).divide(new BigDecimal(Float.toString(moveSectionWidth)), RoundingMode.FLOOR).floatValue();
+        float f4 = iFloatValue * moveSectionWidth;
         if (isLayoutRtl()) {
-            floatValue = -floatValue;
+            iFloatValue = -iFloatValue;
         }
-        this.mCurrentOffset = f3;
-        if (Math.abs((this.mTouchDownPos + floatValue) - this.mProgress) > 0) {
-            float f5 = this.mTouchDownThumbX;
-            startMoveAnimation(f5, f4 + f5, this.mMoveAnimationValue, 100);
+        mCurrentOffset = f3;
+        if (Math.abs((mTouchDownPos + iFloatValue) - mProgress) > 0) {
+            float f5 = mTouchDownThumbX;
+            startMoveAnimation(f5, f4 + f5, mMoveAnimationValue, true);
         } else {
-            this.mThumbX = this.mTouchDownThumbX + f4 + ((this.mCurrentOffset - f4) * 0.6f);
+            mThumbX = mTouchDownThumbX + f4 + ((mCurrentOffset - f4) * 0.6f);
             invalidate();
         }
-        this.mLastX = f2;
+        mLastX = f2;
     }
 
+    @Override
+    public void draw(@NonNull Canvas canvas) {
+        if (mThumbX == -1.0f) {
+            calculateThumbPositionByIndex();
+        }
+        super.draw(canvas);
+    }
 
     @Override
     public void drawActiveTrack(Canvas canvas, float f2) {
-        float start;
-        float f3;
-        float width = (getWidth() - getEnd()) - this.mCurPaddingHorizontal;
         int seekBarCenterY = getSeekBarCenterY();
-        if (isLayoutRtl()) {
-            f3 = getStart() + this.mCurPaddingHorizontal + f2;
-            start = getStart() + this.mCurPaddingHorizontal + this.mThumbX;
-        } else {
-            start = getStart() + this.mCurPaddingHorizontal;
-            f3 = this.mThumbX + start;
-        }
-        if (this.mShowProgress) {
-            this.mPaint.setColor(this.mProgressColor);
-            RectF rectF = this.mProgressRect;
-            float f5 = this.mCurProgressRadius;
-            rectF.set(start, (float) seekBarCenterY - f5, f3, (float) seekBarCenterY + f5);
-            canvas.drawRect(this.mProgressRect, this.mPaint);
-            if (isLayoutRtl()) {
-                RectF rectF2 = this.mTempRect;
-                float f6 = this.mCurProgressRadius;
-                RectF rectF3 = this.mProgressRect;
-                rectF2.set(width - f6, rectF3.top, f6 + width, rectF3.bottom);
-                canvas.drawArc(this.mTempRect, -90.0f, 180.0f, true, this.mPaint);
-            } else {
-                RectF rectF4 = this.mTempRect;
-                float f7 = this.mCurProgressRadius;
-                RectF rectF5 = this.mProgressRect;
-                rectF4.set(start - f7, rectF5.top, start + f7, rectF5.bottom);
-                canvas.drawArc(this.mTempRect, 90.0f, 180.0f, true, this.mPaint);
-            }
-        }
-        int saveLayer = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
-        this.mPaint.setXfermode(this.mPorterDuffXfermode);
-        this.mPaint.setColor(this.mShowProgress ? isLayoutRtl() ? this.mCurInactiveMarkColor : this.mCurActiveMarkColor : this.mCurInactiveMarkColor);
-        float start2 = getStart() + this.mCurPaddingHorizontal;
-        float f8 = width - start2;
-        int i2 = 0;
-        boolean z2 = false;
-        while (true) {
-            int i3 = this.mMax;
-            if (i2 > i3) {
-                break;
-            }
-            if (this.mShowProgress && !z2 && ((i2 * f8) / i3) + start2 > getStart() + this.mCurPaddingHorizontal + this.mThumbX) {
-                this.mPaint.setColor(isLayoutRtl() ? this.mCurActiveMarkColor : this.mCurInactiveMarkColor);
-                z2 = true;
-            }
-            canvas.drawCircle(((i2 * f8) / this.mMax) + start2, seekBarCenterY, this.mCurMarkRadius, this.mPaint);
-            i2++;
-        }
-        this.mPaint.setXfermode(null);
-        canvas.restoreToCount(saveLayer);
-        this.mLabelX = this.mThumbX;
-        if (this.mShowThumb) {
-            float start3 = getStart() + this.mCurPaddingHorizontal;
-            this.mPaint.setColor(this.mThumbColor);
-            canvas.drawCircle(start3 + Math.min(this.mThumbX, getSeekBarWidth()), seekBarCenterY, this.mThumbOutRadius, this.mPaint);
-        }
-    }
-
-    @Override
-    public void drawInactiveTrack(Canvas canvas) {
-        if (this.mThumbX == -1.0f) {
-            calculateThumbPositionByIndex();
-        }
-        int seekBarCenterY = getSeekBarCenterY();
-        int saveLayer = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
-        super.drawInactiveTrack(canvas);
-        this.mPaint.setXfermode(this.mPorterDuffXfermode);
-        float start = getStart() + this.mCurPaddingHorizontal;
-        float width = ((getWidth() - getEnd()) - this.mCurPaddingHorizontal) - start;
-        this.mPaint.setColor(this.mShowProgress ? isLayoutRtl() ? this.mBackgroundColor : this.mProgressColor : this.mBackgroundColor);
-        int i2 = 0;
-        boolean z2 = false;
-        while (true) {
-            int i3 = this.mMax;
-            if (i2 > i3) {
-                this.mPaint.setXfermode(null);
-                canvas.restoreToCount(saveLayer);
-                return;
-            }
-            if (this.mShowProgress && !z2 && ((i2 * width) / i3) + start > getStart() + this.mThumbX) {
-                this.mPaint.setColor(isLayoutRtl() ? this.mProgressColor : this.mBackgroundColor);
-                z2 = true;
-            }
-            canvas.drawCircle(((i2 * width) / this.mMax) + start, seekBarCenterY, this.mMarkRadius, this.mPaint);
-            i2++;
-        }
+        float f3 = mHeightTopDeformedUpValue - mHeightBottomDeformedDownValue;
+        mThumbPosition = getStart() + mPaddingHorizontal + Math.min(mThumbX, getSeekBarWidth()) + (isLayoutRtl() ? -f3 : f3);
+        mLabelX = mThumbX;
+        drawProgress(canvas);
+        drawGlitterEffect(canvas);
+        drawMark(canvas, seekBarCenterY, f3);
+        drawThumb(canvas, seekBarCenterY);
     }
 
     @Override
     public void handleMotionEventDown(MotionEvent motionEvent) {
         float touchXOfDrawArea = getTouchXOfDrawArea(motionEvent);
-        this.mTouchDownX = touchXOfDrawArea;
-        this.mLastX = touchXOfDrawArea;
+        mTouchDownX = touchXOfDrawArea;
+        mLastX = touchXOfDrawArea;
+        mIsBumpingEdges = false;
+        executeThumbScaleAnim(motionEvent);
     }
 
     @Override
-    public void handleMotionEventMove(MotionEvent motionEvent) {
-        float touchXOfDrawArea = getTouchXOfDrawArea(motionEvent);
-        if (this.mIsDragging) {
-            int r2 = -1;
-            float f2 = this.mLastX;
-            if (touchXOfDrawArea - f2 > 0.0f) {
-                r2 = 1;
-            } else if (touchXOfDrawArea - f2 >= 0.0f) {
-                r2 = 0;
+    public void handleMotionEventMove(MotionEvent event) {
+        resetBumpingEdges();
+        clearDeformationValue(event);
+
+        float currentTouchX = getTouchXOfDrawArea(event);
+
+        if (mIsDragging) {
+            int currentDirection = 0;
+            if (currentTouchX > mLastX) {
+                currentDirection = 1;
+            } else if (currentTouchX < mLastX) {
+                currentDirection = -1;
             }
-            if (r2 == (-this.mActionMoveDirection)) {
-                this.mActionMoveDirection = r2;
-                int i2 = this.mTouchDownPos;
-                int i3 = this.mProgress;
-                if (i2 != i3) {
-                    this.mTouchDownPos = i3;
-                    this.mTouchDownThumbX = getMoveThumbXByIndex(i3);
-                    this.mMoveAnimationValue = 0.0f;
+
+            if (currentDirection == (-mActionMoveDirection)) {
+                mActionMoveDirection = currentDirection;
+
+                if (mTouchDownPos != mProgress) {
+                    mTouchDownPos = mProgress;
+                    mTouchDownThumbX = getMoveThumbXByIndex(mProgress);
+                    mMoveAnimationValue = INTERPOLATOR_CONTROL_X1;
                 }
+
                 if (mMoveAnimator != null) {
                     mMoveAnimator.cancel();
                 }
             }
-            trackTouchEvent(touchXOfDrawArea);
+
+            trackTouchEvent(event, currentTouchX);
+
         } else {
-            if (!touchInSeekBar(motionEvent, this)) {
+            if (!isToucheInSeekBar(event)) {
                 return;
             }
-            if (Math.abs(touchXOfDrawArea - this.mTouchDownX) > this.mTouchSlop) {
+
+            float distanceFromStart = Math.abs(event.getX() - ((mTouchDownX + getStart()) + mPaddingHorizontal));
+
+            if (distanceFromStart > mTouchSlop) {
+                mClickAnim.cancel();
+                mDeformedReleaseAnim.cancel();
+
                 startDrag();
                 touchAnim();
-                int thumbPosByX = getThumbPosByX(this.mTouchDownX);
-                this.mTouchDownPos = thumbPosByX;
-                checkThumbPosChange(thumbPosByX);
-                float moveThumbXByIndex = getMoveThumbXByIndex(this.mTouchDownPos);
-                this.mTouchDownThumbX = moveThumbXByIndex;
-                this.mMoveAnimationValue = 0.0f;
-                this.mThumbX = moveThumbXByIndex;
+
+                int initialPos = getThumbPosByX(mTouchDownX);
+                mTouchDownPos = initialPos;
+                checkThumbPosChange(initialPos);
+
+                float initialThumbX = getMoveThumbXByIndex(mTouchDownPos);
+                mTouchDownThumbX = initialThumbX;
+                mMoveAnimationValue = 0.0f;
+                mThumbX = initialThumbX;
+
                 invalidate();
-                trackTouchEvent(touchXOfDrawArea);
-                this.mActionMoveDirection = touchXOfDrawArea - this.mTouchDownX > 0.0f ? 1 : -1;
+                trackTouchEvent(event, currentTouchX);
+
+                mActionMoveDirection = (currentTouchX > mTouchDownX) ? 1 : -1;
             }
         }
-        this.mLastX = touchXOfDrawArea;
+
+        mLastX = currentTouchX;
     }
 
     @Override
     public void handleMotionEventUp(MotionEvent motionEvent) {
+        releaseThumbScaleAnim();
         float touchXOfDrawArea = getTouchXOfDrawArea(motionEvent);
-        if (!this.mIsDragging) {
-            invalidateProgress(touchXOfDrawArea, false);
-            animForClick(touchXOfDrawArea);
-            releaseAnim();
+        if (!mIsDragging) {
+            if (motionEvent.getAction() != 3 && isEnabled() && touchInSeekBar(motionEvent, this)) {
+                invalidateProgress(touchXOfDrawArea, false);
+                animForClick(touchXOfDrawArea);
+                releaseAnim();
+                return;
+            }
             return;
         }
-        if (mMoveAnimator != null && mMoveAnimator.isRunning()) {
-            this.mIsFastMoving = true;
+        ValueAnimator valueAnimator = mMoveAnimator;
+        if (valueAnimator != null && valueAnimator.isRunning()) {
+            mIsFastMoving = true;
         }
-        if (!this.mIsFastMoving) {
+        if (mScale < SCALE_MIN) {
+            mDeformedReleaseAnim.setStartValue(mScale * DEFORMATION_SCALE_FACTOR);
+            mDeformedReleaseAnim.animateToFinalPosition(SCALE_MIN);
+            onStopTrackingTouch(true);
+        } else if (mScale > SCALE_MAX) {
+            mDeformedReleaseAnim.setStartValue(mScale * DEFORMATION_SCALE_FACTOR);
+            mDeformedReleaseAnim.animateToFinalPosition(DEFORMATION_SCALE_FACTOR);
+            onStopTrackingTouch(true);
+        } else if (!mIsFastMoving) {
             invalidateProgress(touchXOfDrawArea, true);
         }
-        onStopTrackingTouch();
+        onStopTrackingTouch(false);
         setPressed(false);
         releaseAnim();
     }
 
     @Override
-    public void onEnlargeAnimationUpdate(ValueAnimator valueAnimator) {
-        super.onEnlargeAnimationUpdate(valueAnimator);
-        float animatedFraction = valueAnimator.getAnimatedFraction();
-        this.mCurMarkRadius = mMarkRadius + (animatedFraction * ((MARK_RADIUS_SCALE * mMarkRadius) - mMarkRadius));
+    public void onClickAnimationUpdate(float f2) {
+        mThumbX = (int) f2;
+        invalidate();
     }
 
     @Override
     public void onSizeChanged(int i2, int i3, int i4, int i5) {
         super.onSizeChanged(i2, i3, i4, i5);
-        this.mThumbX = -1.0f;
+        mThumbX = -1.0f;
     }
 
     @Override
     public void performFeedback() {
-        if (this.mEnableVibrator) {
-            if ((this.mHasMotorVibrator && this.mEnableAdaptiveVibrator && performAdaptiveFeedback()) || performHapticFeedback(308)) {
+        if (mEnableVibrator) {
+            if ((mHasMotorVibrator && mEnableAdaptiveVibrator && performAdaptiveFeedback()) || performHapticFeedback(308)) {
                 return;
             }
             performHapticFeedback(302);
@@ -438,33 +506,21 @@ public class OplusSectionSeekBar extends OplusSeekBar {
     }
 
     @Override
-    public void releaseAnim() {
-        super.releaseAnim();
-        ValueAnimator valueAnimator = new ValueAnimator();
-        valueAnimator.setValues(PropertyValuesHolder.ofFloat("markRadius", this.mCurMarkRadius, this.mMarkRadius), PropertyValuesHolder.ofInt("activeAlpha", Color.alpha(this.mCurActiveMarkColor), 0), PropertyValuesHolder.ofInt("inactiveAlpha", Color.alpha(this.mCurInactiveMarkColor), 0));
-        valueAnimator.setDuration(183L);
-        valueAnimator.setInterpolator(PROGRESS_SCALE_INTERPOLATOR);
-        valueAnimator.addUpdateListener(valueAnimator2 -> {
-            mCurMarkRadius = (Float) valueAnimator2.getAnimatedValue("markRadius");
-            int intValue = (Integer) valueAnimator2.getAnimatedValue("activeAlpha");
-            int intValue2 = (Integer) valueAnimator2.getAnimatedValue("inactiveAlpha");
-            mCurActiveMarkColor = Color.argb(intValue, 0, 0, 0);
-            mCurInactiveMarkColor = Color.argb(intValue2, 255, 255, 255);
-            invalidate();
-        });
-        valueAnimator.cancel();
-        valueAnimator.start();
+    public void setEnabled(boolean z2) {
+        super.setEnabled(z2);
+        mInactiveMarkColor = getColor(this, mInactiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_inactive_mark_selector));
+        mActiveMarkColor = getColor(this, mActiveMarkColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_active_mark_selector));
     }
 
     @Override
-    public void setMax(int i2) {
-        if (i2 < getMin()) {
-            i2 = getMin();
+    public void setMax(int max) {
+        if (max < getMin()) {
+            max = getMin();
         }
-        if (i2 != this.mMax) {
-            setLocalMax(i2);
-            if (this.mProgress > i2) {
-                setProgress(i2);
+        if (max != mMax) {
+            setLocalMax(max);
+            if (mProgress > max) {
+                setProgress(max);
             }
             calculateThumbPositionByIndex();
         }
@@ -473,42 +529,56 @@ public class OplusSectionSeekBar extends OplusSeekBar {
 
     @Override
     public void setProgress(int i2, boolean z2, boolean z3) {
-        if (this.mProgress != Math.max(0, Math.min(i2, this.mMax))) {
+        if (mProgress != Math.max(0, Math.min(i2, mMax))) {
             if (z2) {
                 checkThumbPosChange(i2, false, z3);
                 calculateThumbPositionByIndex();
                 startTransitionAnim(i2, z3);
-                return;
-            }
-            checkThumbPosChange(i2, false, z3);
-            if (getWidth() != 0) {
-                calculateThumbPositionByIndex();
-                this.mOverstep = mThumbX;
-                this.mMoveAnimationEndThumbX = mThumbX;
-                invalidate();
+            } else {
+                checkThumbPosChange(i2, false, z3);
+                if (getWidth() != 0) {
+                    calculateThumbPositionByIndex();
+                    mMoveAnimationEndThumbX = mThumbX;
+                    invalidate();
+                }
             }
         }
     }
 
     @Override
-    public void startTransitionAnim(int i2, boolean z2) {
-        if (mClickAnimatorSet == null) {
-            this.mClickAnimatorSet = new AnimatorSet();
+    public void setProgressRect() {
+        float seekBarWidth = getSeekBarWidth();
+        int seekBarCenterY = getSeekBarCenterY();
+        if (isLayoutRtl()) {
+            float start = getStart() + mPaddingHorizontal + seekBarWidth;
+            float start2 = getStart() + mPaddingHorizontal + mThumbX;
+            float deformation = start2 - mHeightTopDeformedUpValue;
+            mProgressRect.set(deformation + mHeightBottomDeformedDownValue, (seekBarCenterY - (mProgressHeight / 2.0f)) + mWidthDeformedValue, (start - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, (seekBarCenterY + (mProgressHeight / 2.0f)) - mWidthDeformedValue);
         } else {
-            mClickAnimatorSet.cancel();
+            float start3 = getStart() + mPaddingHorizontal;
+            float f7 = mThumbX + start3;
+            float deformation = (start3 - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
+            mProgressRect.set(deformation, (seekBarCenterY - (mProgressHeight / 2.0f)) + mWidthDeformedValue, (f7 + mHeightTopDeformedUpValue) - mHeightBottomDeformedDownValue, (seekBarCenterY + (mProgressHeight / 2.0f)) - mWidthDeformedValue);
         }
-        ValueAnimator ofInt = ValueAnimator.ofFloat(this.mLabelX, getThumbXByIndex(i2));
-        ofInt.addUpdateListener(valueAnimator -> {
-            mThumbX = (float) valueAnimator.getAnimatedValue();
-            invalidate();
-        });
-        ofInt.setInterpolator(THUMB_ANIMATE_INTERPOLATOR);
-        long abs = (long) ((Math.abs(mThumbX - mLabelX) / getSeekBarWidth()) * 483.0f);
-        if (abs < 150) {
-            abs = 150;
-        }
-        this.mClickAnimatorSet.setDuration(abs);
-        this.mClickAnimatorSet.play(ofInt);
-        this.mClickAnimatorSet.start();
+        mProgressRect.left = mProgressRect.left - (mProgressHeight / 2.0f);
+        mProgressRect.right += mProgressHeight / 2.0f;
     }
+
+    @Override
+    public void startTransitionAnim(int i2, boolean z2) {
+        OplusDynamicAnimation.OnAnimationEndListener onAnimationEndListener = (OplusDynamicAnimation, z3, f2, f3) -> onStopTrackingTouch(true);
+        int i3 = (int) mLabelX;
+        int i4 = (int) mThumbX;
+        mClickAnim.cancel();
+        OplusDynamicAnimation.OnAnimationEndListener onAnimationEndListener2 = mLastEndClickListener;
+        if (onAnimationEndListener2 != null) {
+            mClickAnim.removeEndListener(onAnimationEndListener2);
+        }
+        mClickAnim.addEndListener(onAnimationEndListener);
+        mClickAnim.setStartValue(i3);
+        onStartTrackingTouch(true);
+        mClickAnim.animateToFinalPosition(i4);
+        mLastEndClickListener = onAnimationEndListener;
+    }
+
 }

@@ -58,12 +58,19 @@
     <color name="oplus_seekbar_text_color">#ec3e50</color>
     <color name="oplus_seekbar_thumb_color">#ffffffff</color>
     <color name="oplus_seekbar_thumb_color_disabled">#ffffffff</color>
+    <color name="oplus_seekbar_thumb_disable_color">#8affffff</color>
     <color name="oplus_seekbar_thumb_shadow_color">#29000000</color>
     <color name="oplus_seekbar_tick_mark_color">#f2f2f2</color>
+    <color name="oplus_seekbar_glitter_effect_max_color">#a0ffffff</color>
+    <color name="oplus_seekbar_glitter_effect_min_color">#00ffffff</color>
+    <color name="oplus_seekbar_inactive_mark_disable_color">#42000000</color>
+    <color name="oplus_seekbar_active_mark_disable_color">#8affffff</color>
 
     <color name="oplus_color_container_solid">#ebebeb</color>
     <color name="oplus_color_controls">#29000000</color>
     <color name="oplus_color_fill_solid">#ebebeb</color>
+
+    <color name="oplus_color_label_on_color">#ffffff</color>
 
     <!-- Edit Text -->
     <color name="oplus_color_label_tertiary">#42000000</color>

@@ -79,6 +79,12 @@
     <dimen name="oplus_seekbar_view_min_height">36dp</dimen>
     <dimen name="oplus_section_seekbar_tick_mark_radius">4dp</dimen>
     <dimen name="oplus_section_seekbar_progress_padding_horizontal">12dp</dimen>
+    <dimen name="oplus_seekbar_shadow_offset_y">2dp</dimen>
+    <dimen name="oplus_seekbar_thumb_radius">6dp</dimen>
+    <dimen name="oplus_seekbar_thumb_max_radius">8dp</dimen>
+    <dimen name="oplus_seekbar_background_height">20dp</dimen>
+    <dimen name="oplus_seekbar_progress_height">20dp</dimen>
+
 
     <!-- Edit Text dimens -->
     <dimen name="oplus_edit_text_height_min">62dp</dimen>
