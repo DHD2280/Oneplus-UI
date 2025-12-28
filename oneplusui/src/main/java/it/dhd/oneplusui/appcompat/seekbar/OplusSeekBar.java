@@ -141,7 +141,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     protected float mLabelX;
     protected OplusDynamicAnimation.OnAnimationEndListener mLastEndClickListener;
     protected float mLastX;
-    protected Object mLinearMotorVibrator;
     protected int mMax;
     protected int mMin;
     protected int mOldProgress;
@@ -162,15 +161,12 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     protected Interpolator mThumbAnimateInterpolator;
     protected int mThumbColor;
     protected float mThumbMaxRadius;
-    protected float mThumbOutHeight;
     protected float mThumbOutRadius;
-    protected float mThumbOutRoundCornerWeight;
     protected float mThumbPosition;
     protected float mThumbRadius;
     protected int mThumbShadowColor;
     protected float mThumbShadowOffsetY;
     protected int mThumbShadowRadiusSize;
-    protected AnimatorSet mTouchAnimator;
     protected float mTouchDownX;
     protected ValueAnimator mTouchEnlargeAnimator;
     protected ValueAnimator mTouchReleaseAnimator;
@@ -245,7 +241,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         mEnableVibrator = true;
         mEnableAdaptiveVibrator = true;
         mHasMotorVibrator = true;
-        mLinearMotorVibrator = null;
         mTouchSlop = 0;
         mProgress = 0;
         mOldProgress = 0;
@@ -300,7 +295,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         };
         mClipProgressPath = new Path();
         mClipProgressRect = new RectF();
-        mTouchAnimator = new AnimatorSet();
         mProgressScaleInterpolator = PathInterpolatorCompat.create(0.33f, 0.0f, 0.67f, 1.0f);
         mThumbAnimateInterpolator = PathInterpolatorCompat.create(CLICK_SPRING_RESPONSE, 0.0f, 0.1f, 1.0f);
         mTempRect = new RectF();
@@ -371,7 +365,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     private float calculateDamping() {
         float f2 = mDamping;
-        if (f2 != 0.0f) {
+        if (mDamping != 0.0f) {
             return f2;
         }
         return MAX_MOVE_DAMPING;
@@ -388,8 +382,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private void clearDeformationValue() {
-        float f2 = mScale;
-        if (f2 <= 0.0f || f2 >= MAX_MOVE_DAMPING) {
+        if (mScale <= SCALE_MIN || mScale >= MAX_MOVE_DAMPING) {
             return;
         }
         resetDeformationValue();
@@ -451,17 +444,16 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     private void executeFlingGlitterEffectAnim(BaseBehavior baseBehavior, float f2) {
         float fMin = Math.min(Compat.physicalSizeToPixels(baseBehavior.getPropertyBodyVelocity().mX), MAX_VELOCITY);
         if (!mIsStartFromMiddle) {
-            if (mScale < 1.0f || mIsBumpingEdges || f2 >= 1.0f) {
+            if (mScale < SCALE_MAX || mIsBumpingEdges || f2 >= SCALE_MAX) {
                 return;
             }
             startGlitterEffectAnim(fMin);
             return;
         }
-        float f3 = mScale;
-        if (f3 >= 1.0f && !mIsBumpingEdges && f2 < 1.0f) {
+        if (mScale >= SCALE_MAX && !mIsBumpingEdges && mScale < SCALE_MAX) {
             startGlitterEffectAnim(fMin);
         } else {
-            if (f3 > 0.0f || mIsBumpingEdges || f2 <= 0.0f) {
+            if (mScale > SCALE_MIN || mIsBumpingEdges || mScale <= SCALE_MIN) {
                 return;
             }
             startGlitterEffectAnim(fMin);
@@ -472,8 +464,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         if (mFlingValueHolder == null || mFlingBehavior == null || !mIsSupportDeformation) {
             return;
         }
-        float f2 = mScale;
-        if (f2 > 1.0f || f2 < 0.0f) {
+        if (mScale > SCALE_MAX || mScale < SCALE_MIN) {
             int seekBarWidth = getSeekBarWidth();
             int i2 = mMax - mMin;
             float f3 = i2 > 0 ? seekBarWidth / i2 : 0.0f;
@@ -537,13 +528,12 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private float getDeformationFlingScale() {
-        float f2 = mScale;
-        return f2 > 1.0f ? ((f2 - 1.0f) / 5.0f) + 1.0f : f2 < 0.0f ? f2 / 5.0f : f2;
+        return mScale > SCALE_MAX ? ((mScale - SCALE_MAX) / SCALE_DEFORMATION_TIMES) + SCALE_MAX : mScale < SCALE_MIN ? mScale / SCALE_DEFORMATION_TIMES : mScale;
     }
 
-    private ValueAnimator getEnlargeAnimator(long j2, Interpolator interpolator) {
+    private ValueAnimator getEnlargeAnimator(long duration, Interpolator interpolator) {
         ValueAnimator valueAnimator = new ValueAnimator();
-        valueAnimator.setDuration(j2);
+        valueAnimator.setDuration(duration);
         valueAnimator.setInterpolator(interpolator);
         valueAnimator.addUpdateListener(valueAnimator2 -> getEnlargeAnimator(valueAnimator2));
         return valueAnimator;
@@ -571,16 +561,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private float getHeightTopDeformedValue() {
-        float f2;
-        float f3;
-        if (isLayoutRtl()) {
-            f2 = mHeightTopDeformedDownValue;
-            f3 = mHeightTopDeformedUpValue;
-        } else {
-            f2 = mHeightTopDeformedUpValue;
-            f3 = mHeightTopDeformedDownValue;
-        }
-        return f2 - f3;
+        return
+                isLayoutRtl() ?
+                        mHeightTopDeformedDownValue - mHeightTopDeformedUpValue :
+                        mHeightTopDeformedUpValue - mHeightTopDeformedDownValue;
     }
 
     private float getPercent(int i2) {
@@ -595,10 +579,8 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private int getProgressLimit(int i2) {
-        int i3 = mMax;
-        int i4 = mMin;
-        int i5 = i3 - i4;
-        return Math.max(i4 - i5, Math.min(i2, i3 + i5));
+        int diff = mMax - mMin;
+        return Math.max(mMin - diff, Math.min(i2, mMax + diff));
     }
 
     private int getRealProgress(int i2) {
@@ -661,8 +643,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         mDeformationAnim = spring;
         spring.addUpdateListener((OplusDynamicAnimation, f2, f3) -> {
             float f4 = f2 / DEFORMATION_SCALE_FACTOR;
-            float f5 = mScale;
-            if (mScale > 1.0f) {
+            if (mScale > SCALE_MAX) {
                 mHeightBottomDeformedUpValue = computeValue(f4, mMaxMovingDistance);
                 mHeightTopDeformedUpValue = computeValue(f4, mMaxMovingDistance + mMaxHeightDeformedValue);
                 mWidthDeformedValue = computeValue(f4, mMaxWidthDeformedValue);
@@ -670,7 +651,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
                 invalidate();
                 return;
             }
-            if (mScale < 0.0f) {
+            if (mScale < SCALE_MIN) {
                 mHeightTopDeformedDownValue = computeValue(f4, mMaxMovingDistance);
                 mHeightBottomDeformedDownValue = computeValue(f4, mMaxMovingDistance + mMaxHeightDeformedValue);
                 mWidthDeformedValue = computeValue(f4, mMaxWidthDeformedValue);
@@ -681,11 +662,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private void initEnlargeAnim() {
-        ValueAnimator valueAnimator = mTouchEnlargeAnimator;
-        if (valueAnimator == null) {
-            mTouchEnlargeAnimator = getEnlargeAnimator(183L, PROGRESS_SCALE_INTERPOLATOR);
+        if (mTouchEnlargeAnimator == null) {
+            mTouchEnlargeAnimator = getEnlargeAnimator(TOUCH_ANIMATION_ENLARGE_DURATION, PROGRESS_SCALE_INTERPOLATOR);
         } else {
-            cancelAnim(valueAnimator);
+            cancelAnim(mTouchEnlargeAnimator);
         }
         setEnlargeAnimatorValues(mTouchEnlargeAnimator);
     }
@@ -752,11 +732,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private void initOrResetVelocityTracker() {
-        VelocityTracker velocityTracker = mVelocityTracker;
-        if (velocityTracker == null) {
+        if (mVelocityTracker == null) {
             mVelocityTracker = VelocityTracker.obtain();
         } else {
-            velocityTracker.clear();
+            mVelocityTracker.clear();
         }
     }
 
@@ -856,7 +835,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     private boolean isDeformationFling() {
         if (mIsSupportDeformation) {
-            return (mScale > 1.0f || mScale < 0.0f) && (mPhysicalAnimator != null) && mPhysicalAnimator.isAnimatorRunning();
+            return (mScale > SCALE_MAX || mScale < SCALE_MIN) && (mPhysicalAnimator != null) && mPhysicalAnimator.isAnimatorRunning();
         }
         return false;
     }
@@ -919,16 +898,14 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     private void setMaxToMinLinearGradient() {
         if (mMaxToMinLinearGradient == null) {
-            RectF rectF = mProgressRect;
-            mMaxToMinLinearGradient = new LinearGradient(rectF.left, 0.0f, rectF.right, 0.0f, mGlitterEffectMaxColor, mGlitterEffectMinColor, Shader.TileMode.CLAMP);
+            mMaxToMinLinearGradient = new LinearGradient(mProgressRect.left, 0.0f, mProgressRect.right, 0.0f, mGlitterEffectMaxColor, mGlitterEffectMinColor, Shader.TileMode.CLAMP);
         }
         mGlitterEffectPaint.setShader(mMaxToMinLinearGradient);
     }
 
     private void setMinToMaxLinearGradient() {
         if (mMinToMaxLinearGradient == null) {
-            RectF rectF = mProgressRect;
-            mMinToMaxLinearGradient = new LinearGradient(rectF.left, 0.0f, rectF.right, 0.0f, mGlitterEffectMinColor, mGlitterEffectMaxColor, Shader.TileMode.CLAMP);
+            mMinToMaxLinearGradient = new LinearGradient(mProgressRect.left, 0.0f, mProgressRect.right, 0.0f, mGlitterEffectMinColor, mGlitterEffectMaxColor, Shader.TileMode.CLAMP);
         }
         mGlitterEffectPaint.setShader(mMinToMaxLinearGradient);
     }
@@ -996,19 +973,18 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         executeTouchGlitterEffectAnim();
         mFlexibleFollowHandAnim.animateToFinalPosition(mScale * FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR);
         int progressLimit = getProgressLimit(Math.round((mScale * f3) + getMin()));
-        int i3 = mProgress;
-        int i4 = mRealProgress;
+        int progress = mProgress;
+        int realProgress = mRealProgress;
         setLocalProgress(progressLimit);
-        if (i3 != mProgress) {
+        if (progress != mProgress) {
             mLastX = x2;
             dispatchProgressChanged(mRealProgress, true);
-            if (i4 != mRealProgress) {
+            if (realProgress != mRealProgress) {
                 performFeedback();
             }
         }
-        VelocityTracker velocityTracker = mVelocityTracker;
-        if (velocityTracker != null) {
-            velocityTracker.computeCurrentVelocity(VELOCITY_COMPUTE_TIME);
+        if (mVelocityTracker != null) {
+            mVelocityTracker.computeCurrentVelocity(VELOCITY_COMPUTE_TIME);
             startFastMoveAnimation(mVelocityTracker.getXVelocity());
         }
     }
@@ -1076,11 +1052,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void calculateTouchDeformationValue() {
-        float f2 = mScale;
-        if (f2 > SCALE_MAX) {
-            mDeformationAnim.animateToFinalPosition(((f2 - SCALE_MAX) / SCALE_DEFORMATION_TIMES) * DEFORMATION_SCALE_FACTOR);
-        } else if (f2 < SCALE_MIN) {
-            mDeformationAnim.animateToFinalPosition((Math.abs(f2) / SCALE_DEFORMATION_TIMES) * DEFORMATION_SCALE_FACTOR);
+        if (mScale > SCALE_MAX) {
+            mDeformationAnim.animateToFinalPosition(((mScale - SCALE_MAX) / SCALE_DEFORMATION_TIMES) * DEFORMATION_SCALE_FACTOR);
+        } else if (mScale < SCALE_MIN) {
+            mDeformationAnim.animateToFinalPosition((Math.abs(mScale) / SCALE_DEFORMATION_TIMES) * DEFORMATION_SCALE_FACTOR);
         }
     }
 
@@ -1243,16 +1218,16 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     @Override
-    public void setMax(int i2) {
-        if (i2 < getMin()) {
+    public void setMax(int max) {
+        if (max < getMin()) {
             int min = getMin();
-            Log.e(TAG, "setMax : the input params is lower than min. (inputMax:" + i2 + ",mMin:" + mMin + ")");
-            i2 = min;
+            Log.e(TAG, "setMax : the input params is lower than min. (inputMax:" + max + ",mMin:" + mMin + ")");
+            max = min;
         }
-        if (i2 != mMax) {
-            setLocalMax(i2);
-            if (mProgress > i2) {
-                setProgress(i2);
+        if (max != mMax) {
+            setLocalMax(max);
+            if (mProgress > max) {
+                setProgress(max);
             }
         }
         invalidate();
@@ -1339,12 +1314,11 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
             return;
         }
         if (mIsDragging && mStartDragging) {
-            int i5 = mMoveType;
-            if (i5 != 0) {
-                if (i5 == 1) {
+            if (mMoveType != MOVE_BY_DEFAULT) {
+                if (mMoveType == MOVE_BY_FINGER) {
                     trackTouchEventByFinger(motionEvent);
                     return;
-                } else if (i5 != 2) {
+                } else if (mMoveType != MOVE_BY_DISTANCE) {
                     return;
                 }
             }
@@ -1369,7 +1343,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void handleMotionEventUp(MotionEvent motionEvent) {
-        OnSeekBarChangeListener onSeekBarChangeListener;
         releaseThumbScaleAnim();
         getFastMoveSpring().setEndValue(0.0d);
         if (!mIsDragging) {
@@ -1383,9 +1356,8 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         mIsDragging = false;
         mStartDragging = false;
         Log.i(TAG, "handleMotionEventUp mFlingVelocity = " + mFlingVelocity);
-        if (!mIsPhysicsEnable || Math.abs(mFlingVelocity) < 100.0f) {
-            float f2 = mScale;
-            if (f2 >= 0.0f && f2 <= 1.0f) {
+        if (!mIsPhysicsEnable || Math.abs(mFlingVelocity) < PHYSICAL_VELOCITY_LIMIT) {
+            if (mScale >= SCALE_MIN && mScale <= SCALE_MAX) {
                 dispatchStopTrackingTouch();
             }
             flingBehaviorAfterDeformationDrag();
@@ -1416,8 +1388,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     @Override
     public void onAnimationUpdate(BaseBehavior baseBehavior) {
-        float f2;
-        float f3 = mScale;
+        float flingScale;
         Object animatedValue = baseBehavior.getAnimatedValue();
         if (animatedValue == null) {
             return;
@@ -1425,17 +1396,16 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         float fFloatValue = ((Float) animatedValue).floatValue();
         int seekBarWidth = getSeekBarWidth();
         if (isLayoutRtl()) {
-            float f4 = seekBarWidth;
-            f2 = (f4 - fFloatValue) / f4;
+            flingScale = (seekBarWidth - fFloatValue) / seekBarWidth;
         } else {
-            f2 = fFloatValue / seekBarWidth;
+            flingScale = fFloatValue / seekBarWidth;
         }
-        setFlingScale(f2);
-        executeFlingGlitterEffectAnim(baseBehavior, f3);
-        float f5 = mProgress;
+        setFlingScale(flingScale);
+        executeFlingGlitterEffectAnim(baseBehavior, mScale);
+        float progress = mProgress;
         setLocalProgress(getProgressLimit(Math.round((mMax - mMin) * mScale) + mMin));
         invalidate();
-        if (f5 != mProgress) {
+        if (progress != mProgress) {
             mLastX = fFloatValue + getStart();
             dispatchProgressChanged(mRealProgress, true);
         }
@@ -1470,19 +1440,18 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     @Override
-    public void onMeasure(int i2, int i3) {
-        int mode = View.MeasureSpec.getMode(i3);
-        int size = View.MeasureSpec.getSize(i3);
-        int size2 = View.MeasureSpec.getSize(i2);
+    public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int mode = View.MeasureSpec.getMode(heightMeasureSpec);
+        int height = View.MeasureSpec.getSize(heightMeasureSpec);
+        int width = View.MeasureSpec.getSize(widthMeasureSpec);
         int paddingTop = mSeekbarMinHeight + getPaddingTop() + getPaddingBottom();
-        if (1073741824 != mode || size < paddingTop) {
-            size = paddingTop;
+        if (mode != View.MeasureSpec.EXACTLY || height < paddingTop) {
+            height = paddingTop;
         }
-        int i4 = mMaxWidth;
-        if (i4 > 0 && size2 > i4) {
-            size2 = i4;
+        if (mMaxWidth > 0 && width > mMaxWidth) {
+            width = mMaxWidth;
         }
-        setMeasuredDimension(size2, size);
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -1580,7 +1549,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
                     mVelocityTracker.computeCurrentVelocity(ONE_SECOND_UNITS, MAX_VELOCITY);
                     mFlingVelocity = mVelocityTracker.getXVelocity();
 
-                    Log.i("COUISeekBar", "onTouchEvent ACTION_UP mFlingVelocity = " + mFlingVelocity);
+                    Log.i("OplusSeekBar", "onTouchEvent ACTION_UP mFlingVelocity = " + mFlingVelocity);
                 }
 
                 // Clean up the velocity tracker and handle the final touch-up logic
@@ -1658,11 +1627,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     public void releaseAnim() {
         cancelAnim(mTouchEnlargeAnimator);
-        ValueAnimator valueAnimator = mTouchReleaseAnimator;
-        if (valueAnimator == null) {
-            mTouchReleaseAnimator = getReleaseAnimator(183L, PROGRESS_SCALE_INTERPOLATOR);
+        if (mTouchReleaseAnimator == null) {
+            mTouchReleaseAnimator = getReleaseAnimator(TOUCH_ANIMATION_ENLARGE_DURATION, PROGRESS_SCALE_INTERPOLATOR);
         } else {
-            cancelAnim(valueAnimator);
+            cancelAnim(mTouchReleaseAnimator);
         }
         setReleaseAnimatorValues(mTouchReleaseAnimator);
         mTouchReleaseAnimator.start();
@@ -1680,12 +1648,11 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     public void resetBumpingEdges() {
         if (!mIsStartFromMiddle) {
-            if (mScale < 1.0f) {
+            if (mScale < SCALE_MAX) {
                 mIsBumpingEdges = false;
             }
         } else {
-            float f2 = mScale;
-            if (f2 >= 1.0f || f2 <= 0.0f) {
+            if (mScale >= SCALE_MAX || mScale <= SCALE_MIN) {
                 return;
             }
             mIsBumpingEdges = false;
@@ -1720,20 +1687,15 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         float start = (getStart() + mPaddingHorizontal) - (mCurBackgroundHeight / 2.0f);
         float width = ((getWidth() - getEnd()) - mPaddingHorizontal) + (mCurBackgroundHeight / 2.0f);
         if (isLayoutRtl()) {
-            RectF rectF = mBackgroundRect;
             float f2 = (start - mHeightTopDeformedUpValue) + mHeightTopDeformedDownValue;
             float f3 = seekBarCenterY;
             float f4 = mCurBackgroundHeight;
             float f5 = mWidthDeformedValue;
-            rectF.set(f2, f3 - ((f4 / 2.0f) - f5), (width - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, f3 + ((f4 / 2.0f) - f5));
+            mBackgroundRect.set(f2, f3 - ((f4 / 2.0f) - f5), (width - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, f3 + ((f4 / 2.0f) - f5));
             return;
         }
-        RectF rectF2 = mBackgroundRect;
         float f6 = (start - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
-        float f7 = seekBarCenterY;
-        float f8 = mCurBackgroundHeight;
-        float f9 = mWidthDeformedValue;
-        rectF2.set(f6, f7 - ((f8 / 2.0f) - f9), (width + mHeightTopDeformedUpValue) - mHeightTopDeformedDownValue, f7 + ((f8 / 2.0f) - f9));
+        mBackgroundRect.set(f6, seekBarCenterY - ((mCurBackgroundHeight / 2.0f) - mWidthDeformedValue), (width + mHeightTopDeformedUpValue) - mHeightTopDeformedDownValue, seekBarCenterY + ((mCurBackgroundHeight / 2.0f) - mWidthDeformedValue));
     }
 
     public void setBackgroundRoundCornerWeight(float f2) {
@@ -2038,20 +2000,20 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     public void setTouchScale(float f2, boolean z2) {
         if (!mIsSupportDeformation) {
             if (!z2) {
-                mScale = Math.max(0.0f, Math.min(f2, 1.0f));
+                mScale = Math.max(SCALE_MIN, Math.min(f2, SCALE_MAX));
                 return;
             }
-            float fMax = Math.max(0.0f, Math.min(f2, 1.0f));
+            float fMax = Math.max(SCALE_MIN, Math.min(f2, SCALE_MAX));
             mScale = fMax;
             mDrawProgressScale = fMax;
             return;
         }
         if (z2) {
-            float fMax2 = Math.max(-1.0f, Math.min(f2, 2.0f));
+            float fMax2 = Math.max(SCALE_DEFORMATION_MIN, Math.min(f2, SCALE_DEFORMATION_MAX));
             mScale = fMax2;
             mDrawProgressScale = fMax2;
         } else {
-            mScale = Math.max(-1.0f, Math.min(f2, 2.0f));
+            mScale = Math.max(SCALE_DEFORMATION_MIN, Math.min(f2, SCALE_DEFORMATION_MAX));
         }
         calculateTouchDeformationValue();
         if (mOnDeformedListener != null) {
@@ -2075,9 +2037,8 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         };
         float max = (mScale * (getMax() - getMin())) + getMin();
         mClickAnim.cancel();
-        OplusDynamicAnimation.OnAnimationEndListener onAnimationEndListener2 = mLastEndClickListener;
-        if (onAnimationEndListener2 != null) {
-            mClickAnim.removeEndListener(onAnimationEndListener2);
+        if (mLastEndClickListener != null) {
+            mClickAnim.removeEndListener(mLastEndClickListener);
         }
         mClickAnim.addEndListener(onAnimationEndListener);
         mClickAnim.setStartValue(max * mPixPerProgress);
@@ -2087,11 +2048,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void stopPhysicsMove() {
-        FlingBehavior flingBehavior;
-        if (!mIsPhysicsEnable || mPhysicalAnimator == null || (flingBehavior = mFlingBehavior) == null) {
+        if (!mIsPhysicsEnable || mPhysicalAnimator == null || mFlingBehavior == null) {
             return;
         }
-        flingBehavior.stop();
+        mFlingBehavior.stop();
     }
 
     public float subtract(float f2, float f3) {
@@ -2144,9 +2104,8 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void setProgress(int i2, boolean z2, boolean z3) {
-        OplusSpringAnimation oplusSpringAnimation = mFlexibleFollowHandAnim;
-        if (oplusSpringAnimation != null) {
-            oplusSpringAnimation.cancel();
+        if (mFlexibleFollowHandAnim != null) {
+            mFlexibleFollowHandAnim.cancel();
         }
         mOldProgress = mProgress;
         int iMax = Math.max(mMin, Math.min(i2, mMax));
