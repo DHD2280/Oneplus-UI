@@ -50,7 +50,6 @@ public class CardListSelectedItemLayout extends LinearLayout {
         this.mInitPaddingBottom = getPaddingBottom();
     }
 
-
     private void setCardRadiusStyle(int i) {
         if (i == 4) {
             this.mTopRounded = true;
