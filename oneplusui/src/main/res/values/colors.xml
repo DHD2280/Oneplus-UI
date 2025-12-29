@@ -65,6 +65,7 @@
     <color name="oplus_seekbar_glitter_effect_min_color">#00ffffff</color>
     <color name="oplus_seekbar_inactive_mark_disable_color">#42000000</color>
     <color name="oplus_seekbar_active_mark_disable_color">#8affffff</color>
+    <color name="section_seekbar_text_color">@color/oplus_color_secondary_neutral</color>
 
     <color name="oplus_color_container_solid">#ebebeb</color>
     <color name="oplus_color_controls">#29000000</color>

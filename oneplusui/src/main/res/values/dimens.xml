@@ -84,6 +84,8 @@
     <dimen name="oplus_seekbar_thumb_max_radius">8dp</dimen>
     <dimen name="oplus_seekbar_background_height">20dp</dimen>
     <dimen name="oplus_seekbar_progress_height">20dp</dimen>
+    <dimen name="text_descripe_seekbar_padding">10dp</dimen>
+    <dimen name="text_descripe_seekbar_value">14sp</dimen>
 
 
     <!-- Edit Text dimens -->

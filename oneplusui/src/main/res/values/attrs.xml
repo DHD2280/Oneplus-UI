@@ -56,6 +56,10 @@
         <attr name="decimalFormat" format="string" />
         <attr name="valueFormat" format="string" />
         <attr name="outputScale" format="float" />
+        <attr name="tipLeft" format="reference|string" />
+        <attr name="tipRight" format="reference|string" />
+        <attr name="leftTipIcon" format="reference" />
+        <attr name="rightTipIcon" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="OplusSeekbarPreference">
@@ -67,6 +71,10 @@
         <attr name="seekBarIncrement" format="integer" />
         <attr name="showSeekBarValue" />
         <attr name="adjustable" format="boolean" />
+        <attr name="tipLeft" />
+        <attr name="tipRight" />
+        <attr name="leftTipIcon" />
+        <attr name="rightTipIcon" />
     </declare-styleable>
 
     <declare-styleable name="ForegroundCheckTextView">

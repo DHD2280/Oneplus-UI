@@ -3,14 +3,19 @@ package it.dhd.oneplusui.preference;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceViewHolder;
@@ -40,19 +45,67 @@ import it.dhd.oneplusui.appcompat.seekbar.OplusSeekBarLegacy;
  */
 public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
 
-    private static final String TAG = "OplusSectionSeekbarPreference";
-    private final int mDefaultValue;
+    private static final String TAG = "OplusSectionSeekbarLegacyPreference";
+    private final Context mContext;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             int mSectionSeekbarValue;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             int mMin;
+    private int mMax;
+    private int mSectionSeekbarIncrement;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             boolean mTrackingTouch;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             OplusSectionSeekBarLegacy mSectionSeekbar;
+    private TextView mSectionSeekbarValueTextView;
+    private int mLeftTipIcon, mRightTipIcon;
+    private CharSequence mLeftTipText, mRightTipText;
+    private TextView mLeftTipTextView, mRightTipTextView;
+    private ImageView mLeftTipIconView, mRightTipIconView;
+    private RelativeLayout mTipsLayout;
+    private MaterialButton mResetButton;
+    private final int mDefaultValue;
     // Whether the OplusSeekBar should respond to the left/right keys
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             boolean mAdjustable;
+    // Whether to show the OplusSeekBar value TextView next to the bar
+    private boolean mShowSeekBarValue;
+    // Whether the SeekBarPreference should continuously save the OplusSeekBar value while it is being
+    // dragged.
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+            boolean mUpdatesContinuously;
+
+    // Whether the SeekBarPreference should show the reset button
+    @SuppressWarnings("WeakerAccess") /* synthetic access */
+            boolean mShowResetButton;
+    /**
+     * Listener reacting to the {@link OplusSectionSeekBarLegacy} changing value by the user
+     */
+    private final OplusSeekBarLegacy.OnSeekBarChangeListener mSectionSeekbarChangeListener = new OplusSeekBarLegacy.OnSeekBarChangeListener() {
+        @Override
+        public void onProgressChanged(OplusSeekBarLegacy seekBar, int progress, boolean fromUser) {
+            if (fromUser && (mUpdatesContinuously || !mTrackingTouch)) {
+                syncValueInternal(seekBar);
+            } else {
+                // We always want to update the text while the seekbar is being dragged
+                updateLabelValue(progress + mMin);
+            }
+        }
+
+        @Override
+        public void onStartTrackingTouch(OplusSeekBarLegacy OplusSeekbar) {
+            mTrackingTouch = true;
+        }
+
+        @Override
+        public void onStopTrackingTouch(OplusSeekBarLegacy OplusSeekbar) {
+            mTrackingTouch = false;
+            if (OplusSeekbar.getProgress() + mMin != mSectionSeekbarValue) {
+                syncValueInternal(OplusSeekbar);
+            }
+        }
+    };
+
     /**
      * Listener reacting to the user pressing DPAD left/right keys if {@code
      * adjustable} attribute is set to true; it transfers the key presses to the {@link OplusSectionSeekBarLegacy}
@@ -84,47 +137,8 @@ public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
             return mSectionSeekbar.onKeyDown(keyCode, event);
         }
     };
-    // Whether the SeekBarPreference should continuously save the OplusSeekBar value while it is being
-    // dragged.
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-            boolean mUpdatesContinuously;
-    // Whether the SeekBarPreference should show the reset button
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
-            boolean mShowResetButton;
-    private int mMax;
-    private int mSectionSeekbarIncrement;
-    private TextView mSectionSeekbarValueTextView;
-    private MaterialButton mResetButton;
-    /**
-     * Listener reacting to the {@link OplusSectionSeekBarLegacy} changing value by the user
-     */
-    private final OplusSeekBarLegacy.OnSeekBarChangeListener mSectionSeekbarChangeListener = new OplusSeekBarLegacy.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(OplusSeekBarLegacy seekBar, int progress, boolean fromUser) {
-            if (fromUser && (mUpdatesContinuously || !mTrackingTouch)) {
-                syncValueInternal(seekBar);
-            } else {
-                // We always want to update the text while the seekbar is being dragged
-                updateLabelValue(progress + mMin);
-            }
-        }
 
-        @Override
-        public void onStartTrackingTouch(OplusSeekBarLegacy OplusSeekbar) {
-            mTrackingTouch = true;
-        }
-
-        @Override
-        public void onStopTrackingTouch(OplusSeekBarLegacy OplusSeekbar) {
-            mTrackingTouch = false;
-            if (OplusSeekbar.getProgress() + mMin != mSectionSeekbarValue) {
-                syncValueInternal(OplusSeekbar);
-            }
-        }
-    };
-    /**
-     * Listener reacting to the reset button click
-     */
+    /** Listener reacting to the reset button click */
     private final View.OnClickListener mResetButtonClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -133,15 +147,13 @@ public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
             }
         }
     };
-    // Whether to show the OplusSeekBar value TextView next to the bar
-    private boolean mShowSeekBarValue;
 
     @SuppressLint("PrivateResource")
     public OplusSectionSeekbarLegacyPreference(
             @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-
+        mContext = context;
         TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.OplusSeekbarPreference, defStyleAttr, defStyleRes);
 
@@ -156,12 +168,16 @@ public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
                 false);
         mShowSeekBarValue = a.getBoolean(R.styleable.OplusSeekbarPreference_showSeekBarValue, true);
         mShowResetButton = a.getBoolean(R.styleable.OplusSeekbarPreference_showResetButton, true);
+        mLeftTipText = a.getText(R.styleable.OplusSeekbarPreference_tipLeft);
+        mRightTipText = a.getText(R.styleable.OplusSeekbarPreference_tipRight);
+        mLeftTipIcon = a.getResourceId(R.styleable.OplusSeekbarPreference_leftTipIcon, 0);
+        mRightTipIcon = a.getResourceId(R.styleable.OplusSeekbarPreference_rightTipIcon, 0);
         mDefaultValue = a.getInt(R.styleable.OplusSeekbarPreference_android_defaultValue, 2);
         a.recycle();
     }
 
     public OplusSectionSeekbarLegacyPreference(@NonNull Context context, @Nullable AttributeSet attrs,
-                                               int defStyleAttr) {
+                                         int defStyleAttr) {
         this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_SectionSeekbarLegacy);
     }
 
@@ -180,17 +196,19 @@ public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
         mSectionSeekbar = (OplusSectionSeekBarLegacy) holder.findViewById(R.id.slider);
         mSectionSeekbarValueTextView = (TextView) holder.findViewById(R.id.seekbar_value);
         mResetButton = (MaterialButton) holder.findViewById(R.id.reset_button);
+        mTipsLayout = (RelativeLayout) holder.findViewById(R.id.tips_layout);
+        mLeftTipTextView = (TextView) holder.findViewById(R.id.left_vertical_center_text);
+        mRightTipTextView = (TextView) holder.findViewById(R.id.right_vertical_center_text);
+        mLeftTipIconView = (ImageView) holder.findViewById(R.id.left_icon);
+        mRightTipIconView = (ImageView) holder.findViewById(R.id.right_icon);
         if (mShowSeekBarValue) {
             mSectionSeekbarValueTextView.setVisibility(View.VISIBLE);
         } else {
             mSectionSeekbarValueTextView.setVisibility(View.GONE);
             mSectionSeekbarValueTextView = null;
         }
-        if (mShowResetButton) {
-            mResetButton.setVisibility(View.VISIBLE);
-        } else {
-            mResetButton.setVisibility(View.GONE);
-        }
+        mResetButton.setVisibility(mShowResetButton ? View.VISIBLE : View.GONE);
+        updateTipUI();
 
         if (mSectionSeekbar == null) {
             Log.e(TAG, "OplusSeekBar view is null in onBindViewHolder.");
@@ -214,6 +232,38 @@ public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
         handleResetButton();
         updateLabelValue(mSectionSeekbarValue);
         mSectionSeekbar.setEnabled(isEnabled());
+    }
+
+    private void updateTipUI() {
+        if (mTipsLayout == null) return;
+
+        boolean hasLeft = updateComponent(mLeftTipIconView, mLeftTipIcon)
+                | updateComponent(mLeftTipTextView, mLeftTipText);
+
+        boolean hasRight = updateComponent(mRightTipIconView, mRightTipIcon)
+                | updateComponent(mRightTipTextView, mRightTipText);
+
+        mTipsLayout.setVisibility((hasLeft || hasRight) ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean updateComponent(ImageView view, int resId) {
+        if (resId != 0) {
+            view.setImageResource(resId);
+            view.setVisibility(View.VISIBLE);
+            return true;
+        }
+        view.setVisibility(View.GONE);
+        return false;
+    }
+
+    private boolean updateComponent(TextView view, CharSequence text) {
+        if (!TextUtils.isEmpty(text)) {
+            view.setText(text);
+            view.setVisibility(View.VISIBLE);
+            return true;
+        }
+        view.setVisibility(View.GONE);
+        return false;
     }
 
     private void handleResetButton() {
@@ -388,6 +438,90 @@ public class OplusSectionSeekbarLegacyPreference extends OplusPreference {
     public void setShowResetButton(boolean showResetButton) {
         mShowResetButton = showResetButton;
         notifyChanged();
+    }
+
+    /**
+     * Sets the left tip text.
+     *
+     * @param text The left tip text
+     */
+    public void setLeftTip(String text) {
+        if (!TextUtils.equals(text, mLeftTipText)) {
+            mLeftTipText = text;
+            notifyChanged();
+        }
+    }
+
+    /**
+     * Sets the left tip text.
+     *
+     * @param resId The left tip text resource id
+     */
+    public void setLeftTip(int resId) {
+        setLeftTip(mContext.getString(resId));
+    }
+
+    /**
+     * Sets the right tip text.
+     *
+     * @param text The right tip text
+     */
+    public void setRightTip(String text) {
+        if (!TextUtils.equals(text, mRightTipText)) {
+            mRightTipText = text;
+            notifyChanged();
+        }
+    }
+
+    /**
+     * Sets the right tip text.
+     *
+     * @param resId The right tip text resource id
+     */
+    public void setRightTip(int resId) {
+        setRightTip(mContext.getString(resId));
+    }
+
+    /**
+     * Sets the left tip icon.
+     *
+     * @param resId The left tip icon resource id
+     */
+    public void setLeftTipIcon(@DrawableRes int resId) {
+        setLeftTipIcon(mContext.getDrawable(resId));
+    }
+
+    /**
+     * Sets the left tip icon.
+     *
+     * @param drawable The left tip icon drawable
+     */
+    public void setLeftTipIcon(Drawable drawable) {
+        if (mLeftTipIconView != null) {
+            mLeftTipIconView.setImageDrawable(drawable);
+            notifyChanged();
+        }
+    }
+
+    /**
+     * Sets the right tip icon.
+     *
+     * @param resId The right tip icon resource id
+     */
+    public void setRightTipIcon(@DrawableRes int resId) {
+        setRightTipIcon(mContext.getDrawable(resId));
+    }
+
+    /**
+     * Sets the right tip icon.
+     *
+     * @param drawable The right tip icon drawable
+     */
+    public void setRightTipIcon(Drawable drawable) {
+        if (mRightTipIconView != null) {
+            mRightTipIconView.setImageDrawable(drawable);
+            notifyChanged();
+        }
     }
 
     private void setValueInternal(int seekBarValue, boolean notifyChanged) {

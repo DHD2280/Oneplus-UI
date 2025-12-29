@@ -3,14 +3,19 @@ package it.dhd.oneplusui.preference;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -41,6 +46,7 @@ import it.dhd.oneplusui.appcompat.seekbar.OplusSeekBarLegacy;
 public class OplusSeekbarLegacyPreference extends OplusPreference {
 
     private static final String TAG = "OplusSeekbarLegacyPreference";
+    private final Context mContext;
     private final int mDefaultValue;
     @SuppressWarnings("WeakerAccess") /* synthetic access */
             int mSeekBarValue;
@@ -94,6 +100,11 @@ public class OplusSeekbarLegacyPreference extends OplusPreference {
     private int mMax;
     private int mSeekBarIncrement;
     private TextView mSeekBarValueTextView;
+    private int mLeftTipIcon, mRightTipIcon;
+    private CharSequence mLeftTipText, mRightTipText;
+    private TextView mLeftTipTextView, mRightTipTextView;
+    private ImageView mLeftTipIconView, mRightTipIconView;
+    private RelativeLayout mTipsLayout;
     private MaterialButton mResetButton;
     /**
      * Listener reacting to the {@link OplusSeekBarLegacy} changing value by the user
@@ -142,7 +153,7 @@ public class OplusSeekbarLegacyPreference extends OplusPreference {
             @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-
+        mContext = context;
         TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.OplusSeekbarPreference, defStyleAttr, defStyleRes);
 
@@ -157,6 +168,10 @@ public class OplusSeekbarLegacyPreference extends OplusPreference {
                 false);
         mShowSeekBarValue = a.getBoolean(R.styleable.OplusSeekbarPreference_showSeekBarValue, true);
         mShowResetButton = a.getBoolean(R.styleable.OplusSeekbarPreference_showResetButton, true);
+        mLeftTipText = a.getText(R.styleable.OplusSeekbarPreference_tipLeft);
+        mRightTipText = a.getText(R.styleable.OplusSeekbarPreference_tipRight);
+        mLeftTipIcon = a.getResourceId(R.styleable.OplusSeekbarPreference_leftTipIcon, 0);
+        mRightTipIcon = a.getResourceId(R.styleable.OplusSeekbarPreference_rightTipIcon, 0);
         mDefaultValue = a.getInt(R.styleable.OplusSeekbarPreference_android_defaultValue, 0);
         a.recycle();
     }
@@ -181,17 +196,19 @@ public class OplusSeekbarLegacyPreference extends OplusPreference {
         mSeekBar = (OplusSeekBarLegacy) holder.findViewById(R.id.slider);
         mSeekBarValueTextView = (TextView) holder.findViewById(R.id.seekbar_value);
         mResetButton = (MaterialButton) holder.findViewById(R.id.reset_button);
+        mTipsLayout = (RelativeLayout) holder.findViewById(R.id.tips_layout);
+        mLeftTipTextView = (TextView) holder.findViewById(R.id.left_vertical_center_text);
+        mRightTipTextView = (TextView) holder.findViewById(R.id.right_vertical_center_text);
+        mLeftTipIconView = (ImageView) holder.findViewById(R.id.left_icon);
+        mRightTipIconView = (ImageView) holder.findViewById(R.id.right_icon);
         if (mShowSeekBarValue) {
             mSeekBarValueTextView.setVisibility(View.VISIBLE);
         } else {
             mSeekBarValueTextView.setVisibility(View.GONE);
             mSeekBarValueTextView = null;
         }
-        if (mShowResetButton) {
-            mResetButton.setVisibility(View.VISIBLE);
-        } else {
-            mResetButton.setVisibility(View.GONE);
-        }
+        mResetButton.setVisibility(mShowResetButton ? View.VISIBLE : View.GONE);
+        updateTipUI();
 
         if (mSeekBar == null) {
             Log.e(TAG, "OplusSeekBarLegacy view is null in onBindViewHolder.");
@@ -215,6 +232,38 @@ public class OplusSeekbarLegacyPreference extends OplusPreference {
         handleResetButton();
         updateLabelValue(mSeekBarValue);
         mSeekBar.setEnabled(isEnabled());
+    }
+
+    private void updateTipUI() {
+        if (mTipsLayout == null) return;
+
+        boolean hasLeft = updateComponent(mLeftTipIconView, mLeftTipIcon)
+                | updateComponent(mLeftTipTextView, mLeftTipText);
+
+        boolean hasRight = updateComponent(mRightTipIconView, mRightTipIcon)
+                | updateComponent(mRightTipTextView, mRightTipText);
+
+        mTipsLayout.setVisibility((hasLeft || hasRight) ? View.VISIBLE : View.GONE);
+    }
+
+    private boolean updateComponent(ImageView view, int resId) {
+        if (resId != 0) {
+            view.setImageResource(resId);
+            view.setVisibility(View.VISIBLE);
+            return true;
+        }
+        view.setVisibility(View.GONE);
+        return false;
+    }
+
+    private boolean updateComponent(TextView view, CharSequence text) {
+        if (!TextUtils.isEmpty(text)) {
+            view.setText(text);
+            view.setVisibility(View.VISIBLE);
+            return true;
+        }
+        view.setVisibility(View.GONE);
+        return false;
     }
 
     private void handleResetButton() {
@@ -389,6 +438,90 @@ public class OplusSeekbarLegacyPreference extends OplusPreference {
     public void setShowResetButton(boolean showResetButton) {
         mShowResetButton = showResetButton;
         notifyChanged();
+    }
+
+    /**
+     * Sets the left tip text.
+     *
+     * @param text The left tip text
+     */
+    public void setLeftTip(String text) {
+        if (!TextUtils.equals(text, mLeftTipText)) {
+            mLeftTipText = text;
+            notifyChanged();
+        }
+    }
+
+    /**
+     * Sets the left tip text.
+     *
+     * @param resId The left tip text resource id
+     */
+    public void setLeftTip(int resId) {
+        setLeftTip(mContext.getString(resId));
+    }
+
+    /**
+     * Sets the right tip text.
+     *
+     * @param text The right tip text
+     */
+    public void setRightTip(String text) {
+        if (!TextUtils.equals(text, mRightTipText)) {
+            mRightTipText = text;
+            notifyChanged();
+        }
+    }
+
+    /**
+     * Sets the right tip text.
+     *
+     * @param resId The right tip text resource id
+     */
+    public void setRightTip(int resId) {
+        setRightTip(mContext.getString(resId));
+    }
+
+    /**
+     * Sets the left tip icon.
+     *
+     * @param resId The left tip icon resource id
+     */
+    public void setLeftTipIcon(@DrawableRes int resId) {
+        setLeftTipIcon(mContext.getDrawable(resId));
+    }
+
+    /**
+     * Sets the left tip icon.
+     *
+     * @param drawable The left tip icon drawable
+     */
+    public void setLeftTipIcon(Drawable drawable) {
+        if (mLeftTipIconView != null) {
+            mLeftTipIconView.setImageDrawable(drawable);
+            notifyChanged();
+        }
+    }
+
+    /**
+     * Sets the right tip icon.
+     *
+     * @param resId The right tip icon resource id
+     */
+    public void setRightTipIcon(@DrawableRes int resId) {
+        setRightTipIcon(mContext.getDrawable(resId));
+    }
+
+    /**
+     * Sets the right tip icon.
+     *
+     * @param drawable The right tip icon drawable
+     */
+    public void setRightTipIcon(Drawable drawable) {
+        if (mRightTipIconView != null) {
+            mRightTipIconView.setImageDrawable(drawable);
+            notifyChanged();
+        }
     }
 
     private void setValueInternal(int seekBarValue, boolean notifyChanged) {

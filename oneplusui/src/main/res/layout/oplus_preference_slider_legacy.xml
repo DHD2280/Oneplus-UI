@@ -24,8 +24,6 @@
         style="@style/PreferenceContent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:clipChildren="false"
-        android:clipToPadding="false"
         android:orientation="vertical">
 
         <LinearLayout
@@ -75,8 +73,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
-            android:clipChildren="false"
-            android:clipToPadding="false"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -84,8 +80,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:clipChildren="false"
-                android:clipToPadding="false"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -136,7 +130,7 @@
                     </LinearLayout>
                 </RelativeLayout>
 
-                <it.dhd.oneplusui.appcompat.seekbar.OplusSlider
+                <it.dhd.oneplusui.appcompat.seekbar.OplusSliderLegacy
                     android:id="@+id/slider"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
