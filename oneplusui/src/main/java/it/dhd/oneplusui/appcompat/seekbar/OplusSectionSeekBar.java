@@ -98,7 +98,7 @@ public class OplusSectionSeekBar extends OplusSeekBar {
         float f4 = mCurThumbRadius;
         float f5 = f3 - f4;
         float f6 = f3 + f4;
-        int iSaveLayer = canvas.saveLayer(null, null, 31);
+        int iSaveLayer = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
         mPaint.setXfermode(mPorterDuffXfermode);
         int i3 = (!mShowProgress || isLayoutRtl()) ? mInactiveMarkColor : mActiveMarkColor;
         mPaint.setColor(i3);
