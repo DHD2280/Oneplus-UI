@@ -1,3 +1,8 @@
+**2.0.0**  
+- Added Tips to SeekBar, SectionSeekBar and Slider preferences  
+- Added OplusSlider based to OOS16  
+- Added new SeekBar and SectionSeekBar from OOS16 style  
+  
 **1.5.1**  
 - show slider value initialized as true in OplusSliderPreference  
   
