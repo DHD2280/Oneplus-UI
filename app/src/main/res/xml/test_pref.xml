@@ -14,6 +14,16 @@
             android:summary="This is a test switch preference"
             android:title="Test Switch Preference" />
 
+        <it.dhd.oneplusui.preference.OplusSliderLegacyPreference
+            android:key="test_slider_old_key"
+            android:summary="This is a test slider preference\nFrom 0 to 100 with step size 1.\nOOS14-15 style."
+            android:title="Test Slider Preference"
+            app:defaultValue="0"
+            app:maxVal="100"
+            app:minVal="0"
+            app:showSeekBarValue="false"
+            app:tickInterval="1" />
+
         <it.dhd.oneplusui.preference.OplusSliderPreference
             android:key="test_slider_key"
             android:summary="This is a test slider preference\nFrom 0 to 100 with step size 1"

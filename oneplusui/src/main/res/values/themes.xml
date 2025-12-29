@@ -31,6 +31,7 @@
 
         <!-- Slider -->
         <item name="sliderStyle">@style/Widget.App.Slider</item>
+        <item name="oplusSliderLegacyStyle">@style/Widget.Oplus.SliderLegacy</item>
         <item name="oplusSliderStyle">@style/Widget.Oplus.Slider</item>
 
         <!-- AppBarLayout -->
@@ -59,6 +60,7 @@
         <item name="preferenceCategoryStyle">@style/Preferences.Oplus.Category</item>
         <item name="preferenceStyle">@style/Preferences.Oplus.Preference</item>
         <item name="oplusSliderPreferenceStyle">@style/Preferences.Oplus.Preference.Slider</item>
+        <item name="oplusSliderLegacyPreferenceStyle">@style/Preferences.Oplus.Preference.SliderLegacy</item>
         <item name="oplusSeekBarLegacyPreferenceStyle">@style/Preferences.Oplus.Preference.SeekbarLegacy</item>
         <item name="oplusSeekBarPreferenceStyle">@style/Preferences.Oplus.Preference.Seekbar</item>
         <item name="oplusSectionSeekBarLegacyPreferenceStyle">@style/Preferences.Oplus.Preference.SectionSeekbar</item>

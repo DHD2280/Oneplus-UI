@@ -41,19 +41,19 @@ import java.util.Scanner;
 
 import it.dhd.oneplusui.R;
 import it.dhd.oneplusui.appcompat.seekbar.LabelFormatter;
-import it.dhd.oneplusui.appcompat.seekbar.OplusSlider;
+import it.dhd.oneplusui.appcompat.seekbar.OplusSliderLegacy;
 
 
-public class OplusSliderPreference extends OplusPreference {
+public class OplusSliderLegacyPreference extends OplusPreference {
 
-    private static final String TAG = "OplusSliderPreference";
+    private static final String TAG = "OplusSliderLegacyPreference";
     private final Context mContext;
     private float valueFrom;
     private float valueTo;
     private final float tickInterval;
     private boolean mShowResetButton;
     public final List<Float> defaultValue = new ArrayList<>();
-    public OplusSlider mOplusSlider;
+    public OplusSliderLegacy mOplusSlider;
     private int mLeftTipIcon, mRightTipIcon;
     private CharSequence mLeftTipText, mRightTipText;
     private TextView mLeftTipTextView, mRightTipTextView;
@@ -69,20 +69,20 @@ public class OplusSliderPreference extends OplusPreference {
     boolean updateConstantly;
     boolean showSeekBarValue;
 
-    public OplusSliderPreference(@NonNull Context context) {
+    public OplusSliderLegacyPreference(@NonNull Context context) {
         this(context, null);
     }
 
-    public OplusSliderPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, R.attr.oplusSliderPreferenceStyle);
+    public OplusSliderLegacyPreference(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, R.attr.oplusSliderLegacyPreferenceStyle);
     }
 
-    public OplusSliderPreference(@NonNull Context context, @Nullable AttributeSet attrs,
+    public OplusSliderLegacyPreference(@NonNull Context context, @Nullable AttributeSet attrs,
                                  int defStyleAttr) {
-        this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_Slider);
+        this(context, attrs, defStyleAttr, R.style.Preferences_Oplus_Preference_SliderLegacy);
     }
 
-    public OplusSliderPreference(
+    public OplusSliderLegacyPreference(
             @NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
             int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -195,7 +195,6 @@ public class OplusSliderPreference extends OplusPreference {
     }
 
     private void updateLabel() {
-        Log.i(TAG, "Updating label for " + getKey());
         List<Float> values = mOplusSlider.getValues();
         if (values.size() > 1) mValueText.setText(labelFormatter.getFormattedValue(mOplusSlider.getValues().get(0)) + " - " + labelFormatter.getFormattedValue(mOplusSlider.getValues().get(1)));
         else mValueText.setText(labelFormatter.getFormattedValue(mOplusSlider.getValues().get(0)));
@@ -302,9 +301,9 @@ public class OplusSliderPreference extends OplusPreference {
         }
     }
 
-    OplusSlider.OnSliderChangeListener sliderTouchListener = new OplusSlider.OnSliderChangeListener() {
+    OplusSliderLegacy.OnSliderChangeListener sliderTouchListener = new OplusSliderLegacy.OnSliderChangeListener() {
         @Override
-        public void onProgressChanged(OplusSlider oplusSlider, boolean fromUser) {
+        public void onProgressChanged(OplusSliderLegacy oplusSlider, boolean fromUser) {
             if (!getKey().equals(mOplusSlider.getTag())) return;
 
             updateLabel();
@@ -314,11 +313,11 @@ public class OplusSliderPreference extends OplusPreference {
         }
 
         @Override
-        public void onStartTrackingTouch(OplusSlider oplusSlider) {
+        public void onStartTrackingTouch(OplusSliderLegacy oplusSlider) {
         }
 
         @Override
-        public void onStopTrackingTouch(OplusSlider oplusSlider) {
+        public void onStopTrackingTouch(OplusSliderLegacy oplusSlider) {
             if (!getKey().equals(mOplusSlider.getTag())) return;
 
             handleResetButton();
@@ -398,7 +397,6 @@ public class OplusSliderPreference extends OplusPreference {
     }
 
     private void updateTipUI() {
-        Log.i(TAG, "Updating tip UI " + (mTipsLayout == null));
         if (mTipsLayout == null) return;
 
         boolean hasLeft = updateComponent(mLeftTipIconView, mLeftTipIcon)
@@ -421,7 +419,6 @@ public class OplusSliderPreference extends OplusPreference {
     }
 
     private boolean updateComponent(TextView view, CharSequence text) {
-        Log.i(TAG, "Updating component text: " + text);
         if (!TextUtils.isEmpty(text)) {
             view.setText(text);
             view.setVisibility(View.VISIBLE);
@@ -449,7 +446,7 @@ public class OplusSliderPreference extends OplusPreference {
         if (mOplusSlider != null) mOplusSlider.setValueTo(value);
     }
 
-    public OplusSlider getOplusSlider() {
+    public OplusSliderLegacy getOplusSlider() {
         return mOplusSlider;
     }
 

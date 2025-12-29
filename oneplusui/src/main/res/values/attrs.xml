@@ -11,9 +11,11 @@
     <attr name="oplusSectionSeekBarStyle" format="reference" />
     <attr name="oplusSectionSeekBarLegacyPreferenceStyle" format="reference" />
     <attr name="oplusSectionSeekBarPreferenceStyle" format="reference" />
+    <attr name="oplusSliderLegacyStyle" format="reference" />
     <attr name="oplusSliderStyle" format="reference" />
     <attr name="oplusTooltipStyle" format="reference" />
     <attr name="oplusSliderPreferenceStyle" format="reference" />
+    <attr name="oplusSliderLegacyPreferenceStyle" format="reference" />
     <attr name="oplusEditTextStyle" format="reference" />
     <attr name="oplusInputPreferenceEditTextStyle" format="reference" />
     <attr name="oplusInputPreferenceStyle" format="reference" />
@@ -148,6 +150,7 @@
         <attr name="oplusSeekBarProgressColor" />
         <attr name="oplusSeekBarThumbColor" />
         <attr name="oplusSeekBarShadowColor" />
+        <attr name="oplusSeekBarShowGlitterEffect" />
         <attr name="oplusSeekBarThumbShadowColor" />
         <attr name="oplusSeekBarBackgroundRadius" />
         <attr name="oplusSeekBarProgressRadius" />

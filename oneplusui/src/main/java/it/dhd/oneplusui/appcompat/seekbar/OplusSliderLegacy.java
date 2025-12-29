@@ -23,19 +23,16 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.os.VibratorManager;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -61,7 +58,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
-import androidx.dynamicanimation.animation.FloatPropertyCompat;
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator;
 
 import com.facebook.rebound.Spring;
@@ -89,9 +85,6 @@ import java.util.concurrent.Executors;
 import it.dhd.oneplusui.R;
 import it.dhd.oneplusui.appcompat.animation.OplusEaseInterpolator;
 import it.dhd.oneplusui.appcompat.animation.OplusMoveEaseInterpolator;
-import it.dhd.oneplusui.appcompat.animation.dynamic.OplusSpringAnimation;
-import it.dhd.oneplusui.appcompat.animation.dynamic.OplusSpringForce;
-import it.dhd.oneplusui.physicsengine.common.Compat;
 import it.dhd.oneplusui.physicsengine.engine.AnimationListener;
 import it.dhd.oneplusui.physicsengine.engine.AnimationUpdateListener;
 import it.dhd.oneplusui.physicsengine.engine.BaseBehavior;
@@ -100,40 +93,42 @@ import it.dhd.oneplusui.physicsengine.engine.FlingBehavior;
 import it.dhd.oneplusui.physicsengine.engine.FloatValueHolder;
 import it.dhd.oneplusui.physicsengine.engine.PhysicalAnimator;
 
-public class OplusSlider extends View implements AnimationListener, AnimationUpdateListener {
+public class OplusSliderLegacy extends View implements AnimationListener, AnimationUpdateListener {
 
+    private static final String TAG = "OplusSliderLegacy";
     // Move Type
     public static final int MOVE_BY_DEFAULT = 0;
     public static final int MOVE_BY_DISTANCE = 2;
     public static final int MOVE_BY_FINGER = 1;
+
     public final static double DOUBLE_EPSILON = Double.longBitsToDouble(1);
-    protected static final long RELEASE_ANIM_DURATION = 183L;
+    protected static final int RELEASE_ANIM_DURATION = 183;
+
     protected static final Interpolator THUMB_ANIMATE_INTERPOLATOR = new OplusMoveEaseInterpolator();
     protected static final Interpolator PROGRESS_SCALE_INTERPOLATOR = new OplusEaseInterpolator();
-    protected static final float SCALE_DEFORMATION_MAX = 2.0f;
+
     static final int UNIT_VALUE = 1;
     static final int UNIT_PX = 0;
-    private static final String TAG = "OplusSlider";
-    private static final float BACKGROUND_RADIUS_SCALE = 1.4f;
+
+    private static final float BACKGROUND_RADIUS_SCALE = 6.0f;
     private static final int DAMPING_DISTANCE = 20;
     private static final int DURATION_150 = 150;
     private static final int DURATION_483 = 483;
     private static final int FAST_MOVE_VELOCITY = 95;
-    private static final int FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR = 1000;
-    private static final float GLITTER_EFFECT_SPRING_RESPONSE = 0.6f;
     private static final float MAX_FAST_MOVE_PERCENT = 0.95f;
-    private static final float MAX_MOVE_DAMPING = 1.0f;
+    private static final float MAX_MOVE_DAMPING = 0.4f;
     private static final int MAX_VELOCITY = 8000;
     private static final float MIN_FAST_MOVE_PERCENT = 0.05f;
     private static final int ONE_SECOND_UNITS = 1000;
     private static final int PHYSICAL_VELOCITY_LIMIT = 100;
     private static final float PROGRESS_RADIUS_SCALE = 4.0f;
+    protected static final float SCALE_DEFORMATION_MAX = 2.0f;
     private static final float SCALE_DEFORMATION_MIN = -1.0f;
     private static final int SCALE_DEFORMATION_TIMES = 5;
-    private static final int DEFORMATION_SCALE_FACTOR = 100000;
-    private static final float DEFORMATION_SPRING_RESPONSE = 0.1f;
     private static final float SCALE_MAX = 1.0f;
     private static final float SCALE_MIN = 0.0f;
+    protected static final float TEXT_SHADOW_DX = 0.0f;
+    protected static final float TEXT_SHADOW_DY = 8.0f;
     @SuppressWarnings("unused")
     private static final int THUMB_SHADOW_OFFSET = 8;
     private static final int TOUCH_ANIMATION_ENLARGE_DURATION = 183;
@@ -185,24 +180,18 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     private final Rect labelRect = new Rect();
     @NonNull
     private final List<TooltipDrawable> labels = new ArrayList<>();
-    private final Path mBackgroundPath, mProgressPath;
-    private final int mGlitterEffectMaxColor, mGlitterEffectMinColor;
-    private final SpringConfig mFastMoveSpringConfig;
-    private final int mSeekbarMinHeight;
-    private final FloatPropertyCompat<OplusSlider> mThumbScaleTransition, mGlitterEffectTransition;
-    @SeparationUnit
-    private final int separationUnit = UNIT_PX;
     protected int mBackgroundColor;
     protected float mBackgroundEnlargeScale;
     protected float mBackgroundHeight;
-    protected float mMaxBackgroundHeight;
     protected float mBackgroundRadius;
     protected float mBackgroundRoundCornerWeight;
     protected AnimatorSet mClickAnimatorSet;
     protected Path mClipProgressPath;
+    protected RectF mClipProgressRect;
     protected float mCurBackgroundHeight;
-    protected float mCurThumbRadius;
+    protected float mCurBackgroundRadius;
     protected float mCurPaddingHorizontal;
+    protected float mCurProgressHeight;
     protected float mCurProgressRadius;
     protected boolean mEnableAdaptiveVibrator;
     protected boolean mEnableVibrator;
@@ -226,30 +215,20 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     protected RectF mTempRect;
     protected Interpolator mThumbAnimateInterpolator;
     protected int mThumbColor;
+    protected float mThumbOutHeight;
     protected float mThumbOutRadius;
-    protected float mThumbRadius, mThumbMaxRadius, mThumbShadowOffsetY;
+    protected float mThumbOutRoundCornerWeight;
     protected int mThumbShadowColor;
+    protected AnimatorSet mTouchAnimator;
     protected float mTouchDownX;
     protected int mTouchSlop;
-    protected float mHeightBottomDeformedDownValue;
-    protected float mHeightBottomDeformedUpValue;
-    protected float mHeightTopDeformedDownValue;
-    protected float mHeightTopDeformedUpValue;
-    protected ValueAnimator mTouchEnlargeAnimator;
-    protected ValueAnimator mTouchReleaseAnimator;
-    protected int mThumbShadowRadiusSize;
-    protected float mWidthDeformedValue;
     ColorStateList mBackgroundColorStateList;
     ColorStateList mProgressColorStateList;
     ColorStateList mThumbColorStateList;
-    private LinearGradient mMinToMaxLinearGradient, mMaxToMinLinearGradient;
-    private Paint mGlitterEffectPaint;
     // Whether the labels are showing or in the process of animating in.
     private boolean labelsAreAnimatedIn = false;
     private ValueAnimator labelsInAnimator;
     private ValueAnimator labelsOutAnimator;
-    private float[] mThumbPosition;
-    private float mDrawProgressScale;
     private float mCurBottomDeformationValue;
     private float mCurTopDeformationValue;
     private Interpolator mCustomProgressAnimInterpolator;
@@ -258,22 +237,22 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     private AccessibilityEventSender accessibilityEventSender;
     private float mFastMoveScaleOffsetX;
     private Spring mFastMoveSpring;
-    private OplusSpringAnimation mFlexibleFollowHandAnim;
-    private OplusSpringAnimation mGlitterEffectAnim;
+    private final SpringConfig mFastMoveSpringConfig;
     private FlingBehavior mFlingBehavior;
     private float mFlingDampingRatio;
     private float mFlingFrequency;
     private float mFlingLinearDamping;
     private FloatValueHolder mFlingValueHolder;
     private float mFlingVelocity;
-    private OplusSpringAnimation mDeformationAnim;
+    protected float mHeightBottomDeformedDownValue;
+    protected float mHeightBottomDeformedUpValue;
+    protected float mHeightTopDeformedDownValue;
+    protected float mHeightTopDeformedUpValue;
+    protected final int mInnerShadowRadiusSize;
+    private Interpolator mInterpolator;
     private boolean mIsPhysicsEnable;
     private boolean mIsSupportDeformation;
-    private boolean mShowGlitterEffect = true;
-    private boolean mIsBumpingEdges;
     private int labelStyle;
-    private int mCurGlitterEffectAlpha;
-    private float mCurGlitterEffectValue;
     private float mMaxHeightDeformedValue;
     private int mMaxMovingDistance;
     private float mMaxWidthDeformedValue;
@@ -281,16 +260,19 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     private OnDeformedListener mOnDeformedListener;
     private List<OnSliderChangeListener> mOnSliderChangeListeners = new ArrayList<>();
     private PhysicalAnimator mPhysicalAnimator;
-    private float mPixPerProgress;
     private float mRealProgress;
     private int mRefreshStyle;
+    private final int mSeekbarMinHeight;
+    protected final int mShadowColor;
+    protected final int mShadowRadiusSize;
     private boolean mStartDragging;
+    protected int mThumbShadowRadiusSize;
     private VelocityTracker mVelocityTracker;
     private ExecutorService mVibratorExecutor;
+    protected float mWidthDeformedValue;
     private float valueFrom;
     private float valueTo;
     private LabelFormatter formatter;
-    private OplusSpringAnimation mThumbScaleAnim;
     // Holds the values set to this mOplusSlider. We keep this array sorted in order to check if the value
     // has been changed when a new value is set and to find the minimum and maximum values.
     private ArrayList<Float> values = new ArrayList<>();
@@ -313,24 +295,24 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
             this::updateLabels;
     @NonNull
     private final ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = this::updateLabels;
+    @SeparationUnit
+    private final int separationUnit = UNIT_PX;
 
-    public OplusSlider(Context context) {
+    public OplusSliderLegacy(Context context) {
         this(context, null);
     }
 
-    public OplusSlider(Context context, AttributeSet attributeSet) {
-        this(context, attributeSet, R.attr.oplusSliderStyle);
+    public OplusSliderLegacy(Context context, AttributeSet attributeSet) {
+        this(context, attributeSet, R.attr.oplusSliderLegacyStyle);
     }
 
-    public OplusSlider(Context context, AttributeSet attributeSet, int defStyleAttr) {
-        this(context, attributeSet, defStyleAttr, R.style.Widget_Oplus_Slider);
+    public OplusSliderLegacy(Context context, AttributeSet attributeSet, int defStyleAttr) {
+        this(context, attributeSet, defStyleAttr, R.style.Widget_Oplus_SliderLegacy);
     }
 
-    public OplusSlider(Context context, AttributeSet attributeSet, int defStyleAttr, int defStyleRes) {
+    public OplusSliderLegacy(Context context, AttributeSet attributeSet, int defStyleAttr, int defStyleRes) {
         super(context, attributeSet, defStyleAttr, defStyleRes);
-        mScale = SCALE_MIN;
-        mDrawProgressScale = SCALE_MIN;
-        mThumbPosition = new float[2];
+        mScale = 0.0f;
         mEnableVibrator = true;
         mEnableAdaptiveVibrator = true;
         mHasMotorVibrator = true;
@@ -344,10 +326,10 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         mThumbColorStateList = null;
         mCustomProgressAnimInterpolator = null;
         mClipProgressPath = new Path();
-        mBackgroundPath = new Path();
-        mProgressPath = new Path();
+        mClipProgressRect = new RectF();
         mProgressRect = new RectF();
         mTempRect = new RectF();
+        mTouchAnimator = new AnimatorSet();
         mProgressScaleInterpolator = PathInterpolatorCompat.create(0.33f, 0.0f, 0.67f, 1.0f);
         mThumbAnimateInterpolator = PathInterpolatorCompat.create(0.3f, 0.0f, 0.1f, 1.0f);
         mStartDragging = false;
@@ -355,6 +337,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         mMoveType = MOVE_BY_FINGER;
         mFastMoveSpringConfig = SpringConfig.fromOrigamiTensionAndFriction(500.0d, 30.0d);
         mDamping = 0.0f;
+        mInterpolator = PathInterpolatorCompat.create(0.3f, 0.0f, 0.1f, 1.0f);
         mIsPhysicsEnable = false;
         mFlingVelocity = 0.0f;
         mFlingFrequency = 2.8f;
@@ -363,29 +346,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         mMaxMovingDistance = 30;
         mMaxHeightDeformedValue = 28.5f;
         mMaxWidthDeformedValue = 4.7f;
-        mThumbScaleTransition = new FloatPropertyCompat<>("thumbScaleTransition") {
-
-            @Override
-            public float getValue(OplusSlider OplusSeekBar) {
-                return OplusSeekBar.getCurThumbRadius();
-            }
-
-            @Override
-            public void setValue(OplusSlider OplusSeekBar, float f2) {
-                OplusSeekBar.setCurThumbRadius(f2);
-            }
-        };
-        mGlitterEffectTransition = new FloatPropertyCompat<>("glitterEffectTransition") {
-            @Override
-            public float getValue(OplusSlider OplusSeekBar) {
-                return OplusSeekBar.getCurGlitterEffectValue();
-            }
-
-            @Override
-            public void setValue(OplusSlider OplusSeekBar, float f2) {
-                OplusSeekBar.setCurGlitterEffectValue(f2);
-            }
-        };
         if (attributeSet != null) {
             mRefreshStyle = attributeSet.getStyleAttribute();
         }
@@ -403,32 +363,28 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         mBackgroundColor = getColor(this, mBackgroundColorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_background_color_normal));
         ColorStateList colorStateList = mProgressColorStateList;
         Context context2 = getContext();
-        mProgressColor = getColor(this, colorStateList, ContextCompat.getColor(context2, R.color.oplus_seekbar_progress_color_normal));
-        mThumbColor = getColor(this, mThumbColorStateList, ContextCompat.getColor(getContext(), R.color.white));
-        mThumbShadowOffsetY = getResources().getDimension(R.dimen.oplus_seekbar_shadow_offset_y);
-        mThumbRadius = getResources().getDimension(R.dimen.oplus_seekbar_thumb_radius);
-        mThumbMaxRadius = getResources().getDimension(R.dimen.oplus_seekbar_thumb_max_radius);
-        mShowGlitterEffect = attributes.getBoolean(R.styleable.OplusSlider_oplusSeekBarShowGlitterEffect, true);
-        mGlitterEffectMinColor = getResources().getColor(R.color.oplus_seekbar_glitter_effect_min_color);
-        mGlitterEffectMaxColor = getResources().getColor(R.color.oplus_seekbar_glitter_effect_max_color);
+        int i4 = R.color.oplus_seekbar_progress_color_normal;
+        mProgressColor = getColor(this, colorStateList, ContextCompat.getColor(context2, i4));
+        mThumbColor = getColor(this, mThumbColorStateList, ContextCompat.getColor(getContext(), i4));
+        mShadowColor = attributes.getColor(R.styleable.OplusSlider_oplusSeekBarShadowColor, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_shadow_color));
         mThumbShadowColor = attributes.getColor(R.styleable.OplusSlider_oplusSeekBarThumbShadowColor, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_thumb_shadow_color));
         mBackgroundRadius = attributes.getDimension(R.styleable.OplusSlider_oplusSeekBarBackgroundRadius, getResources().getDimension(R.dimen.oplus_seekbar_background_radius));
         mProgressRadius = attributes.getDimension(R.styleable.OplusSlider_oplusSeekBarProgressRadius, getResources().getDimension(R.dimen.oplus_seekbar_progress_radius));
         mBackgroundRoundCornerWeight = attributes.getFloat(R.styleable.OplusSlider_oplusSeekBarBackgroundRoundCornerWeight, 0.0f);
         mProgressRoundCornerWeight = attributes.getFloat(R.styleable.OplusSlider_oplusSeekBarProgressRoundCornerWeight, 0.0f);
+        mShadowRadiusSize = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarShadowSize, 0);
         mThumbShadowRadiusSize = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarThumbShadowSize, 0);
-        mBackgroundHeight = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarBackgroundHeight, (int) getResources().getDimension(R.dimen.oplus_seekbar_background_height));
-        mProgressHeight = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarProgressHeight, (int) getResources().getDimension(R.dimen.oplus_seekbar_progress_height));
+        mInnerShadowRadiusSize = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarInnerShadowSize, 0);
+        mPaddingHorizontal = attributes.getDimensionPixelOffset(R.styleable.OplusSlider_oplusSeekBarProgressPaddingHorizontal, getResources().getDimensionPixelSize(R.dimen.oplus_seekbar_progress_padding_horizontal));
+        mBackgroundHeight = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarBackgroundHeight, (int) (mBackgroundRadius * SCALE_DEFORMATION_MAX));
+        mProgressHeight = attributes.getDimensionPixelSize(R.styleable.OplusSlider_oplusSeekBarProgressHeight, (int) (mProgressRadius * SCALE_DEFORMATION_MAX));
         mSeekbarMinHeight = attributes.getDimensionPixelOffset(R.styleable.OplusSlider_oplusSeekBarMinHeight, getResources().getDimensionPixelSize(R.dimen.oplus_seekbar_view_min_height));
-        mBackgroundEnlargeScale = attributes.getFloat(R.styleable.OplusSeekBar_oplusSeekBarBackGroundEnlargeScale, BACKGROUND_RADIUS_SCALE);
+        mBackgroundEnlargeScale = attributes.getFloat(R.styleable.OplusSlider_oplusSeekBarBackGroundEnlargeScale, BACKGROUND_RADIUS_SCALE);
         mProgressEnlargeScale = attributes.getFloat(R.styleable.OplusSlider_oplusSeekBarProgressEnlargeScale, PROGRESS_RADIUS_SCALE);
-        mIsSupportDeformation = attributes.getBoolean(R.styleable.OplusSlider_oplusSeekBarDeformation, true);
+        mIsSupportDeformation = attributes.getBoolean(R.styleable.OplusSlider_oplusSeekBarDeformation, false);
         labelStyle = attributes.getResourceId(R.styleable.OplusSlider_oplusLabelStyle, R.style.Widget_Oplus_Tooltip);
         attributes.recycle();
         mVibrator = getContext().getSystemService(Vibrator.class);
-        float f2 = mBackgroundHeight * mBackgroundEnlargeScale;
-        mMaxBackgroundHeight = f2;
-        mPaddingHorizontal = f2 / 2.0f;
         mHasMotorVibrator = mVibrator.hasVibrator();
         accessibilityManager =
                 (AccessibilityManager) getContext().getSystemService(Context.ACCESSIBILITY_SERVICE);
@@ -455,111 +411,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         }
 
         return defaultValue;
-    }
-
-    private void initFlexibleFollowHandAnim() {
-        if (mFlexibleFollowHandAnim != null) {
-            return;
-        }
-        androidx.dynamicanimation.animation.FloatValueHolder floatValueHolder = new androidx.dynamicanimation.animation.FloatValueHolder(0.0f);
-        OplusSpringForce oplusSpringForce = new OplusSpringForce();
-        oplusSpringForce.setBounce(0.0f);
-        oplusSpringForce.setResponse(DEFORMATION_SPRING_RESPONSE);
-        OplusSpringAnimation spring = new OplusSpringAnimation(floatValueHolder).setSpring(oplusSpringForce);
-        mFlexibleFollowHandAnim = spring;
-        spring.addUpdateListener((OplusDynamicAnimation, f2, f3) -> {
-            mDrawProgressScale = f2 / FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR;
-            invalidate();
-        });
-    }
-
-    private void startGlitterEffectAnim(float f2) {
-        mIsBumpingEdges = true;
-        mGlitterEffectAnim.setStartValue(mCurGlitterEffectValue);
-        mGlitterEffectAnim.animateToFinalPosition(0.0f);
-        mGlitterEffectAnim.setStartVelocity(Math.abs(f2));
-    }
-
-    public void executeThumbScaleAnim(MotionEvent motionEvent) {
-        if (isWithinThumbBounds(motionEvent.getX(), motionEvent.getY())) {
-            mThumbScaleAnim.setStartValue(mCurThumbRadius);
-            mThumbScaleAnim.animateToFinalPosition(mThumbMaxRadius);
-        }
-    }
-
-    private boolean isWithinThumbBounds(float f2, float f3) {
-        int seekBarCenterY = getSeekBarCenterY();
-        float f4 = mThumbPosition[0];
-        float f5 = mPaddingHorizontal;
-        if (f2 >= f4 - f5 && f2 <= f4 + f5) {
-            float f6 = seekBarCenterY;
-            return f3 >= f6 - f5 && f3 <= f6 + f5;
-        }
-        return false;
-    }
-
-    public void executeTouchGlitterEffectAnim() {
-        mVelocityTracker.computeCurrentVelocity(ONE_SECOND_UNITS, MAX_VELOCITY);
-        float xVelocity = mVelocityTracker.getXVelocity();
-
-        if (isLayoutRtl()) {
-            if (mScale < SCALE_MAX || mIsBumpingEdges || xVelocity >= 0.0f) {
-                return;
-            }
-            startGlitterEffectAnim(xVelocity);
-        } else {
-            if (mScale < SCALE_MAX || mIsBumpingEdges || xVelocity <= 0.0f) {
-                return;
-            }
-            startGlitterEffectAnim(xVelocity);
-        }
-    }
-
-    private void executeFlingGlitterEffectAnim(BaseBehavior baseBehavior, float f2) {
-        float fMin = Math.min(Compat.physicalSizeToPixels(baseBehavior.getPropertyBodyVelocity().mX), MAX_VELOCITY);
-        if (mScale < SCALE_MAX || mIsBumpingEdges || f2 >= SCALE_MAX) {
-            return;
-        }
-        startGlitterEffectAnim(fMin);
-    }
-
-    private void invalidateProgress(MotionEvent motionEvent) {
-        float x2 = motionEvent.getX();
-        setTouchScale(isLayoutRtl() ? (((getWidth() - x2) - getEnd()) - mPaddingHorizontal) / getSeekBarWidth() : ((x2 - getStart()) - mPaddingHorizontal) / getSeekBarWidth(), true);
-        mFlexibleFollowHandAnim.animateToFinalPosition(mScale * FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR);
-        float progressLimit = getProgressLimit(Math.round((mScale * (getValueFrom() - getValueTo())) + getValueFrom()));
-        float progress = mProgress;
-        float realProgress = mRealProgress;
-        setLocalProgress(progressLimit);
-        if (progress != mProgress) {
-            dispatchChangeListener(true);
-            if (realProgress != mRealProgress) {
-                performFeedback();
-            }
-        }
-    }
-
-    public float getCurThumbRadius() {
-        return mCurThumbRadius;
-    }
-
-    public void setCurThumbRadius(float f2) {
-        mCurThumbRadius = f2;
-        invalidate();
-    }
-
-    public float getCurGlitterEffectValue() {
-        return mCurGlitterEffectValue;
-    }
-
-    public void setCurGlitterEffectValue(float f2) {
-        mCurGlitterEffectValue = f2;
-        mCurGlitterEffectAlpha = computeGlitterEffectAlpha(f2);
-        invalidate();
-    }
-
-    private int computeGlitterEffectAlpha(float f2) {
-        return (int) Math.round((1.0d - Math.exp((-(Math.log(85.0d) / 360.0d)) * f2)) * 255.0d);
     }
 
     public void scheduleTooltipTimeout() {
@@ -648,29 +499,54 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         return true;
     }
 
-    private float calculateDamping() {
-        float f2 = mDamping;
+    private float calculateDamping(float f2) {
         if (mDamping != 0.0f) {
-            return f2;
+            return mDamping;
         }
-        return MAX_MOVE_DAMPING;
+        float seekBarWidth = getSeekBarWidth();
+        float f4 = seekBarWidth / SCALE_DEFORMATION_MAX;
+        float interpolation = 1.0f - mInterpolator.getInterpolation(Math.abs(f2 - f4) / f4);
+        if (f2 > seekBarWidth - getPaddingRight() || f2 < getPaddingLeft() || interpolation < MAX_MOVE_DAMPING) {
+            return MAX_MOVE_DAMPING;
+        }
+        return interpolation;
     }
 
-    private void calculateFlingDeformationValue(float f2) {
-        if (f2 > MAX_MOVE_DAMPING) {
-            mDeformationAnim.animateToFinalPosition((f2 - MAX_MOVE_DAMPING) * DEFORMATION_SCALE_FACTOR);
-        } else if (f2 >= 0.0f) {
-            resetDeformationValue();
-        } else {
-            mDeformationAnim.animateToFinalPosition(Math.abs(f2) * DEFORMATION_SCALE_FACTOR);
+    private void calculateFlingDeformationValue(float flingScale) {
+        if (flingScale > 1.0f) {
+            double d2 = flingScale - 1.0f;
+            mHeightBottomDeformedUpValue = computeValue(d2, mMaxMovingDistance);
+            mHeightTopDeformedUpValue = computeValue(d2, mMaxMovingDistance + mMaxHeightDeformedValue);
+            mWidthDeformedValue = computeValue(d2, mMaxWidthDeformedValue);
+            heightDeformedChanged();
+            return;
         }
+        if (flingScale >= 0.0f) {
+            resetDeformationValue();
+            return;
+        }
+        double abs = Math.abs(flingScale);
+        mHeightTopDeformedDownValue = computeValue(abs, mMaxMovingDistance);
+        mHeightBottomDeformedDownValue = computeValue(abs, mMaxMovingDistance + mMaxHeightDeformedValue);
+        mWidthDeformedValue = computeValue(abs, mMaxWidthDeformedValue);
+        heightDeformedChanged();
     }
 
     private void calculateTouchDeformationValue() {
         if (mScale > SCALE_MAX) {
-            mDeformationAnim.animateToFinalPosition(((mScale - SCALE_MAX) / SCALE_DEFORMATION_TIMES) * DEFORMATION_SCALE_FACTOR);
-        } else if (mScale < SCALE_MIN) {
-            mDeformationAnim.animateToFinalPosition((Math.abs(mScale) / SCALE_DEFORMATION_TIMES) * DEFORMATION_SCALE_FACTOR);
+            double d2 = (mScale - SCALE_MAX) / SCALE_DEFORMATION_TIMES;
+            mHeightBottomDeformedUpValue = computeValue(d2, mMaxMovingDistance);
+            mHeightTopDeformedUpValue = computeValue(d2, mMaxMovingDistance + mMaxHeightDeformedValue);
+            mWidthDeformedValue = computeValue(d2, mMaxWidthDeformedValue);
+            heightDeformedChanged();
+            return;
+        }
+        if (mScale < SCALE_MIN) {
+            double abs = Math.abs(mScale) / SCALE_DEFORMATION_TIMES;
+            mHeightTopDeformedDownValue = computeValue(abs, mMaxMovingDistance);
+            mHeightBottomDeformedDownValue = computeValue(abs, mMaxMovingDistance + mMaxHeightDeformedValue);
+            mWidthDeformedValue = computeValue(abs, mMaxWidthDeformedValue);
+            heightDeformedChanged();
         }
     }
 
@@ -686,67 +562,121 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         return (float) (f2 * (1.0d - Math.exp(d2 * (-11.5d))));
     }
 
-    protected void drawProgress(Canvas canvas) {
-        mPaint.setColor(mProgressColor);
-        if (mProgressRoundCornerWeight == 0.0f) {
-            canvas.drawRoundRect(mProgressRect, mProgressHeight / 2.0f, mProgressHeight / 2.0f, mPaint);
-        } else {
-            drawUniversalSmoothRect(canvas, mProgressRect, mProgressHeight / 2.0f, mPaint);
+    protected void drawProgress(Canvas canvas, int i2, float f2, float f3) {
+        if (mInnerShadowRadiusSize > 0 && mCurProgressRadius > mProgressRadius) {
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(0.0f);
+            mPaint.setColor(0);
+            mPaint.setShadowLayer(mInnerShadowRadiusSize, 0.0f, 0.0f, mShadowColor);
+            mProgressRect.set(
+                    (f2 - ((float) mInnerShadowRadiusSize / 2)) - mCurProgressRadius,
+                    ((float) i2 - (mCurProgressHeight / SCALE_DEFORMATION_MAX)) - ((float) mInnerShadowRadiusSize / 2),
+                    ((float) mInnerShadowRadiusSize / 2) + f3 + mCurProgressRadius,
+                    (float) i2 + (mCurProgressHeight / SCALE_DEFORMATION_MAX) + ((float) mInnerShadowRadiusSize / 2));
+            canvas.drawRoundRect(mProgressRect, mCurProgressRadius, mCurProgressRadius, mPaint);
+            mPaint.clearShadowLayer();
+            mPaint.setStyle(Paint.Style.FILL);
         }
-        mProgressPath.reset();
+        mPaint.setColor(mProgressColor);
+        if (isLayoutRtl()) {
+            float f11 = f2 - mHeightTopDeformedUpValue;
+            mProgressRect.set(
+                    f11 + mHeightBottomDeformedDownValue,
+                    (float) i2 - ((mCurProgressHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue),
+                    (f3 - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue,
+                    (float) i2 + ((mCurProgressHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue));
+        } else {
+            float f17 = (f2 - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
+            mProgressRect.set(
+                    f17,
+                    (float) i2 - ((mCurProgressHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue),
+                    (f3 + mHeightTopDeformedUpValue) - mHeightBottomDeformedDownValue,
+                    (float) i2 + ((mCurProgressHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue));
+        }
+        mClipProgressPath.reset();
+        mClipProgressPath.addRoundRect(mClipProgressRect, mCurProgressRadius, mCurProgressRadius, Path.Direction.CCW);
         canvas.save();
-        canvas.clipPath(mProgressPath);
-        canvas.drawColor(mProgressColor);
+        canvas.clipPath(mClipProgressPath);
+        float left = mProgressRect.left;
+        mProgressRect.left = left - (mThumbOutHeight / SCALE_DEFORMATION_MAX);
+        mProgressRect.right += mThumbOutHeight / SCALE_DEFORMATION_MAX;
+        canvas.drawRoundRect(mProgressRect, mCurProgressRadius, mCurProgressRadius, mPaint);
         canvas.restore();
     }
 
+    protected void drawThumb(Canvas canvas, int center, float left, float right) {
+        if (mThumbShadowRadiusSize > 0 && mCurProgressRadius < mThumbOutRadius) {
+            mPaint.setStyle(Paint.Style.FILL);
+            mPaint.setShadowLayer(mThumbShadowRadiusSize, TEXT_SHADOW_DX, TEXT_SHADOW_DY, mShadowColor);
+        }
+        mPaint.setColor(mThumbColor);
+        canvas.drawRoundRect(
+                left,
+                (float) center - (mThumbOutHeight / SCALE_DEFORMATION_MAX),
+                right,
+                (float) center + (mThumbOutHeight / SCALE_DEFORMATION_MAX), mThumbOutRadius, mThumbOutRadius, mPaint);
+        mPaint.clearShadowLayer();
+    }
+
     protected void ensureSize() {
+        mHorizontalPaddingScale = mBackgroundEnlargeScale != 1.0f ? (getResources().getDimensionPixelSize(R.dimen.oplus_seekbar_progress_pressed_padding_horizontal) + (mBackgroundRadius * mBackgroundEnlargeScale)) / mPaddingHorizontal : 1.0f;
+        mCurProgressRadius = mProgressRadius;
+        mCurBackgroundRadius = mBackgroundRadius;
+        mThumbOutRadius = mProgressRadius * mProgressEnlargeScale;
+        mThumbOutRoundCornerWeight = mProgressRoundCornerWeight;
+        mCurProgressHeight = mProgressHeight;
         mCurBackgroundHeight = mBackgroundHeight;
-        mCurThumbRadius = mThumbRadius;
-        float f2 = mProgressHeight;
-        mCurProgressRadius = f2 / 2.0f;
-        mThumbOutRadius = f2 / 2.0f;
+        mThumbOutHeight = mProgressHeight * mProgressEnlargeScale;
         mCurPaddingHorizontal = mPaddingHorizontal;
-        Log.i(TAG, "OplusSeekBar ensureSize : mPaddingHorizontal:" + mPaddingHorizontal + ",mBackgroundHeight:" + mBackgroundHeight + ",mBackgroundEnlargeScale" + mBackgroundEnlargeScale + ",mProgressHeight:" + mProgressHeight + ",mThumbRadius" + mThumbRadius);
         updateBehavior();
     }
 
     private void flingBehaviorAfterDeformationDrag() {
-        if (mFlingValueHolder == null || mFlingBehavior == null || !mIsSupportDeformation) {
-            return;
-        }
-        if (mScale > SCALE_MAX || mScale < SCALE_MIN) {
-            int normalSeekBarWidth = getNormalSeekBarWidth();
-            float diff = valueTo - valueFrom;
-            float f3 = diff > 0 ? normalSeekBarWidth / diff : 0.0f;
-            if (isLayoutRtl()) {
-                mFlingValueHolder.setStartValue((valueTo - (getDeformationFlingScale() * diff)) * f3);
-            } else {
-                mFlingValueHolder.setStartValue(getDeformationFlingScale() * diff * f3);
+        if (mIsSupportDeformation) {
+            if (mScale > 1.0f || mScale < 0.0f) {
+                int normalSeekBarWidth = getNormalSeekBarWidth();
+                float diff = valueTo - valueFrom;
+                float f3 = diff > 0 ? normalSeekBarWidth / diff : 0.0f;
+                if (isLayoutRtl()) {
+                    mFlingValueHolder.setStartValue((valueTo - (getDeformationFlingScale() * diff)) * f3);
+                } else {
+                    mFlingValueHolder.setStartValue(getDeformationFlingScale() * diff * f3);
+                }
+                mFlingBehavior.start();
             }
-            mFlingBehavior.start();
         }
     }
 
     private void flingBehaviorAfterEndDrag(float f2) {
-        if (mFlingValueHolder == null || mFlingBehavior == null) {
-            return;
-        }
-        int seekBarWidth = getSeekBarWidth();
-        float i2 = normalizeValue(valueTo) - normalizeValue(valueFrom);
-        float f3 = i2 > 0 ? seekBarWidth / i2 : 0.0f;
+        int normalSeekBarWidth = getNormalSeekBarWidth();
+        float i2 = valueTo - valueFrom;
+        float f3 = i2 > 0 ? (float) normalSeekBarWidth / i2 : 0.0f;
         if (isLayoutRtl()) {
             if (mIsSupportDeformation) {
-                mFlingValueHolder.setStartValue((normalizeValue(valueTo) - (getDeformationFlingScale() * i2)) * f3);
+                mFlingValueHolder.setStartValue((valueTo - (getDeformationFlingScale() * i2)) * f3);
             } else {
-                mFlingValueHolder.setStartValue(((normalizeValue(valueTo) - mProgress) + normalizeValue(valueFrom)) * f3);
+                float prog =
+                        activeThumbIdx == -1 ?
+                                mProgress :
+                                values.get(activeThumbIdx);
+                mFlingValueHolder.setStartValue(((valueTo - prog) + valueFrom) * f3);
             }
         } else if (mIsSupportDeformation) {
             mFlingValueHolder.setStartValue(getDeformationFlingScale() * i2 * f3);
         } else {
-            mFlingValueHolder.setStartValue((mProgress - normalizeValue(valueFrom)) * f3);
+            mFlingValueHolder.setStartValue((mProgress - valueFrom) * f3);
         }
         mFlingBehavior.start(f2);
+        invalidate();
+    }
+
+    private float getDeformationFlingScale() {
+        return
+                mScale > SCALE_MAX ?
+                        ((mScale - SCALE_MAX) / SCALE_DEFORMATION_TIMES) + SCALE_MAX :
+                        mScale < SCALE_MIN ?
+                                mScale / SCALE_DEFORMATION_TIMES :
+                                mScale;
     }
 
     @NonNull
@@ -758,16 +688,10 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private float getHeightBottomDeformedValue() {
-        float f2;
-        float f3;
-        if (isLayoutRtl()) {
-            f2 = mHeightBottomDeformedDownValue;
-            f3 = mHeightBottomDeformedUpValue;
-        } else {
-            f2 = mHeightBottomDeformedUpValue;
-            f3 = mHeightBottomDeformedDownValue;
-        }
-        return f2 - f3;
+        return
+                isLayoutRtl() ?
+                    mHeightBottomDeformedDownValue - mHeightBottomDeformedUpValue :
+                    mHeightBottomDeformedUpValue - mHeightBottomDeformedDownValue;
     }
 
     private float getHeightTopDeformedValue() {
@@ -805,39 +729,14 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     private void initAnimation() {
-        initEnlargeAnim();
-        initThumbScaleAnim();
-        initGlitterEffectAnim();
-        initFlexibleFollowHandAnim();
-        initDeformationAnim();
-    }
-
-    private void updatePixPerProgress() {
-        int seekBarWidth = getSeekBarWidth();
-        float diff = getValueTo() - getValueFrom();
-        mPixPerProgress = diff > 0 ? seekBarWidth / diff : 0.0f;
-    }
-
-    private void initThumbScaleAnim() {
-        if (mThumbScaleAnim != null) {
-            return;
-        }
-        mThumbScaleAnim = new OplusSpringAnimation(this, mThumbScaleTransition);
-        OplusSpringForce oplusSpringForce = new OplusSpringForce();
-        oplusSpringForce.setBounce(0.0f);
-        oplusSpringForce.setResponse(0.2f);
-        mThumbScaleAnim.setSpring(oplusSpringForce);
-    }
-
-    private void initGlitterEffectAnim() {
-        if (mGlitterEffectAnim != null) {
-            return;
-        }
-        mGlitterEffectAnim = new OplusSpringAnimation(this, mGlitterEffectTransition);
-        OplusSpringForce oplusSpringForce = new OplusSpringForce();
-        oplusSpringForce.setBounce(0.0f);
-        oplusSpringForce.setResponse(GLITTER_EFFECT_SPRING_RESPONSE);
-        mGlitterEffectAnim.setSpring(oplusSpringForce);
+        mTouchAnimator.setInterpolator(PROGRESS_SCALE_INTERPOLATOR);
+        ValueAnimator ofFloat = ValueAnimator.ofFloat(0.0f, 1.0f);
+        ofFloat.setDuration(TOUCH_ANIMATION_ENLARGE_DURATION);
+        ofFloat.addUpdateListener(valueAnimator -> {
+            onEnlargeAnimationUpdate(valueAnimator);
+            invalidate();
+        });
+        mTouchAnimator.play(ofFloat);
     }
 
     private void initFastMoveAnimation() {
@@ -861,16 +760,13 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
             }
 
             @Override
-            public void onSpringActivate(Spring spring) {
-            }
+            public void onSpringActivate(Spring spring) {}
 
             @Override
-            public void onSpringAtRest(Spring spring) {
-            }
+            public void onSpringAtRest(Spring spring) {}
 
             @Override
-            public void onSpringEndStateChange(Spring spring) {
-            }
+            public void onSpringEndStateChange(Spring spring) {}
         });
     }
 
@@ -906,17 +802,35 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         ViewCompat.setAccessibilityDelegate(this, patternExploreByTouchHelper);
         setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         mAccessibilityHelper.invalidateRoot();
-        Paint paint = new Paint(1);
-        mPaint = paint;
-        paint.setDither(true);
-        TextPaint textPaint = new TextPaint(1);
-        mGlitterEffectPaint = textPaint;
-        textPaint.setColor(ViewCompat.MEASURED_STATE_MASK);
+        mPaint = new Paint();
+        mPaint.setAntiAlias(true);
+        mPaint.setDither(true);
+    }
+
+    private void invalidateProgress(MotionEvent motionEvent) {
+        float x2 = motionEvent.getX();
+        float seekBarWidth = getSeekBarWidth();
+        float f3 = seekBarWidth + (SCALE_DEFORMATION_MAX * mCurProgressRadius);
+        float f4 = mCurPaddingHorizontal - mCurProgressRadius;
+        mScale = Math.max(0.0f, Math.min(isLayoutRtl() ? (((getWidth() - x2) - getStart()) - f4) / f3 : ((x2 - getStart()) - f4) / f3, 1.0f));
+        float progressLimit = getProgressLimit(Math.round((mScale * (valueTo - valueFrom)) + valueFrom));
+        float i2 = values.get(activeThumbIdx);
+        float i3 = mRealProgress;
+        setLocalProgress(progressLimit);
+        invalidate();
+        if (i2 != mProgress) {
+            dispatchChangeListener(true);
+            if (i3 != mRealProgress) {
+                performFeedback();
+            }
+        }
     }
 
     private boolean isDeformationFling() {
+        PhysicalAnimator physicalAnimator;
         if (mIsSupportDeformation) {
-            return (mScale > SCALE_MAX || mScale < SCALE_MIN) && (mPhysicalAnimator != null) && mPhysicalAnimator.isAnimatorRunning();
+            float f2 = mScale;
+            return (f2 > 1.0f || f2 < 0.0f) && (physicalAnimator = mPhysicalAnimator) != null && physicalAnimator.isAnimatorRunning();
         }
         return false;
     }
@@ -943,21 +857,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         }
     }
 
-    public void releaseThumbScaleAnim() {
-        float f2 = mCurThumbRadius;
-        if (f2 != mThumbRadius) {
-            mThumbScaleAnim.setStartValue(f2);
-            mThumbScaleAnim.animateToFinalPosition(mThumbRadius);
-        }
-    }
-
-    public void resetBumpingEdges() {
-        if (mScale < SCALE_MAX) {
-            mIsBumpingEdges = false;
-        }
-    }
-
-    public void resetDeformationValue() {
+    private void resetDeformationValue() {
         if (mIsSupportDeformation) {
             mHeightTopDeformedUpValue = 0.0f;
             mHeightBottomDeformedUpValue = 0.0f;
@@ -968,57 +868,39 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         }
     }
 
-    private void setDeformationScale(float f2) {
-        if (f2 > SCALE_MAX) {
-            f2 = ((f2 - SCALE_MAX) * SCALE_DEFORMATION_TIMES) + SCALE_MAX;
-        } else if (f2 < SCALE_MIN) {
-            f2 *= SCALE_DEFORMATION_TIMES;
+    private void setDeformationScale(float flingScale) {
+        if (flingScale > 1.0f) {
+            flingScale = ((flingScale - 1.0f) * 5.0f) + 1.0f;
+        } else if (flingScale < 0.0f) {
+            flingScale *= 5.0f;
         }
-        float fMax = Math.max(SCALE_DEFORMATION_MIN, Math.min(f2, SCALE_DEFORMATION_MAX));
-        mScale = fMax;
-        mDrawProgressScale = fMax;
+        mScale = Math.max(SCALE_DEFORMATION_MIN, Math.min(flingScale, SCALE_DEFORMATION_MAX));
     }
 
-    private void setFlingScale(float f2) {
+    private void setFlingScale(float flingScale) {
         if (!mIsSupportDeformation) {
-            float fMax = Math.max(SCALE_MIN, Math.min(f2, SCALE_MAX));
-            mScale = fMax;
-            mDrawProgressScale = fMax;
+            mScale = Math.max(0.0f, Math.min(flingScale, 1.0f));
             return;
         }
-        calculateFlingDeformationValue(f2);
-        setDeformationScale(f2);
+        calculateFlingDeformationValue(flingScale);
+        setDeformationScale(flingScale);
         if (mOnDeformedListener != null) {
             DeformedValueBean deformedValueBean = new DeformedValueBean(mHeightBottomDeformedUpValue, mHeightTopDeformedUpValue, mWidthDeformedValue, mHeightBottomDeformedDownValue, mHeightTopDeformedDownValue, mProgress);
             deformedValueBean.setScale(mScale);
-            deformedValueBean.setDrawProgressScale(mDrawProgressScale);
             mOnDeformedListener.onScaleChanged(deformedValueBean);
         }
     }
 
-    public void setTouchScale(float f2, boolean z2) {
+    private void setTouchScale(float f2) {
         if (!mIsSupportDeformation) {
-            if (!z2) {
-                mScale = Math.max(SCALE_MIN, Math.min(f2, SCALE_MAX));
-                return;
-            }
-            float fMax = Math.max(SCALE_MIN, Math.min(f2, SCALE_MAX));
-            mScale = fMax;
-            mDrawProgressScale = fMax;
+            mScale = Math.max(0.0f, Math.min(f2, 1.0f));
             return;
         }
-        if (z2) {
-            float fMax2 = Math.max(SCALE_DEFORMATION_MIN, Math.min(f2, SCALE_DEFORMATION_MAX));
-            mScale = fMax2;
-            mDrawProgressScale = fMax2;
-        } else {
-            mScale = Math.max(SCALE_DEFORMATION_MIN, Math.min(f2, SCALE_DEFORMATION_MAX));
-        }
+        mScale = Math.max(SCALE_DEFORMATION_MIN, Math.min(f2, SCALE_DEFORMATION_MAX));
         calculateTouchDeformationValue();
         if (mOnDeformedListener != null) {
             DeformedValueBean deformedValueBean = new DeformedValueBean(mHeightBottomDeformedUpValue, mHeightTopDeformedUpValue, mWidthDeformedValue, mHeightBottomDeformedDownValue, mHeightTopDeformedDownValue, mProgress);
             deformedValueBean.setScale(mScale);
-            deformedValueBean.setDrawProgressScale(mDrawProgressScale);
             mOnDeformedListener.onScaleChanged(deformedValueBean);
         }
     }
@@ -1052,8 +934,8 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     /**
      * Returns the {@link LabelBehavior} used.
      *
-     * @attr ref com.google.android.material.R.styleable#Slider_labelBehavior
      * @see #setLabelBehavior(int)
+     * @attr ref com.google.android.material.R.styleable#Slider_labelBehavior
      */
     @LabelBehavior
     public int getLabelBehavior() {
@@ -1063,9 +945,9 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     /**
      * Determines the {@link LabelBehavior} used.
      *
-     * @attr ref com.google.android.material.R.styleable#Slider_labelBehavior
      * @see LabelBehavior
      * @see #getLabelBehavior()
+     * @attr ref com.google.android.material.R.styleable#Slider_labelBehavior
      */
     public void setLabelBehavior(@LabelBehavior int labelBehavior) {
         if (this.labelBehavior != labelBehavior) {
@@ -1088,15 +970,15 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         int right;
         int bottom;
         int top;
-        float deformOffset = mHeightTopDeformedUpValue - mHeightBottomDeformedDownValue;
         left =
                 (int) (mCurPaddingHorizontal
                         + (int) (normalizeValue(value) * getSeekBarWidth())
+                        + (mThumbOutRadius / 2)
                         - label.getIntrinsicWidth() / 2);
         right = left + label.getIntrinsicWidth();
         bottom = (int) (labels.get(0).getIntrinsicHeight() - (mThumbOutRadius));
         top = bottom - label.getIntrinsicHeight();
-        labelRect.set((int) (left + deformOffset), top, (int) (right + deformOffset), bottom);
+        labelRect.set(left, top, right, bottom);
     }
 
     @SuppressLint({"RestrictedApi"})
@@ -1105,20 +987,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         label.invalidateSelf();
         positionLabel(label, value);
         ViewUtils.getContentViewOverlay(this).add(label);
-    }
-
-    private void setMaxToMinLinearGradient() {
-        if (mMaxToMinLinearGradient == null) {
-            mMaxToMinLinearGradient = new LinearGradient(mProgressRect.left, 0.0f, mProgressRect.right, 0.0f, mGlitterEffectMaxColor, mGlitterEffectMinColor, Shader.TileMode.CLAMP);
-        }
-        mGlitterEffectPaint.setShader(mMaxToMinLinearGradient);
-    }
-
-    private void setMinToMaxLinearGradient() {
-        if (mMinToMaxLinearGradient == null) {
-            mMinToMaxLinearGradient = new LinearGradient(mProgressRect.left, 0.0f, mProgressRect.right, 0.0f, mGlitterEffectMinColor, mGlitterEffectMaxColor, Shader.TileMode.CLAMP);
-        }
-        mGlitterEffectPaint.setShader(mMinToMaxLinearGradient);
     }
 
     private void startFastMoveAnimation(float f2) {
@@ -1174,9 +1042,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         if (isLayoutRtl()) {
             f2 = -f2;
         }
-        setTouchScale((mProgress / diff) + ((f2 * calculateDamping()) / getSeekBarWidth()), false);
-        executeTouchGlitterEffectAnim();
-        mFlexibleFollowHandAnim.animateToFinalPosition(mScale * FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR);
+        setTouchScale((this.mProgress / diff) + ((f2 * calculateDamping(x2)) / getSeekBarWidth()));
         float progressLimit = getProgressLimit(Math.round((this.mScale * diff) + valueFrom));
         float i3 = this.mProgress;
         float i4 = this.mRealProgress;
@@ -1301,7 +1167,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
 
         float relativeX = touchX - seekBarStart;
         relativeX = Math.max(0, Math.min(relativeX, seekBarWidth));
-        int iRound = Math.round(((motionEvent.getX() - mLastX) * calculateDamping()) + mLastX);
+        int round = Math.round(((motionEvent.getX() - this.mLastX) * calculateDamping(motionEvent.getX())) + this.mLastX);
 
         if (isLayoutRtl()) {
             relativeX = seekBarWidth - relativeX;
@@ -1317,22 +1183,14 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         progress = Math.max(valueFrom, Math.min(progress, valueTo));
         float snappedProgress = getProgressLimit(progress);
 
-        float start;
-        if (isLayoutRtl()) {
-            start = ((getWidth() - iRound) - getEnd()) - mPaddingHorizontal;
-        } else {
-            start = (iRound - getStart()) - mPaddingHorizontal;
-        }
-        setTouchScale(start / seekBarWidth, false);
-        executeTouchGlitterEffectAnim();
-
+        mScale = scale;
         float i2 = values.get(activeThumbIdx);
         float realProgress = this.mRealProgress;
         setLocalProgress(snappedProgress);
         snapActiveThumbToValue(snappedProgress);
         invalidate();
         if (i2 != values.get(activeThumbIdx)) {
-            this.mLastX = iRound;
+            this.mLastX = round;
             mProgress = progress;
             dispatchChangeListener(true);
             if (realProgress != this.mRealProgress) {
@@ -1353,7 +1211,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         float seekBarWidth = getSeekBarWidth();
         float f4 = seekBarWidth + (SCALE_DEFORMATION_MAX * mCurProgressRadius);
         float f5 = mCurPaddingHorizontal - mCurProgressRadius;
-        clearDeformationValue();
         startTransitionAnim(getProgressLimit((((isLayoutRtl() ? (((getWidth() - f2) - getStart()) - f5) / f4 : ((f2 - getStart()) - f5) / f4) * (valueTo - valueFrom)) + valueFrom)), true);
     }
 
@@ -1363,143 +1220,55 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     protected void drawActiveTrackSingle(Canvas canvas, float seekWidth) {
+        float progressStartX;
         int seekBarCenterY = getSeekBarCenterY();
+        progressStartX = mCurPaddingHorizontal - mCurProgressRadius;
 
-        float start = getStart() + mPaddingHorizontal;
-        float currentProgressX = start + (getRealScale(mScale) * seekWidth);
+        mClipProgressRect.top = seekBarCenterY - (mCurProgressHeight / 2f);
+        mClipProgressRect.bottom = seekBarCenterY + (mCurProgressHeight / 2f);
 
-        float f2 = currentProgressX;
-        float realScale2 = start;
+        mClipProgressRect.left = progressStartX;
+        mClipProgressRect.right = mCurPaddingHorizontal + mThumbOutRadius + (mScale * seekWidth);
 
-        if (isLayoutRtl()) {
-            float startRtl = start + seekWidth;
-            float progressRtl = startRtl - (getRealScale(mScale) * seekWidth);
-            f2 = startRtl;
-            realScale2 = progressRtl;
-        }
+        drawProgress(canvas, seekBarCenterY, mClipProgressRect.left, mClipProgressRect.right);
 
-        if (isLayoutRtl()) {
-            float leftDeform = realScale2 - mHeightTopDeformedUpValue;
-            mProgressRect.set(
-                    leftDeform + mHeightBottomDeformedDownValue,
-                    seekBarCenterY - ((mProgressHeight / 2.0f)),
-                    (f2 - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue,
-                    seekBarCenterY + ((mProgressHeight / 2.0f))
-            );
-        } else {
-            float leftDeform = (realScale2 - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
-            mProgressRect.set(
-                    leftDeform,
-                    seekBarCenterY - ((mProgressHeight / 2.0f) - mWidthDeformedValue),
-                    (f2 + mHeightTopDeformedUpValue) - mHeightBottomDeformedDownValue,
-                    seekBarCenterY + ((mProgressHeight / 2.0f) - mWidthDeformedValue)
-            );
-        }
-
-        mProgressRect.left -= (mProgressHeight / 2.0f);
-        mProgressRect.right += (mProgressHeight / 2.0f);
-
-        drawProgress(canvas);
-
-        float deformOffset = mHeightTopDeformedUpValue - mHeightBottomDeformedDownValue;
-        mThumbPosition[0] = f2 + (isLayoutRtl() ? -deformOffset : deformOffset);
-
-        drawThumb(canvas);
+        float thumbCenterX = mCurPaddingHorizontal + (mScale * seekWidth);
+        drawThumb(canvas, seekBarCenterY,
+                thumbCenterX - mThumbOutRadius,
+                thumbCenterX + mThumbOutRadius);
     }
 
     public void drawActiveTrackRange(Canvas canvas, float seekWidth) {
+        // normalize our values
         float[] activeRange = getActiveRange();
-        float normalizedLeft = getRealScale(activeRange[0]);
-        float normalizedRight = getRealScale(activeRange[1]);
+        float normalizedLeft = activeRange[0];
+        float normalizedRight = activeRange[1];
 
         int seekBarCenterY = getSeekBarCenterY();
-        float start = getStart() + mPaddingHorizontal;
-        float deformOffset = mHeightTopDeformedUpValue - mHeightBottomDeformedDownValue;
-
-        float leftX = start + (normalizedLeft * seekWidth);
-        float rightX = start + (normalizedRight * seekWidth);
-
-        if (isLayoutRtl()) {
-            float startRtl = start + seekWidth;
-            float tempLeft = leftX;
-            leftX = startRtl - (normalizedRight * seekWidth);
-            rightX = startRtl - (tempLeft - start);
-        }
+        float trackStart = mCurPaddingHorizontal;
+        float trackEnd = seekWidth - mCurPaddingHorizontal;
+        float leftX = mCurPaddingHorizontal + (normalizedLeft * seekWidth);
+        float rightX = trackStart + (normalizedRight * seekWidth);
+        float thumbRadius = mThumbOutRadius;
 
         if (isLayoutRtl()) {
-            float leftDeform = leftX - mHeightTopDeformedUpValue;
-            mProgressRect.set(
-                    leftDeform + mHeightBottomDeformedDownValue,
-                    seekBarCenterY - ((mProgressHeight / 2.0f) - mWidthDeformedValue),
-                    (rightX - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue,
-                    seekBarCenterY + ((mProgressHeight / 2.0f) - mWidthDeformedValue)
-            );
-        } else {
-            float leftDeform = (leftX - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
-            mProgressRect.set(
-                    leftDeform,
-                    seekBarCenterY - ((mProgressHeight / 2.0f) - mWidthDeformedValue),
-                    (rightX + mHeightTopDeformedUpValue) - mHeightBottomDeformedDownValue,
-                    seekBarCenterY + ((mProgressHeight / 2.0f) - mWidthDeformedValue)
-            );
+            float temp = leftX;
+            leftX = trackEnd - rightX;
+            rightX = trackEnd - temp;
         }
 
-        mProgressRect.left -= (mProgressHeight / 2.0f);
-        mProgressRect.right += (mProgressHeight / 2.0f);
+        RectF activeTrackRect = mClipProgressRect;
+        activeTrackRect.left = leftX;
+        activeTrackRect.right = rightX;
+        activeTrackRect.top = seekBarCenterY - (mCurProgressHeight / 2f) + mWidthDeformedValue;
+        activeTrackRect.bottom = seekBarCenterY + (mCurProgressHeight / 2f) - mWidthDeformedValue;
 
-        drawProgress(canvas);
+        mPaint.setColor(mProgressColor);
+        canvas.drawRoundRect(activeTrackRect, 0, 0, mPaint);
 
-        if (isLayoutRtl()) {
-            mThumbPosition[0] = leftX - deformOffset;
-            mThumbPosition[1] = rightX - deformOffset;
-        } else {
-            mThumbPosition[0] = leftX + deformOffset;
-            mThumbPosition[1] = rightX + deformOffset;
-        }
-
-        drawThumb(canvas);
-    }
-
-    private float getRealScale(float f2) {
-        return Math.max(0.0f, Math.min(f2, 1.0f));
-    }
-
-    public void setBackgroundRect() {
-        int seekBarCenterY = getSeekBarCenterY();
-        float start = (getStart() + mPaddingHorizontal) - (mCurBackgroundHeight / 2.0f);
-        float width = ((getWidth() - getEnd()) - mPaddingHorizontal) + (mCurBackgroundHeight / 2.0f);
-        if (isLayoutRtl()) {
-            float f2 = (start - mHeightTopDeformedUpValue) + mHeightTopDeformedDownValue;
-            float f4 = mCurBackgroundHeight;
-            float f5 = mWidthDeformedValue;
-            mBackgroundRect.set(f2, (float) seekBarCenterY - ((f4 / 2.0f) - f5), (width - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, (float) seekBarCenterY + ((f4 / 2.0f) - f5));
-            return;
-        }
-        float f6 = (start - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
-        float f8 = mCurBackgroundHeight;
-        float f9 = mWidthDeformedValue;
-        mBackgroundRect.set(f6, (float) seekBarCenterY - ((f8 / 2.0f) - f9), (width + mHeightTopDeformedUpValue) - mHeightTopDeformedDownValue, (float) seekBarCenterY + ((f8 / 2.0f) - f9));
-    }
-
-    private void drawThumb(Canvas canvas) {
-        int seekBarCenterY = getSeekBarCenterY();
-        float thumbDiff = mThumbPosition[0] - mCurThumbRadius;
-        float thumbSum = mThumbPosition[0] + mCurThumbRadius;
-        if (mThumbShadowRadiusSize > 0 && isEnabled()) {
-            mPaint.setStyle(Paint.Style.FILL);
-            mPaint.setShadowLayer(mThumbShadowRadiusSize, 0.0f, mThumbShadowOffsetY, mThumbShadowColor);
-        }
-        mPaint.setColor(mThumbColor);
-        canvas.drawRoundRect(thumbDiff, seekBarCenterY - mCurThumbRadius, thumbSum, seekBarCenterY + mCurThumbRadius, mCurThumbRadius, mCurThumbRadius, mPaint);
-        if (values.size() > 1) {
-            float thumbDiff2 = mThumbPosition[1] - mCurThumbRadius;
-            float thumbSum2 = mThumbPosition[1] + mCurThumbRadius;
-            canvas.drawRoundRect(thumbDiff2, seekBarCenterY - mCurThumbRadius, thumbSum2, seekBarCenterY + mCurThumbRadius, mCurThumbRadius, mCurThumbRadius, mPaint);
-        }
-        if (mThumbShadowRadiusSize <= 0 || !isEnabled()) {
-            return;
-        }
-        mPaint.clearShadowLayer();
+        // draw thumbs
+        drawThumb(canvas, seekBarCenterY, leftX - thumbRadius, leftX + thumbRadius); // Thumb sinistro
+        drawThumb(canvas, seekBarCenterY, rightX - thumbRadius, rightX + thumbRadius); // Thumb destro
     }
 
     private float valueToX(float value) {
@@ -1507,41 +1276,32 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     public void drawInactiveTrack(Canvas canvas) {
-        mPaint.setColor(mBackgroundColor);
-        if (mBackgroundRoundCornerWeight == 0.0f) {
-            canvas.drawRoundRect(mBackgroundRect, mCurBackgroundHeight / SCALE_DEFORMATION_MAX, mCurBackgroundHeight / SCALE_DEFORMATION_MAX, mPaint);
-        } else {
-            drawUniversalSmoothRect(canvas, mBackgroundRect, mCurBackgroundHeight / SCALE_DEFORMATION_MAX, mPaint);
+        float start = (getStart() + mCurPaddingHorizontal) - mCurBackgroundRadius;
+        float width = ((getWidth() - getEnd()) - mCurPaddingHorizontal) + mCurBackgroundRadius;
+        int seekBarCenterY = getSeekBarCenterY();
+        if (mShadowRadiusSize > 0) {
+            mPaint.setStyle(Paint.Style.STROKE);
+            mPaint.setStrokeWidth(0.0f);
+            mPaint.setColor(0);
+            mPaint.setShadowLayer(mShadowRadiusSize, 0.0f, 0.0f, mShadowColor);
+            mBackgroundRect.set(
+                    start - ((float) mShadowRadiusSize / 2),
+                    ((float) seekBarCenterY - (mCurBackgroundHeight / SCALE_DEFORMATION_MAX)) - ((float) mShadowRadiusSize / 2),
+                    ((float) mShadowRadiusSize / 2) + width,
+                    (float) seekBarCenterY + (mCurBackgroundHeight / SCALE_DEFORMATION_MAX) + ((float) mShadowRadiusSize / 2));
+            canvas.drawRoundRect(mBackgroundRect, mCurBackgroundRadius, mCurBackgroundRadius, mPaint);
+            mPaint.clearShadowLayer();
+            mPaint.setStyle(Paint.Style.FILL);
         }
-        mBackgroundPath.reset();
-        canvas.save();
-        canvas.clipPath(mBackgroundPath);
-        canvas.drawColor(mBackgroundColor);
-        canvas.restore();
-    }
-
-    protected void drawUniversalSmoothRect(Canvas canvas, RectF rect, float radius, Paint paint) {
-        Path path = new Path();
-        float weight = 1.52f;
-
-        float left = rect.left;
-        float top = rect.top;
-        float right = rect.right;
-        float bottom = rect.bottom;
-
-        path.reset();
-        path.moveTo(left + radius, top);
-        path.lineTo(right - radius, top);
-        path.cubicTo(right - radius / weight, top, right, top + radius / weight, right, top + radius);
-        path.lineTo(right, bottom - radius);
-        path.cubicTo(right, bottom - radius / weight, right - radius / weight, bottom, right - radius, bottom);
-        path.lineTo(left + radius, bottom);
-        path.cubicTo(left + radius / weight, bottom, left, bottom - radius / weight, left, bottom - radius);
-        path.lineTo(left, top + radius);
-        path.cubicTo(left, top + radius / weight, left + radius / weight, top, left + radius, top);
-        path.close();
-
-        canvas.drawPath(path, paint);
+        mPaint.setColor(mBackgroundColor);
+        if (isLayoutRtl()) {
+            float deformedValue = (start - mHeightTopDeformedUpValue) + mHeightTopDeformedDownValue;
+            mBackgroundRect.set(deformedValue, (float) seekBarCenterY - ((mCurBackgroundHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue), (width - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, (float) seekBarCenterY + ((mCurBackgroundHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue));
+        } else {
+            float deformedValue = (start - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
+            mBackgroundRect.set(deformedValue, (float) seekBarCenterY - ((mCurBackgroundHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue), (width + mHeightTopDeformedUpValue) - mHeightTopDeformedDownValue, (float) seekBarCenterY + ((mCurBackgroundHeight / SCALE_DEFORMATION_MAX) - mWidthDeformedValue));
+        }
+        canvas.drawRoundRect(mBackgroundRect, mCurBackgroundRadius, mCurBackgroundRadius, mPaint);
     }
 
     @SuppressLint({"RestrictedApi"})
@@ -1557,7 +1317,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            ViewOverlayImpl contentViewOverlay = ViewUtils.getContentViewOverlay(OplusSlider.this);
+                            ViewOverlayImpl contentViewOverlay = ViewUtils.getContentViewOverlay(OplusSliderLegacy.this);
                             for (TooltipDrawable label : labels) {
                                 contentViewOverlay.remove(label);
                             }
@@ -1622,7 +1382,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
 
     /**
      * Set the move type of the slider.
-     *
      * @param moveType The move type of the slider.
      *                 - {@link #MOVE_BY_DEFAULT} - Default move type.
      *                 - {@link #MOVE_BY_FINGER} - Move by finger.
@@ -1648,9 +1407,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     public void handleMotionEventDown(MotionEvent motionEvent) {
         mTouchDownX = motionEvent.getX();
         mLastX = motionEvent.getX();
-        mIsDragging = false;
-        mIsBumpingEdges = false;
-        executeThumbScaleAnim(motionEvent);
     }
 
     public void handleMotionEventMove(MotionEvent motionEvent) {
@@ -1677,7 +1433,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
                 startDrag();
                 touchAnim();
                 this.mLastX = x2;
-                mFlexibleFollowHandAnim.setStartValue(mScale * FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR);
                 if (isMoveFollowHand()) {
                     invalidateProgress(motionEvent);
                 }
@@ -1687,12 +1442,10 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     public void handleMotionEventUp(MotionEvent motionEvent) {
-        releaseThumbScaleAnim();
-        getFastMoveSpring().setEndValue(0.0d);
+        getFastMoveSpring().setEndValue(DOUBLE_EPSILON);
 
         if (!mIsDragging) {
             if (isEnabled() && touchInSeekBar(motionEvent, this) && isMoveFollowHand()) {
-                stopDeformationFling();
                 animForClick(motionEvent.getX());
                 invalidate();
                 return;
@@ -1707,7 +1460,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         } else {
             flingBehaviorAfterEndDrag(mFlingVelocity);
         }
-//        startTransitionAnim(values.get(activeThumbIdx), false);
+        startTransitionAnim(values.get(activeThumbIdx), false);
         setPressed(false);
         releaseAnim();
         removeCallbacks(resetActiveThumbIndex);
@@ -1743,7 +1496,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
             scaledValue = floatValue / normalSeekBarWidth;
         }
         setFlingScale(scaledValue);
-        executeFlingGlitterEffectAnim(baseBehavior, mScale);
         float oldProgress = mProgress;
         float snappedProgress = getProgressLimit(getValueFromNormalized(mScale));
         snapThumbToValue(0, snappedProgress);
@@ -1782,39 +1534,27 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
-        setBackgroundRect();
-        super.draw(canvas);
-    }
-
-    @Override
     public void onDraw(@NonNull Canvas canvas) {
         validateConfigurationIfDirty();
         float seekBarWidth = getSeekBarWidth();
         updateLabels();
         drawInactiveTrack(canvas);
+
         if (values.size() == 2) {
             drawActiveTrackRange(canvas, seekBarWidth);
         } else {
             drawActiveTrackSingle(canvas, seekBarWidth);
         }
-        drawGlitterEffect(canvas);
     }
 
-    public void drawGlitterEffect(Canvas canvas) {
-        if (mShowGlitterEffect) {
-            if (isLayoutRtl()) {
-                if (mScale >= SCALE_MAX) {
-                    setMaxToMinLinearGradient();
-                }
-            } else if (mScale >= SCALE_MAX) {
-                setMinToMaxLinearGradient();
-            }
-            mGlitterEffectPaint.setAlpha(mCurGlitterEffectAlpha);
-            canvas.drawRoundRect(mProgressRect, mProgressHeight / SCALE_DEFORMATION_MAX, mProgressHeight / SCALE_DEFORMATION_MAX, mGlitterEffectPaint);
-        }
+    public void onEnlargeAnimationUpdate(ValueAnimator valueAnimator) {
+        float animatedFraction = valueAnimator.getAnimatedFraction();
+        mCurBackgroundRadius = mBackgroundRadius + (((mBackgroundRadius * mBackgroundEnlargeScale) - mBackgroundRadius) * animatedFraction);
+        mCurProgressRadius = mProgressRadius + (((mProgressRadius * mProgressEnlargeScale) - mProgressRadius) * animatedFraction);
+        mCurBackgroundHeight = mBackgroundHeight + (((mBackgroundEnlargeScale * mBackgroundHeight) - mBackgroundHeight) * animatedFraction);
+        mCurProgressHeight = mProgressHeight + (((mProgressEnlargeScale * mProgressHeight) - mProgressHeight) * animatedFraction);
+        mCurPaddingHorizontal = mPaddingHorizontal + (animatedFraction * ((mHorizontalPaddingScale * mPaddingHorizontal) - mPaddingHorizontal));
     }
-
 
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -1840,12 +1580,9 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     @Override
     public void onSizeChanged(int i2, int i3, int i4, int i5) {
         super.onSizeChanged(i2, i3, i4, i5);
-        mMaxToMinLinearGradient = null;
-        mMinToMaxLinearGradient = null;
         mStartDragging = false;
         stopPhysicsMove();
         updateBehavior();
-        updatePixPerProgress();
     }
 
     public void onStartTrackingTouch() {
@@ -1906,7 +1643,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
                     }
                     thumbIsPressed = true;
                 }
-                resetBumpingEdges();
+
                 clearDeformationValue();
                 initVelocityTrackerIfNotExists();
                 mVelocityTracker.addMovement(motionEvent);
@@ -1916,7 +1653,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
                 thumbIsPressed = false;
-                mFlexibleFollowHandAnim.cancel();
                 if (mVelocityTracker != null) {
                     mVelocityTracker.computeCurrentVelocity(ONE_SECOND_UNITS, MAX_VELOCITY);
                     mFlingVelocity = mVelocityTracker.getXVelocity();
@@ -2121,98 +1857,21 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         }
     }
 
-    public void releaseAnim() {
-        cancelAnim(mTouchEnlargeAnimator);
-        if (mTouchReleaseAnimator == null) {
-            mTouchReleaseAnimator = getReleaseAnimator(TOUCH_ANIMATION_ENLARGE_DURATION, PROGRESS_SCALE_INTERPOLATOR);
-        } else {
-            cancelAnim(mTouchReleaseAnimator);
-        }
-        setReleaseAnimatorValues(mTouchReleaseAnimator);
-        mTouchReleaseAnimator.start();
-    }
-
-    public void setReleaseAnimatorValues(ValueAnimator valueAnimator) {
-        valueAnimator.setValues(PropertyValuesHolder.ofFloat("backgroundHeight", mCurBackgroundHeight, mBackgroundHeight));
-    }
-
-    private ValueAnimator getReleaseAnimator(long j2, Interpolator interpolator) {
+    protected void releaseAnim() {
         ValueAnimator valueAnimator = new ValueAnimator();
-        valueAnimator.setDuration(j2);
-        valueAnimator.setInterpolator(interpolator);
-        valueAnimator.addUpdateListener(valueAnimator2 -> getEnlargeAnimator(valueAnimator2));
-        return valueAnimator;
-    }
-
-    private void initDeformationAnim() {
-        if (mDeformationAnim != null) {
-            return;
-        }
-        androidx.dynamicanimation.animation.FloatValueHolder floatValueHolder = new androidx.dynamicanimation.animation.FloatValueHolder(0.0f);
-        OplusSpringForce oplusSpringForce = new OplusSpringForce();
-        oplusSpringForce.setBounce(0.0f);
-        oplusSpringForce.setResponse(DEFORMATION_SPRING_RESPONSE);
-        OplusSpringAnimation spring = new OplusSpringAnimation(floatValueHolder).setSpring(oplusSpringForce);
-        mDeformationAnim = spring;
-        spring.addUpdateListener((OplusDynamicAnimation, f2, f3) -> {
-            float f4 = f2 / DEFORMATION_SCALE_FACTOR;
-            if (mScale > SCALE_MAX) {
-                mHeightBottomDeformedUpValue = computeValue(f4, mMaxMovingDistance);
-                mHeightTopDeformedUpValue = computeValue(f4, mMaxMovingDistance + mMaxHeightDeformedValue);
-                mWidthDeformedValue = computeValue(f4, mMaxWidthDeformedValue);
-                heightDeformedChanged();
-                invalidate();
-                return;
-            }
-            if (mScale < SCALE_MIN) {
-                mHeightTopDeformedDownValue = computeValue(f4, mMaxMovingDistance);
-                mHeightBottomDeformedDownValue = computeValue(f4, mMaxMovingDistance + mMaxHeightDeformedValue);
-                mWidthDeformedValue = computeValue(f4, mMaxWidthDeformedValue);
-                heightDeformedChanged();
-                invalidate();
-            }
+        valueAnimator.setValues(PropertyValuesHolder.ofFloat("progressRadius", mCurProgressRadius, mProgressRadius), PropertyValuesHolder.ofFloat("backgroundRadius", mCurBackgroundRadius, mBackgroundRadius), PropertyValuesHolder.ofFloat("progressHeight", mCurProgressHeight, mProgressHeight), PropertyValuesHolder.ofFloat("backgroundHeight", mCurBackgroundHeight, mBackgroundHeight), PropertyValuesHolder.ofFloat("animatePadding", mCurPaddingHorizontal, mPaddingHorizontal));
+        valueAnimator.setDuration(RELEASE_ANIM_DURATION);
+        valueAnimator.setInterpolator(PROGRESS_SCALE_INTERPOLATOR);
+        valueAnimator.addUpdateListener(valueAnimator2 -> {
+            mCurProgressRadius = (Float) valueAnimator2.getAnimatedValue("progressRadius");
+            mCurBackgroundRadius = (Float) valueAnimator2.getAnimatedValue("backgroundRadius");
+            mCurProgressHeight = (Float) valueAnimator2.getAnimatedValue("progressHeight");
+            mCurBackgroundHeight = (Float) valueAnimator2.getAnimatedValue("backgroundHeight");
+            mCurPaddingHorizontal = (Float) valueAnimator2.getAnimatedValue("animatePadding");
+            invalidate();
         });
-    }
-
-    private void initEnlargeAnim() {
-        if (mTouchEnlargeAnimator == null) {
-            mTouchEnlargeAnimator = getEnlargeAnimator(TOUCH_ANIMATION_ENLARGE_DURATION, PROGRESS_SCALE_INTERPOLATOR);
-        } else {
-            cancelAnim(mTouchEnlargeAnimator);
-        }
-        setEnlargeAnimatorValues(mTouchEnlargeAnimator);
-    }
-
-    public void cancelAnim(ValueAnimator valueAnimator) {
-        if (valueAnimator == null || !valueAnimator.isRunning()) {
-            return;
-        }
-        valueAnimator.cancel();
-    }
-
-    private float getDeformationFlingScale() {
-        return mScale > SCALE_MAX ? ((mScale - SCALE_MAX) / SCALE_DEFORMATION_TIMES) + SCALE_MAX : mScale < SCALE_MIN ? mScale / SCALE_DEFORMATION_TIMES : mScale;
-    }
-
-    private ValueAnimator getEnlargeAnimator(long duration, Interpolator interpolator) {
-        ValueAnimator valueAnimator = new ValueAnimator();
-        valueAnimator.setDuration(duration);
-        valueAnimator.setInterpolator(interpolator);
-        valueAnimator.addUpdateListener(valueAnimator2 -> getEnlargeAnimator(valueAnimator2));
-        return valueAnimator;
-    }
-
-    public void getEnlargeAnimator(ValueAnimator valueAnimator) {
-        getCurAnimatorValues(valueAnimator);
-        invalidate();
-    }
-
-    public void getCurAnimatorValues(ValueAnimator valueAnimator) {
-        mCurBackgroundHeight = ((Float) valueAnimator.getAnimatedValue("backgroundHeight")).floatValue();
-    }
-
-    public void setEnlargeAnimatorValues(ValueAnimator valueAnimator) {
-        valueAnimator.setValues(PropertyValuesHolder.ofFloat("backgroundHeight", mBackgroundHeight, mMaxBackgroundHeight));
+        mTouchAnimator.cancel();
+        valueAnimator.start();
     }
 
     public void setBackgroundEnlargeScale(float backgroundEnlargeScale) {
@@ -2248,8 +1907,7 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
 
     public void setDeformedParams(DeformedValueBean deformedValueBean) {
         mScale = deformedValueBean.getScale();
-        mDrawProgressScale = deformedValueBean.getDrawProgressScale();
-        mProgress = (int) deformedValueBean.getProgress();
+        mProgress = deformedValueBean.getProgress();
         mHeightBottomDeformedUpValue = deformedValueBean.getHeightBottomDeformedUpValue();
         mHeightTopDeformedUpValue = deformedValueBean.getHeightTopDeformedUpValue();
         mWidthDeformedValue = deformedValueBean.getWidthDeformedValue();
@@ -2433,9 +2091,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
      * #setValues(Float...)} and {@link #setValues(List)}
      */
     private void setValuesInternal(@NonNull ArrayList<Float> values) {
-        if (mFlexibleFollowHandAnim != null) {
-            mFlexibleFollowHandAnim.cancel();
-        }
         if (values.isEmpty()) {
             throw new IllegalArgumentException("At least one value must be set");
         }
@@ -2457,7 +2112,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         focusedThumbIdx = 0;
         createLabelPool();
 //        dispatchOnChangedProgrammatically();
-        updatePixPerProgress();
         mScale = normalizeValue(values.get(0));
         setProgress(values.get(0), false);
         postInvalidate();
@@ -2520,6 +2174,10 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
         }
     }
 
+    public void setInterpolator(Interpolator interpolator) {
+        mInterpolator = interpolator;
+    }
+
     private void setLocalProgress(float localProgress) {
         this.mProgress = localProgress;
         this.mRealProgress = getRealProgress(localProgress);
@@ -2539,7 +2197,6 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
 
     /**
      * Adds a callback {@link OnSliderChangeListener}
-     *
      * @param onSliderChangeListener The callback to run when the slider changes
      */
     public void addOnSliderChangeListener(OnSliderChangeListener onSliderChangeListener) {
@@ -2721,8 +2378,10 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
     }
 
     public void touchAnim() {
-        cancelAnim(mTouchEnlargeAnimator);
-        mTouchEnlargeAnimator.start();
+        if (mTouchAnimator.isRunning()) {
+            mTouchAnimator.cancel();
+        }
+        mTouchAnimator.start();
     }
 
     public boolean touchInSeekBar(MotionEvent motionEvent, View view) {
@@ -3094,11 +2753,11 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
      * Interface definition for a callback to be invoked when the slider's value changes.
      */
     public interface OnSliderChangeListener {
-        void onProgressChanged(OplusSlider oplusSlider, boolean fromUser);
+        void onProgressChanged(OplusSliderLegacy oplusSlider, boolean fromUser);
 
-        void onStartTrackingTouch(OplusSlider oplusSlider);
+        void onStartTrackingTouch(OplusSliderLegacy oplusSlider);
 
-        void onStopTrackingTouch(OplusSlider oplusSlider);
+        void onStopTrackingTouch(OplusSliderLegacy oplusSlider);
     }
 
     /**
@@ -3106,26 +2765,22 @@ public class OplusSlider extends View implements AnimationListener, AnimationUpd
      */
     public interface OnChangeListener {
 
-        /**
-         * Called when the value of the slider changes.
-         */
-        void onValueChange(@NonNull OplusSlider oplusSlider, float value, boolean fromUser);
+        /** Called when the value of the slider changes. */
+        void onValueChange(@NonNull OplusSliderLegacy oplusSlider, float value, boolean fromUser);
     }
 
     public interface OnDeformedListener {
-        default void onScaleChanged(DeformedValueBean deformedValueBean) {
-        }
+        default void onScaleChanged(DeformedValueBean deformedValueBean) {}
 
-        default void onHeightDeformedChanged(float topDeformation, float bottomDeformation) {
-        }
+        default void onHeightDeformedChanged(float topDeformation, float bottomDeformation) {}
     }
 
     public static class AccessibilityHelper extends ExploreByTouchHelper {
 
         final Rect virtualViewBounds = new Rect();
-        private final OplusSlider slider;
+        private final OplusSliderLegacy slider;
 
-        AccessibilityHelper(OplusSlider slider) {
+        AccessibilityHelper(OplusSliderLegacy slider) {
             super(slider);
             this.slider = slider;
         }

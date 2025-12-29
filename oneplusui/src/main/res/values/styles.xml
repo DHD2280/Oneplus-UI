@@ -279,6 +279,10 @@
         <item name="android:layout">@layout/oplus_preference_slider</item>
     </style>
 
+    <style name="Preferences.Oplus.Preference.SliderLegacy" parent="@style/Preferences.Oplus.Preference">
+        <item name="android:layout">@layout/oplus_preference_slider_legacy</item>
+    </style>
+
     <style name="Preferences.Oplus.Preference.SeekbarLegacy" parent="@style/Preferences.Oplus.Preference">
         <item name="android:layout">@layout/oplus_preference_seekbar_legacy</item>
     </style>
@@ -363,7 +367,7 @@
         <item name="oplusSeekBarThumbColor">@color/oplus_seekbar_thumb_selector</item>
     </style>
 
-    <style name="Widget.Oplus.Slider" parent="">
+    <style name="Widget.Oplus.SliderLegacy" parent="">
         <item name="oplusSeekBarAdaptiveVibrator">true</item>
         <item name="oplusSeekBarBackgroundColor">@color/oplus_seekbar_background_selector</item>
         <item name="oplusSeekBarBackgroundRadius">@dimen/oplus_seekbar_background_radius</item>
@@ -381,7 +385,11 @@
         <item name="oplusLabelStyle">@style/Widget.Oplus.Tooltip</item>
     </style>
 
-    <style name="Widget.Oplus.SectionSeekBarLegacy" parent="@style/Widget.Oplus.Slider">
+    <style name="Widget.Oplus.Slider" parent="@style/Widget.Oplus.SliderLegacy">
+        <item name="oplusSeekBarThumbColor">@color/oplus_seekbar_thumb_selector</item>
+    </style>
+
+    <style name="Widget.Oplus.SectionSeekBarLegacy" parent="@style/Widget.Oplus.SliderLegacy">
         <item name="oplusSeekBarPhysicsEnable">false</item>
         <item name="oplusSeekBarProgressPaddingHorizontal">@dimen/oplus_section_seekbar_progress_padding_horizontal</item>
     </style>
