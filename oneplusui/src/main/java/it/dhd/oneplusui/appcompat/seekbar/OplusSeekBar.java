@@ -3,7 +3,6 @@ package it.dhd.oneplusui.appcompat.seekbar;
 import static android.os.VibrationEffect.EFFECT_HEAVY_CLICK;
 import static android.os.VibrationEffect.EFFECT_TICK;
 
-import android.animation.AnimatorSet;
 import android.animation.PropertyValuesHolder;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -41,7 +40,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.animation.PathInterpolatorCompat;
 import androidx.dynamicanimation.animation.FloatPropertyCompat;
 
 import com.facebook.rebound.Spring;
@@ -114,13 +112,11 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     private final List<OnSeekBarChangeListener> mOnSeekBarChangeListeners = new ArrayList<>();
     private final String mSeekBarRoleDescription;
     protected int mBackgroundColor;
-    protected float mBackgroundEnlargeScale;
-    protected float mBackgroundHeight;
-    protected RectF mBackgroundRect;
+    private final float mBackgroundEnlargeScale;
+    private final float mBackgroundHeight;
+    private final RectF mBackgroundRect;
     protected float mBackgroundRoundCornerWeight;
     protected OplusSpringAnimation mClickAnim;
-    protected Path mClipProgressPath;
-    protected RectF mClipProgressRect;
     protected float mCurBackgroundHeight;
     protected float mCurBottomDeformationValue;
     protected float mCurPaddingHorizontal;
@@ -144,29 +140,24 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     protected int mMax;
     protected int mMin;
     protected int mOldProgress;
-    protected float mPaddingHorizontal;
+    private final float mPaddingHorizontal;
     protected Paint mPaint;
     protected int mProgress;
-    protected int mProgressColor;
-    protected float mProgressHeight;
-    protected Path mProgressPath;
-    protected RectF mProgressRect;
+    private int mProgressColor;
+    private final float mProgressHeight;
+    private final Path mProgressPath;
+    private final RectF mProgressRect;
     protected float mProgressRoundCornerWeight;
-    protected Interpolator mProgressScaleInterpolator;
     protected float mScale;
-    protected int mShadowColor;
     protected boolean mShowProgress;
     protected boolean mShowThumb;
-    protected RectF mTempRect;
-    protected Interpolator mThumbAnimateInterpolator;
     protected int mThumbColor;
-    protected float mThumbMaxRadius;
-    protected float mThumbOutRadius;
+    private final float mThumbMaxRadius;
     protected float mThumbPosition;
-    protected float mThumbRadius;
+    private final float mThumbRadius;
     protected int mThumbShadowColor;
     protected float mThumbShadowOffsetY;
-    protected int mThumbShadowRadiusSize;
+    private final int mThumbShadowRadiusSize;
     protected float mTouchDownX;
     protected ValueAnimator mTouchEnlargeAnimator;
     protected ValueAnimator mTouchReleaseAnimator;
@@ -293,11 +284,6 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
                 OplusSeekBar.setCurGlitterEffectValue(f2);
             }
         };
-        mClipProgressPath = new Path();
-        mClipProgressRect = new RectF();
-        mProgressScaleInterpolator = PathInterpolatorCompat.create(0.33f, 0.0f, 0.67f, 1.0f);
-        mThumbAnimateInterpolator = PathInterpolatorCompat.create(CLICK_SPRING_RESPONSE, 0.0f, 0.1f, 1.0f);
-        mTempRect = new RectF();
         if (attributeSet != null) {
             mRefreshStyle = attributeSet.getStyleAttribute();
         }
@@ -433,9 +419,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     private void ensureSize() {
         mCurBackgroundHeight = mBackgroundHeight;
         mCurThumbRadius = mThumbRadius;
-        float f2 = mProgressHeight;
-        mCurProgressRadius = f2 / 2.0f;
-        mThumbOutRadius = f2 / 2.0f;
+        mCurProgressRadius = mProgressHeight / 2.0f;
         mCurPaddingHorizontal = mPaddingHorizontal;
         Log.i(TAG, "OplusSeekBar ensureSize : mPaddingHorizontal:" + mPaddingHorizontal + ",mBackgroundHeight:" + mBackgroundHeight + ",mBackgroundEnlargeScale" + mBackgroundEnlargeScale + ",mProgressHeight:" + mProgressHeight + ",mThumbRadius" + mThumbRadius);
         updateBehavior();
@@ -535,7 +519,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         ValueAnimator valueAnimator = new ValueAnimator();
         valueAnimator.setDuration(duration);
         valueAnimator.setInterpolator(interpolator);
-        valueAnimator.addUpdateListener(valueAnimator2 -> getEnlargeAnimator(valueAnimator2));
+        valueAnimator.addUpdateListener(this::getEnlargeAnimator);
         return valueAnimator;
     }
 
@@ -570,12 +554,11 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     private float getPercent(int i2) {
         float max = getMax();
         float min = getMin();
-        float f2 = i2;
-        float f3 = max - min;
-        if (f3 <= 0.0f) {
+        float diff = max - min;
+        if (diff <= 0.0f) {
             return 0.0f;
         }
-        return Math.max(0.0f, Math.min(1.0f, (f2 - min) / f3));
+        return Math.max(0.0f, Math.min(1.0f, ((float) i2 - min) / diff));
     }
 
     private int getProgressLimit(int i2) {
@@ -591,11 +574,11 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         return Math.max(0.0f, Math.min(f2, 1.0f));
     }
 
-    private ValueAnimator getReleaseAnimator(long j2, Interpolator interpolator) {
+    private ValueAnimator getReleaseAnimator(long duration, Interpolator interpolator) {
         ValueAnimator valueAnimator = new ValueAnimator();
-        valueAnimator.setDuration(j2);
+        valueAnimator.setDuration(duration);
         valueAnimator.setInterpolator(interpolator);
-        valueAnimator.addUpdateListener(valueAnimator2 -> getEnlargeAnimator(valueAnimator2));
+        valueAnimator.addUpdateListener(this::getEnlargeAnimator);
         return valueAnimator;
     }
 
@@ -844,13 +827,10 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         return mMoveType != 2;
     }
 
-    private boolean isWithinThumbBounds(float f2, float f3) {
+    private boolean isWithinThumbBounds(float x, float y) {
         int seekBarCenterY = getSeekBarCenterY();
-        float f4 = mThumbPosition;
-        float f5 = mPaddingHorizontal;
-        if (f2 >= f4 - f5 && f2 <= f4 + f5) {
-            float f6 = seekBarCenterY;
-            return f3 >= f6 - f5 && f3 <= f6 + f5;
+        if (x >= mThumbPosition - mPaddingHorizontal && x <= mThumbPosition + mPaddingHorizontal) {
+            return y >= (float) seekBarCenterY - mPaddingHorizontal && y <= (float) seekBarCenterY + mPaddingHorizontal;
         }
         return false;
     }
@@ -910,26 +890,22 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         mGlitterEffectPaint.setShader(mMinToMaxLinearGradient);
     }
 
-    private void startFastMoveAnimation(float f2) {
+    private void startFastMoveAnimation(float velocity) {
         Spring fastMoveSpring = getFastMoveSpring();
         if (fastMoveSpring.getCurrentValue() == fastMoveSpring.getEndValue()) {
-            int i2 = mMax - mMin;
-            if (f2 >= FAST_MOVE_VELOCITY) {
-                int i3 = mProgress;
-                float f3 = i2;
-                if (i3 > MAX_FAST_MOVE_PERCENT * f3 || i3 < f3 * MIN_FAST_MOVE_PERCENT) {
+            int diff = mMax - mMin;
+            if (velocity >= FAST_MOVE_VELOCITY) {
+                if (mProgress > MAX_FAST_MOVE_PERCENT * (float) diff || mProgress < (float) diff * MIN_FAST_MOVE_PERCENT) {
                     return;
                 }
                 fastMoveSpring.setEndValue(1.0d);
                 return;
             }
-            if (f2 > -FAST_MOVE_VELOCITY) {
+            if (velocity > -FAST_MOVE_VELOCITY) {
                 fastMoveSpring.setEndValue(0.0d);
                 return;
             }
-            int i4 = mProgress;
-            float f4 = i2;
-            if (i4 > MAX_FAST_MOVE_PERCENT * f4 || i4 < f4 * MIN_FAST_MOVE_PERCENT) {
+            if (mProgress > MAX_FAST_MOVE_PERCENT * (float) diff || mProgress < (float) diff * MIN_FAST_MOVE_PERCENT) {
                 return;
             }
             fastMoveSpring.setEndValue(-1.0d);
@@ -963,16 +939,15 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
 
     private void trackTouchEvent(MotionEvent motionEvent) {
         float x2 = motionEvent.getX();
-        float f2 = x2 - mLastX;
-        int i2 = mMax - mMin;
+        float deltax = x2 - mLastX;
+        int diff = mMax - mMin;
         if (isLayoutRtl()) {
-            f2 = -f2;
+            deltax = -deltax;
         }
-        float f3 = i2;
-        setTouchScale((mProgress / f3) + ((f2 * calculateDamping()) / getSeekBarWidth()), false);
+        setTouchScale((mProgress / (float) diff) + ((deltax * calculateDamping()) / getSeekBarWidth()), false);
         executeTouchGlitterEffectAnim();
         mFlexibleFollowHandAnim.animateToFinalPosition(mScale * FLEXIBLE_FOLLOW_HAND_SCALE_FACTOR);
-        int progressLimit = getProgressLimit(Math.round((mScale * f3) + getMin()));
+        int progressLimit = getProgressLimit(Math.round((mScale * (float) diff) + getMin()));
         int progress = mProgress;
         int realProgress = mRealProgress;
         setLocalProgress(progressLimit);
@@ -1205,7 +1180,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void getCurAnimatorValues(ValueAnimator valueAnimator) {
-        mCurBackgroundHeight = ((Float) valueAnimator.getAnimatedValue("backgroundHeight")).floatValue();
+        mCurBackgroundHeight = (Float) valueAnimator.getAnimatedValue("backgroundHeight");
     }
 
     public int getEnd() {
@@ -1393,7 +1368,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         if (animatedValue == null) {
             return;
         }
-        float fFloatValue = ((Float) animatedValue).floatValue();
+        float fFloatValue = (Float) animatedValue;
         int seekBarWidth = getSeekBarWidth();
         if (isLayoutRtl()) {
             flingScale = (seekBarWidth - fFloatValue) / seekBarWidth;
@@ -1688,10 +1663,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         float width = ((getWidth() - getEnd()) - mPaddingHorizontal) + (mCurBackgroundHeight / 2.0f);
         if (isLayoutRtl()) {
             float f2 = (start - mHeightTopDeformedUpValue) + mHeightTopDeformedDownValue;
-            float f3 = seekBarCenterY;
-            float f4 = mCurBackgroundHeight;
-            float f5 = mWidthDeformedValue;
-            mBackgroundRect.set(f2, f3 - ((f4 / 2.0f) - f5), (width - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, f3 + ((f4 / 2.0f) - f5));
+            mBackgroundRect.set(f2, (float) seekBarCenterY - ((mCurBackgroundHeight / 2.0f) - mWidthDeformedValue), (width - mHeightBottomDeformedUpValue) + mHeightBottomDeformedDownValue, (float) seekBarCenterY + ((mCurBackgroundHeight / 2.0f) - mWidthDeformedValue));
             return;
         }
         float f6 = (start - mHeightBottomDeformedDownValue) + mHeightBottomDeformedUpValue;
@@ -1874,11 +1846,9 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void setProgressColor(@NonNull ColorStateList colorStateList) {
-        if (colorStateList != null) {
-            mProgressColorStateList = colorStateList;
-            mProgressColor = getColor(this, colorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_progress_selector));
-            invalidate();
-        }
+        mProgressColorStateList = colorStateList;
+        mProgressColor = getColor(this, colorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_progress_selector));
+        invalidate();
     }
 
     @Deprecated
@@ -1970,11 +1940,9 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void setSeekBarBackgroundColor(@NonNull ColorStateList colorStateList) {
-        if (colorStateList != null) {
-            mBackgroundColorStateList = colorStateList;
-            mBackgroundColor = getColor(this, colorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_background_selector));
-            invalidate();
-        }
+        mBackgroundColorStateList = colorStateList;
+        mBackgroundColor = getColor(this, colorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_background_selector));
+        invalidate();
     }
 
     public void setStartFromMiddle(boolean z2) {
@@ -1990,11 +1958,9 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void setThumbColor(@NonNull ColorStateList colorStateList) {
-        if (colorStateList != null) {
-            mThumbColorStateList = colorStateList;
-            mThumbColor = getColor(this, colorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_thumb_selector));
-            invalidate();
-        }
+        mThumbColorStateList = colorStateList;
+        mThumbColor = getColor(this, colorStateList, ContextCompat.getColor(getContext(), R.color.oplus_seekbar_thumb_selector));
+        invalidate();
     }
 
     public void setTouchScale(float f2, boolean z2) {
@@ -2140,7 +2106,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public static class SavedState extends View.BaseSavedState {
-        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<>() {
 
             @Override
             public SavedState createFromParcel(Parcel parcel) {
