@@ -140,13 +140,13 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     protected int mMax;
     protected int mMin;
     protected int mOldProgress;
-    private final float mPaddingHorizontal;
+    protected float mPaddingHorizontal;
     protected Paint mPaint;
     protected int mProgress;
     private int mProgressColor;
-    private final float mProgressHeight;
+    protected float mProgressHeight;
     private final Path mProgressPath;
-    private final RectF mProgressRect;
+    protected RectF mProgressRect;
     protected float mProgressRoundCornerWeight;
     protected float mScale;
     protected boolean mShowProgress;
@@ -157,7 +157,7 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     private final float mThumbRadius;
     protected int mThumbShadowColor;
     protected float mThumbShadowOffsetY;
-    private final int mThumbShadowRadiusSize;
+    protected int mThumbShadowRadiusSize;
     protected float mTouchDownX;
     protected ValueAnimator mTouchEnlargeAnimator;
     protected ValueAnimator mTouchReleaseAnimator;
@@ -350,9 +350,8 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     private float calculateDamping() {
-        float f2 = mDamping;
         if (mDamping != 0.0f) {
-            return f2;
+            return mDamping;
         }
         return MAX_MOVE_DAMPING;
     }
