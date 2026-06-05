@@ -1,3 +1,6 @@
+**2.0.1**  
+- Fixed OplusSeekBar animations  
+  
 **2.0.0**  
 - Added Tips to SeekBar, SectionSeekBar and Slider preferences  
 - Added OplusSlider based to OOS16  
