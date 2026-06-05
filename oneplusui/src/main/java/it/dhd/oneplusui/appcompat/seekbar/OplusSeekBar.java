@@ -1017,12 +1017,23 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void animForClick(float f2) {
+        if (mPixPerProgress == 0.0f) {
+            updatePixPerProgress();
+        }
         float seekBarWidth = getSeekBarWidth();
         float f4 = seekBarWidth + ((mProgressHeight / SCALE_DEFORMATION_MAX) * SCALE_DEFORMATION_MAX);
         float f5 = mPaddingHorizontal - (mProgressHeight / SCALE_DEFORMATION_MAX);
-        float width = isLayoutRtl() ? (((getWidth() - f2) - getStart()) - f5) / f4 : ((f2 - getStart()) - f5) / f4;
+
+        float width;
+        if (isLayoutRtl()) {
+            width = (((getWidth() - f2) - getStart()) - f5) / f4;
+        } else {
+            width = ((f2 - getStart()) - f5) / f4;
+        }
+        width = Math.max(0.0f, Math.min(1.0f, width));
         clearDeformationValue();
-        startTransitionAnim(getProgressLimit(Math.round((width * (getMax() - getMin())) + getMin())), true);
+        int targetProgress = getProgressLimit(Math.round((width * (getMax() - getMin())) + getMin()));
+        startTransitionAnim(targetProgress, true);
     }
 
     public void calculateTouchDeformationValue() {
@@ -1279,14 +1290,21 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
     }
 
     public void handleMotionEventMove(MotionEvent motionEvent) {
+        // Assicurati che mPixPerProgress sia inizializzato
+        if (mPixPerProgress == 0.0f) {
+            updatePixPerProgress();
+        }
+
         float seekBarWidth = getSeekBarWidth();
         int i2 = mMax;
         int i3 = mMin;
         int i4 = i2 - i3;
         float f2 = (i4 > 0 ? (mProgress * seekBarWidth) / i4 : 0.0f) + i3;
+
         if (mIsStartFromMiddle && Float.compare(f2, seekBarWidth / 2.0f) == 0 && Math.abs(motionEvent.getX() - mLastX) < DAMPING_DISTANCE) {
             return;
         }
+
         if (mIsDragging && mStartDragging) {
             if (mMoveType != MOVE_BY_DEFAULT) {
                 if (mMoveType == MOVE_BY_FINGER) {
@@ -1390,13 +1408,16 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         super.onAttachedToWindow();
     }
 
-    public void onClickAnimationUpdate(float f2) {
-        float f3 = mPixPerProgress;
-        if (f3 > 0.0f) {
-            setLocalProgress((int) (f2 / f3));
-            float seekBarWidth = getSeekBarWidth() > 0 ? (f2 - (mMin * mPixPerProgress)) / getSeekBarWidth() : 0.0f;
-            mScale = seekBarWidth;
-            mDrawProgressScale = seekBarWidth;
+    public void onClickAnimationUpdate(float velocity) {
+        if (mPixPerProgress > 0.0f) {
+            int newProgress = (int) (velocity / mPixPerProgress);
+            setLocalProgress(newProgress);
+
+            float seekBarWidth = getSeekBarWidth();
+            float newScale = seekBarWidth > 0 ? (velocity - (mMin * mPixPerProgress)) / seekBarWidth : 0.0f;
+
+            mScale = newScale;
+            mDrawProgressScale = newScale;
             invalidate();
         }
     }
@@ -1454,6 +1475,16 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         updatePixPerProgress();
     }
 
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        if (changed) {
+            updatePixPerProgress();
+            updateBehavior();
+        }
+    }
+
+
     public void onStartTrackingTouch() {
         onStartTrackingTouch(true);
     }
@@ -1497,6 +1528,9 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
                 mIsDragging = false;
                 mStartDragging = false;
 
+                if (mPixPerProgress == 0.0f) {
+                    updatePixPerProgress();
+                }
                 handleMotionEventDown(event);
                 break;
 
@@ -1879,27 +1913,31 @@ public class OplusSeekBar extends AbsSeekBar implements AnimationListener, Anima
         float f3;
         float seekBarWidth = getSeekBarWidth();
         int seekBarCenterY = getSeekBarCenterY();
+
+        // CORRETTO: Usa mScale invece di mDrawProgressScale per la posizione del thumb
+        float progressScale = mShowProgress ? mDrawProgressScale : mScale;
+
         if (mIsStartFromMiddle) {
             if (isLayoutRtl()) {
                 start2 = getWidth() / SCALE_DEFORMATION_MAX;
-                realScale2 = start2 - ((getRealScale(mDrawProgressScale) - 0.5f) * seekBarWidth);
+                realScale2 = start2 - ((getRealScale(progressScale) - 0.5f) * seekBarWidth);
                 f2 = start2;
                 f3 = realScale2;
             } else {
                 start = getWidth() / SCALE_DEFORMATION_MAX;
-                realScale = start + ((getRealScale(mDrawProgressScale) - 0.5f) * seekBarWidth);
+                realScale = start + ((getRealScale(progressScale) - 0.5f) * seekBarWidth);
                 f2 = realScale;
                 realScale2 = start;
                 f3 = f2;
             }
         } else if (isLayoutRtl()) {
             start2 = getStart() + mPaddingHorizontal + seekBarWidth;
-            realScale2 = start2 - (getRealScale(mDrawProgressScale) * seekBarWidth);
+            realScale2 = start2 - (getRealScale(progressScale) * seekBarWidth);
             f2 = start2;
             f3 = realScale2;
         } else {
             start = getStart() + mPaddingHorizontal;
-            realScale = start + (getRealScale(mDrawProgressScale) * seekBarWidth);
+            realScale = start + (getRealScale(progressScale) * seekBarWidth);
             f2 = realScale;
             realScale2 = start;
             f3 = f2;

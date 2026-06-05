@@ -312,18 +312,22 @@ public abstract class OplusDynamicAnimation<T extends OplusDynamicAnimation<T>> 
         if (mLastFrameTime == 0) {
             mLastFrameTime = lastFrameTime;
             setPropertyValue(mValue);
-            return false;
+            return true;
         }
+
+        long deltaTime = lastFrameTime - mLastFrameTime;
         mLastFrameTime = lastFrameTime;
-        boolean updateValueAndVelocity = updateValueAndVelocity(lastFrameTime - mLastFrameTime);
-        float min = Math.min(mValue, mMaxValue);
+        boolean updateValueAndVelocity = updateValueAndVelocity(deltaTime);        float min = Math.min(mValue, mMaxValue);
         mValue = min;
         float max = Math.max(min, mMinValue);
         mValue = max;
+
         setPropertyValue(max);
+
         if (updateValueAndVelocity) {
             endAnimationInternal(false);
         }
+
         return updateValueAndVelocity;
     }
 
